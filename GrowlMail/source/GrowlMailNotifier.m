@@ -295,7 +295,7 @@ static BOOL notifierEnabled = YES;
 	}
 
 #ifdef GROWL_MAIL_DEBUG
-	NSLog(@"Got %i new messages. Summary mode was %i and is now %i", count, [self summaryMode], summaryMode);
+	NSLog(@"Got %lu new messages. Summary mode was %ld and is now %ld", count, [self summaryMode], summaryMode);
 #endif
 
 	Class Message_class = NSClassFromString(@"Message");
