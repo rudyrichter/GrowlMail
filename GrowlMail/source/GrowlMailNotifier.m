@@ -130,6 +130,8 @@ static BOOL notifierEnabled = YES;
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
         if(!class_getClassMethod(NSClassFromString(@"Library"), @selector(markMessageAsViewed:viewedDate:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
+        if(!class_getClassMethod(NSClassFromString(@"Library"), @selector(messageWithMessageID:)))
+            GMShutDownGrowlMailAndWarn(@"Library does not respond to +messageWithMessageID:");
         
 		id message = [Library messageWithMessageID:clickContext];
 		id viewingState = [[NSClassFromString(@"MessageViewingState") alloc] init];
