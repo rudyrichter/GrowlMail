@@ -440,6 +440,8 @@ typedef struct {
     char _field4;
 } CDAnonymousStruct6;
 
+struct sqlite3;
+
 @interface Library : NSObject
 {
 }

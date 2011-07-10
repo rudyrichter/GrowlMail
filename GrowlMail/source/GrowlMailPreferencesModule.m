@@ -40,7 +40,7 @@
 @end
 
 @implementation MailAccount(GrowlMail)
-+ (NSArray *) remoteMailAccounts; {
++ (NSArray *) remoteMailAccounts {
 	NSArray *mailAccounts = [MailAccount mailAccounts];
 	NSMutableArray *remoteAccounts = [NSMutableArray arrayWithCapacity:[mailAccounts count]];
 	NSEnumerator *enumerator = [mailAccounts objectEnumerator];
