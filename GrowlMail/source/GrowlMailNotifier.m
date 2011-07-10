@@ -92,11 +92,10 @@ static BOOL notifierEnabled = YES;
 		[self configureForBackgroundOnly:[self isBackgroundOnlyEnabled]];
 
 #ifdef GROWL_MAIL_DEBUG
-		/*
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(showAllNotifications:)
-													 name:nil object:nil];
-		 */
+		
+		//[[NSNotificationCenter defaultCenter] addObserver:self
+		//										 selector:@selector(showAllNotifications:)
+		//											 name:nil object:nil];
 #endif
 		sharedNotifier = self;
 	}
@@ -125,28 +124,25 @@ static BOOL notifierEnabled = YES;
 	if ([clickContext length]) {
 		//Make sure we have all the methods we need.
 		
-		if (!class_getClassMethod([Library class], @selector(messageWithMessageID:)))
-			GMShutDownGrowlMailAndWarn(@"Library does not respond to +messageWithMessageID:");
-		if (!class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(initForViewingMessage:showAllHeaders:viewingState:withDefaults:)))
-			if(!class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(initForViewingMessage:showAllHeaders:viewingState:fromDefaults:)))
-				GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -initForViewingMessage:showAllHeaders:viewingState:fromDefaults:");
+		if (!class_getClassMethod(NSClassFromString(@"SingleMessageViewer"), @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:)))
+			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:");
 		if (!class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(showAndMakeKey:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
-
+        if(!class_getClassMethod(NSClassFromString(@"Library"), @selector(markMessageAsViewed:viewedDate:)))
+            GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
+        
 		id message = [Library messageWithMessageID:clickContext];
 		id viewingState = [[NSClassFromString(@"MessageViewingState") alloc] init];
 		id messageViewer = nil;
-		if(class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(initForViewingMessage:showAllHeaders:viewingState:withDefaults:)))
-		   messageViewer = [[NSClassFromString(@"SingleMessageViewer") alloc] initForViewingMessage:message showAllHeaders:NO viewingState:viewingState withDefaults:NO];
-		else if(class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(initForViewingMessage:showAllHeaders:viewingState:fromDefaults:)))
-		   messageViewer = [[NSClassFromString(@"SingleMessageViewer") alloc] initForViewingMessage:message showAllHeaders:NO viewingState:viewingState fromDefaults:NO];
 		
+        if (class_getClassMethod(NSClassFromString(@"SingleMessageViewer"), @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:)))
+            messageViewer = [NSClassFromString(@"SingleMessageViewer") viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO viewingState:viewingState expandedSelectedMailboxes:nil];
+        
 		[viewingState release];
+        [NSApp activateIgnoringOtherApps:YES];
 		[messageViewer showAndMakeKey:YES];
-		[messageViewer release];
-		[Library markMessageAsViewed:message];
+		[Library markMessageAsViewed:message viewedDate:[NSDate date]];
 	}
-	[NSApp activateIgnoringOtherApps:YES];
 }
 
 - (NSDictionary *) registrationDictionaryForGrowl {
@@ -234,14 +230,17 @@ static BOOL notifierEnabled = YES;
 		//As of Tiger, this is normal; this notification is posted a couple times (perhaps once per inbox) with a LibraryStore object.
 		//This is not the notification we're looking for; we don't need to see its papers. We will move along now.
 		return;
-	}
-	//We don't actually use the store. We only retrieve it and examine it at all because we know we don't want the one with a LibraryStore as its object.
-	//The rest of the handler should be able to work just fine without proving anything else about the store, since it doesn't use the store.
-
+	}     
+    
 	NSDictionary *userInfo = [notification userInfo];
-	if (!userInfo) GMShutDownGrowlMailAndWarn(@"Notification had no userInfo");
-
-	NSArray *mailboxes = [userInfo objectForKey:@"mailboxes"];
+	if (!userInfo) 
+        GMShutDownGrowlMailAndWarn(@"Notification had no userInfo");
+    
+    //we return if they were added during Mail.app launching.
+    if([[userInfo objectForKey:@"MessageStoreMessagesAddedDuringOpen"] boolValue])
+        return;
+    
+	NSArray *mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Adding messages to mailboxes %@", __PRETTY_FUNCTION__, mailboxes);
 #endif
