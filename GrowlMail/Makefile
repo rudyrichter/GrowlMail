@@ -7,6 +7,7 @@
 # - Relaunch Mail.
 
 name = GrowlMail
+PACKAGE_MAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 datadir = $(HOME)/Library/Mail/Bundles
 
 CP = /usr/bin/ditto -v --rsrc
@@ -18,7 +19,7 @@ endif
 
 # The build style
 # Possible values are Development and Deployment
-BUILDCONFIGURATION?=Deployment
+BUILDCONFIGURATION?=Release
 
 .PHONY: all $(name) clean install uninstall
 
@@ -39,7 +40,7 @@ install: $(name)
 	mkdir -p "$(datadir)"
 	$(CP) "$(BUILD_DIR)/$(BUILDCONFIGURATION)/$<.mailbundle" "$(datadir)/$(name).mailbundle"
 	defaults write com.apple.mail EnableBundles 1
-	defaults write com.apple.mail BundleCompatibilityVersion 2
+	defaults write com.apple.mail BundleCompatibilityVersion 3
 	$(POST_INSTALL)
 	$(startmail)
 
@@ -53,3 +54,6 @@ uninstall:
 
 clean:
 	xcodebuild clean
+
+dist: $(name)
+	$(PACKAGE_MAKER) --no-relocate --doc product/legacy/GrowlMail\ Installer.pmdoc --out build/$(BUILDCONFIGURATION)/GrowlMail.pkg --version $(GROWLMAIL_VERSION) --id com.growl.growlmail.pkg -v	
