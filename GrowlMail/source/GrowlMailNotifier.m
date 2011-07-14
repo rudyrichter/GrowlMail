@@ -228,11 +228,11 @@ static BOOL notifierEnabled = YES;
 	if (!store) {
 		GMShutDownGrowlMailAndWarn([NSString stringWithFormat:@"'%@' notification has no object", [notification name]]);
 	}
-	if ([store isKindOfClass:[LibraryStore class]]) {
+	/*if ([store isKindOfClass:[LibraryStore class]]) {
 		//As of Tiger, this is normal; this notification is posted a couple times (perhaps once per inbox) with a LibraryStore object.
 		//This is not the notification we're looking for; we don't need to see its papers. We will move along now.
 		return;
-	}     
+	}*/   
     
 	NSDictionary *userInfo = [notification userInfo];
 	if (!userInfo) 
