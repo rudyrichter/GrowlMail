@@ -580,7 +580,8 @@ void GMShutDownGrowlMailAndWarn(NSString *specificWarning)
 	NSLog(NSLocalizedString(@"WARNING: Mail is not behaving in the way that GrowlMail expects. This is probably because GrowlMail is incompatible with the version of Mail you're using. GrowlMail will now turn itself off. Please check the Growl website for a new version. If you're a programmer and want to debug this error, run gdb, load Mail, set a breakpoint on %s, and run.", /*comment*/ nil), __PRETTY_FUNCTION__);
 	if (specificWarning)
 		NSLog(@"Furthermore, the caller provided a more specific message: %@", specificWarning);
-
+    NSLog(@"%@", [NSThread callStackSymbols]);
+    
 	[sharedNotifier shutDownGrowlMail];
 
 	//Prevent ourselves from re-enabling later.
