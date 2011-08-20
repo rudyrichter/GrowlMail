@@ -242,7 +242,14 @@ static BOOL notifierEnabled = YES;
     if([[userInfo objectForKey:@"MessageStoreMessagesAddedDuringOpen"] boolValue])
         return;
     
-	NSArray *mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
+	NSArray *mailboxes = nil;
+    @try {
+        mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"GrowlMail: failed to get a reference to the user's mailboxes");
+    }
+
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Adding messages to mailboxes %@", __PRETTY_FUNCTION__, mailboxes);
 #endif
