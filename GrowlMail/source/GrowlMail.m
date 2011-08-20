@@ -38,7 +38,8 @@
 
 #import <objc/runtime.h>
 
-NSBundle *GMGetGrowlMailBundle(void) {
+NSBundle *GMGetGrowlMailBundle(void) 
+{
 	return [NSBundle bundleForClass:[GrowlMail class]];
 }
 
@@ -48,7 +49,8 @@ static NSImage *growlMailIcon = nil;
 
 #pragma mark Boring bookkeeping stuff
 
-+ (void) initialize {
++ (void) initialize 
+{
 	[super initialize];
 
 	//We attempt to get a reference to the MVMailBundle class so we can swap superclasses, failing that 
@@ -60,7 +62,8 @@ static NSImage *growlMailIcon = nil;
 	{
 		class_setSuperclass([self class], mvMailBundleClass);
 		
-		growlMailIcon = [[NSImage alloc] initByReferencingFile:[GMGetGrowlMailBundle() pathForImageResource:@"GrowlMail"]];
+		//finish setup
+        growlMailIcon = [[NSImage alloc] initByReferencingFile:[GMGetGrowlMailBundle() pathForImageResource:@"GrowlMail"]];
 		[growlMailIcon setName:@"GrowlMail"];
 		
 		[GrowlMail registerBundle];
@@ -69,31 +72,39 @@ static NSImage *growlMailIcon = nil;
 	}
 }
 
-+ (void)registerBundle {
++ (void)registerBundle 
+{
     if(class_getClassMethod(NSClassFromString(@"MVMailBundle"), @selector(registerBundle)))
        [NSClassFromString(@"MVMailBundle") performSelector:@selector(registerBundle)];
 }
 
-+ (BOOL) hasPreferencesPanel {
++ (BOOL) hasPreferencesPanel 
+{
 	return YES;
 }
 
-+ (NSString *) preferencesOwnerClassName {
++ (NSString *) preferencesOwnerClassName 
+{
 	return @"GrowlMailPreferencesModule";
 }
 
-+ (NSString *) preferencesPanelName {
++ (NSString *) preferencesPanelName 
+{
 	return @"GrowlMail";
 }
 
-- (id) init {
-	if ((self = [super init])) {
+- (id) init 
+{
+	if ((self = [super init])) 
+    {
 		NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
 		NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
 
 		NSBundle *growlBundle = [NSBundle bundleWithPath:growlBundlePath];
-		if (growlBundle) {
-			if ([growlBundle load]) {
+		if (growlBundle) 
+        {
+			if ([growlBundle load]) 
+            {
 				if ([GrowlApplicationBridge respondsToSelector:@selector(frameworkInfoDictionary)]) {
 					//Create or obtain our singleton notifier instance.
 					notifier = [[GrowlMailNotifier alloc] init];
@@ -104,11 +115,15 @@ static NSImage *growlMailIcon = nil;
 					NSLog(@"Using Growl.framework %@ (%@)",
 						  [infoDictionary objectForKey:@"CFBundleShortVersionString"],
 						  [infoDictionary objectForKey:(NSString *)kCFBundleVersionKey]);
-				} else {
+				} 
+                else 
+                {
 					NSLog(@"Using a version of Growl.framework older than 1.1. One of the other installed Mail plugins should be updated to Growl.framework 1.1 or later.");
 				}
 			}
-		} else {
+		} 
+        else 
+        {
 			NSLog(@"Could not load Growl.framework, GrowlMail disabled");
 		}
 	}
@@ -116,7 +131,8 @@ static NSImage *growlMailIcon = nil;
 	return self;
 }
 
-- (void) dealloc {
+- (void) dealloc 
+{
 	[notifier release];
 
 	[super dealloc];

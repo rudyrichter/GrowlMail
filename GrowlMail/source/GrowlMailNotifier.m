@@ -14,15 +14,11 @@
 #import "MessageFrameworkHeaders.h"
 
 #define AUTO_THRESHOLD	10
-
 #define	MAX_NOTIFICATION_THREADS	5
 
 static int activeNotificationThreads = 0;
-
 static int messageCopies = 0;
-
 static GrowlMailNotifier *sharedNotifier = nil;
-
 static BOOL notifierEnabled = YES;
 
 @implementation GrowlMailNotifier
@@ -30,34 +26,41 @@ static BOOL notifierEnabled = YES;
 #pragma mark Panic buttons
 
 //The purpose of this method is to shut down GrowlMail completely: we should not be notified of any messages, nor notify the user of any messages, after this message is called.
-- (void) shutDownGrowlMail {
+- (void) shutDownGrowlMail 
+{
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[GrowlApplicationBridge setGrowlDelegate:nil];
 }
 
 #pragma mark The circle of life
 
-+ (id) sharedNotifier {
-	if (!sharedNotifier) {
++ (id) sharedNotifier 
+{
+	if (!sharedNotifier) 
+    {
 		//-init and -dealloc will each assign to sharedNotifier.
 		[[[GrowlMailNotifier alloc] init] autorelease];
 	}
 	return sharedNotifier;
 }
 
-- (id) init {
-	if (sharedNotifier) {
+- (id) init 
+{
+	if (sharedNotifier) 
+    {
 		[self release];
 		return [sharedNotifier retain];
 	}
 
 	//No shared notifier yet; someone is trying to create one. If we previously disabled ourselves, abort this attempt.
-	if (!notifierEnabled) {
+	if (!notifierEnabled) 
+    {
 		[self release];
 		return nil;
 	}
 
-	if((self = [super init])) {
+	if((self = [super init])) 
+    {
 		NSNumber *automatic = [NSNumber numberWithInt:GrowlMailSummaryModeAutomatic];
 		NSDictionary *defaultsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
 			@"(%account) %sender",         @"GMTitleFormat",
@@ -102,7 +105,8 @@ static BOOL notifierEnabled = YES;
 	return self;
 }
 
-- (void) dealloc {
+- (void) dealloc 
+{
 	[self shutDownGrowlMail];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	sharedNotifier = nil;
@@ -112,16 +116,20 @@ static BOOL notifierEnabled = YES;
 
 #pragma mark GrowlApplicationBridge delegate methods
 
-- (NSString *) applicationNameForGrowl {
+- (NSString *) applicationNameForGrowl 
+{
 	return @"GrowlMail";
 }
 
-- (NSImage *) applicationIconForGrowl {
+- (NSImage *) applicationIconForGrowl 
+{
 	return [NSImage imageNamed:@"NSApplicationIcon"];
 }
 
-- (void) growlNotificationWasClicked:(NSString *)clickContext {
-	if ([clickContext length]) {
+- (void) growlNotificationWasClicked:(NSString *)clickContext 
+{
+	if ([clickContext length]) 
+    {
 		//Make sure we have all the methods we need.
 		
 		if (!class_getClassMethod(NSClassFromString(@"SingleMessageViewer"), @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:)))
@@ -147,7 +155,8 @@ static BOOL notifierEnabled = YES;
 	}
 }
 
-- (NSDictionary *) registrationDictionaryForGrowl {
+- (NSDictionary *) registrationDictionaryForGrowl 
+{
 	// Register our ticket with Growl
 	NSArray *allowedNotifications = [NSArray arrayWithObjects:
 		NEW_MAIL_NOTIFICATION,
@@ -177,7 +186,8 @@ static BOOL notifierEnabled = YES;
 
 + (void)showNotificationForMessage:(id)message
 {
-	if (activeNotificationThreads < MAX_NOTIFICATION_THREADS) { 
+	if (activeNotificationThreads < MAX_NOTIFICATION_THREADS) 
+    { 
 		activeNotificationThreads++;
 		
 		/* Why use a thread?
@@ -196,7 +206,9 @@ static BOOL notifierEnabled = YES;
 		[NSThread detachNewThreadSelector:@selector(GMShowNotificationPart1)
 								 toTarget:message
 							   withObject:nil];
-	} else {
+	} 
+    else 
+    {
 		[self performSelector:@selector(showNotificationForMessage:)
 				   withObject:message
 				   afterDelay:2.0];
@@ -209,15 +221,19 @@ static BOOL notifierEnabled = YES;
 	activeNotificationThreads--;	
 }
 
-- (void)messageStoreDidAddMessages:(NSNotification *)notification {
-	if (![self isEnabled]) return;
-	if(!shouldNotify && [self isBackgroundOnlyEnabled]) return;
+- (void)messageStoreDidAddMessages:(NSNotification *)notification 
+{
+	if (![self isEnabled]) 
+        return;
+	if(!shouldNotify && [self isBackgroundOnlyEnabled]) 
+        return;
 	
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s called", __PRETTY_FUNCTION__);
 #endif
 	
-	if (messageCopies) {
+	if (messageCopies) 
+    {
 #ifdef GROWL_MAIL_DEBUG
 		NSLog(@"Ignoring because %i message copies are in process", messageCopies);
 #endif
@@ -225,10 +241,12 @@ static BOOL notifierEnabled = YES;
 	}
 
 	Library *store = [notification object];
-	if (!store) {
+	if (!store) 
+    {
 		GMShutDownGrowlMailAndWarn([NSString stringWithFormat:@"'%@' notification has no object", [notification name]]);
 	}
-	/*if ([store isKindOfClass:[LibraryStore class]]) {
+	/*if ([store isKindOfClass:[LibraryStore class]]) 
+     {
 		//As of Tiger, this is normal; this notification is posted a couple times (perhaps once per inbox) with a LibraryStore object.
 		//This is not the notification we're looking for; we don't need to see its papers. We will move along now.
 		return;
@@ -243,10 +261,12 @@ static BOOL notifierEnabled = YES;
         return;
     
 	NSArray *mailboxes = nil;
-    @try {
+    @try 
+    {
         mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
     }
-    @catch (NSException *exception) {
+    @catch (NSException *exception) 
+    {
         NSLog(@"GrowlMail: failed to get a reference to the user's mailboxes");
     }
 
@@ -255,7 +275,8 @@ static BOOL notifierEnabled = YES;
 #endif
 
 	//As of Tiger, it's normal for about half of these notifications to not have any mailboxes. We simply ignore the notification in this case.
-	if (!(mailboxes && [mailboxes count])) return;
+	if (!(mailboxes && [mailboxes count])) 
+        return;
 
 	//Ignore a notification if we're ignoring all of the mailboxes involved.
 	Class MailAccount_class = [MailAccount class];
@@ -286,7 +307,8 @@ static BOOL notifierEnabled = YES;
 		return;
 
 	NSArray *messages = [userInfo objectForKey:@"messages"];
-	if (!messages) GMShutDownGrowlMailAndWarn(@"Notification's userInfo has no messages");
+	if (!messages) 
+        GMShutDownGrowlMailAndWarn(@"Notification's userInfo has no messages");
 	
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Mail added messages [1] to mailboxes [2].\n[1]: %@\n[2]: %@", __PRETTY_FUNCTION__, messages, mailboxes);
@@ -295,7 +317,8 @@ static BOOL notifierEnabled = YES;
 	NSUInteger count = [messages count];
 
 	GrowlMailSummaryMode summaryMode = [self summaryMode];
-	if (summaryMode == GrowlMailSummaryModeAutomatic) {
+	if (summaryMode == GrowlMailSummaryModeAutomatic) 
+    {
 		if (count >= AUTO_THRESHOLD)
 			summaryMode = GrowlMailSummaryModeAlways;
 		else
@@ -308,9 +331,11 @@ static BOOL notifierEnabled = YES;
 
 	Class Message_class = NSClassFromString(@"Message");
 
-	switch (summaryMode) {
+	switch (summaryMode) 
+    {
 		default:
-		case GrowlMailSummaryModeDisabled: {
+		case GrowlMailSummaryModeDisabled: 
+        {
 			NSEnumerator *messagesEnum = [messages objectEnumerator];
 			id message;
 			while ((message = [messagesEnum nextObject])) {
@@ -333,7 +358,8 @@ static BOOL notifierEnabled = YES;
 			}
 			break;
 		}
-		case GrowlMailSummaryModeAlways: {
+		case GrowlMailSummaryModeAlways: 
+        {
 			if (!class_getClassMethod([MailAccount class], @selector(mailAccounts)))
 				GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +mailAccounts");
 			if (!class_getInstanceMethod(Message_class, @selector(mailbox)))
@@ -346,7 +372,8 @@ static BOOL notifierEnabled = YES;
 			NSEnumerator *messagesEnum = [messages objectEnumerator];
 			NSArray *junkMailboxUids = [MailAccount junkMailboxUids];
 			Message *message;
-			while ((message = [messagesEnum nextObject])) {
+			while ((message = [messagesEnum nextObject])) 
+            {
 				MailboxUid *mailbox = [message mailbox];
 				//If this mailbox is not an inbox, and we only care about inboxes, then skip this message.
 				if ([self inboxOnly] && ![[MailAccount inboxMailboxUids] containsObject:mailbox])
@@ -368,15 +395,19 @@ static BOOL notifierEnabled = YES;
 			MailAccount *account;
 
 			NSEnumerator *accountSummaryEnum = [accountSummary objectEnumerator];
-			while ((account = [accountSummaryEnum nextObject])) {
+			while ((account = [accountSummaryEnum nextObject])) 
+            {
 				if (![self isAccountEnabled:account])
 					continue;
 
 				NSUInteger summaryCount = [accountSummary countForObject:account];
 				if (summaryCount) {
-					if (summaryCount == 1) {
+					if (summaryCount == 1) 
+                    {
 						description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n 1 new mail", NULL, GMGetGrowlMailBundle(), "%@ is an account name"), [account displayName]];
-					} else {
+					} 
+                    else
+                    {
 						description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n %u new mails", NULL, GMGetGrowlMailBundle(), "%@ is an account name; %u becomes a number"), [account displayName], summaryCount];
 					}
 					[GrowlApplicationBridge notifyWithTitle:title
@@ -390,13 +421,16 @@ static BOOL notifierEnabled = YES;
 			}
 
 			NSEnumerator *accountJunkSummaryEnum = [accountJunkSummary objectEnumerator];
-			while ((account = [accountJunkSummaryEnum nextObject])) {
+			while ((account = [accountJunkSummaryEnum nextObject])) 
+            {
 				if (![self isAccountEnabled:account])
 					continue;
 
 				NSUInteger summaryCount = [accountJunkSummary countForObject:account];
-				if (summaryCount) {
-					if (summaryCount == 1) {
+				if (summaryCount) 
+                {
+					if (summaryCount == 1) 
+                    {
 						description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n 1 new mail", NULL, GMGetGrowlMailBundle(), "%@ is an account name"), [account displayName]];
 					} else {
 						description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n %u new mails", NULL, GMGetGrowlMailBundle(), "%@ is an account name; %u becomes a number"), [account displayName], summaryCount];
@@ -419,14 +453,16 @@ static BOOL notifierEnabled = YES;
 {
 	if (([[notification name] rangeOfString:@"NSWindow"].location == NSNotFound) &&
 		([[notification name] rangeOfString:@"NSMouse"].location == NSNotFound) &&
-		([[notification name] rangeOfString:@"_NSThread"].location == NSNotFound)) {
+		([[notification name] rangeOfString:@"_NSThread"].location == NSNotFound)) 
+    {
 		NSLog(@"%@", notification);
 	}
 }
 
 - (void)monitoredActivityStarted:(NSNotification *)notification
 {
-	if ([[[notification object] description] isEqualToString:@"Copying messages"]) {
+	if ([[[notification object] description] isEqualToString:@"Copying messages"]) 
+    {
 		messageCopies++;
 #ifdef GROWL_MAIL_DEBUG
 		NSLog(@"Copying a message: messageCopies is now %i", messageCopies);
@@ -438,7 +474,8 @@ static BOOL notifierEnabled = YES;
 
 - (void)monitoredActivityEnded:(NSNotification *)notification
 {
-	if ([[[notification object] description] isEqualToString:@"Copying messages"]) {
+	if ([[[notification object] description] isEqualToString:@"Copying messages"]) 
+    {
 		if (messageCopies <= 0)
 			GMShutDownGrowlMailAndWarn(@"Number of message-copying operations went below 0. It is not possible to have a negative number of copying operations!");
 		messageCopies--;
@@ -450,12 +487,14 @@ static BOOL notifierEnabled = YES;
 
 #pragma mark NSApplication Notifications
 
-- (void) backgroundOnlyActivate:(NSNotification*)sender {
+- (void) backgroundOnlyActivate:(NSNotification*)sender 
+{
 #pragma unused(sender)
 	shouldNotify = NO;
 }
 
-- (void) backgroundOnlyResign:(NSNotification*)sender {
+- (void) backgroundOnlyResign:(NSNotification*)sender 
+{
 #pragma unused(sender)
 	shouldNotify = YES;
 }
@@ -464,7 +503,8 @@ static BOOL notifierEnabled = YES;
 
 - (void) configureForBackgroundOnly:(BOOL)enabled
 {
-	if(enabled) {
+	if(enabled) 
+    {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backgroundOnlyActivate:) name:NSApplicationDidBecomeActiveNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backgroundOnlyResign:) name:NSApplicationDidResignActiveNotification object:nil];
 	}	
@@ -474,10 +514,12 @@ static BOOL notifierEnabled = YES;
 	}
 }
 
-- (BOOL) isAccountEnabled:(MailAccount *)account {
+- (BOOL) isAccountEnabled:(MailAccount *)account 
+{
 	BOOL isEnabled = YES;
 	NSDictionary *accountSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMAccounts"];
-	if (accountSettings) {
+	if (accountSettings) 
+    {
 		NSNumber *value = [accountSettings objectForKey:[account path]];
 		if (value)
 			isEnabled = [value boolValue];
@@ -485,7 +527,8 @@ static BOOL notifierEnabled = YES;
 	return isEnabled;
 }
 
-- (void) setAccount:(MailAccount *)account enabled:(BOOL)yesOrNo {
+- (void) setAccount:(MailAccount *)account enabled:(BOOL)yesOrNo 
+{
 	NSDictionary *accountSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMAccounts"];
 	NSMutableDictionary *newSettings = [[accountSettings mutableCopy] autorelease];
 	if (!newSettings)
@@ -496,29 +539,35 @@ static BOOL notifierEnabled = YES;
 
 #pragma mark Accessors
 
-- (BOOL) isBackgroundOnlyEnabled {
+- (BOOL) isBackgroundOnlyEnabled 
+{
 	NSNumber *backgroundNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMBackgroundOnly"];
 	return (backgroundNum ? [backgroundNum boolValue] : NO);
 }
 
-- (BOOL) isEnabled {
+- (BOOL) isEnabled 
+{
 	NSNumber *enabledNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMEnableGrowlMailBundle"];
 	return enabledNum ? [enabledNum boolValue] : YES;
 }
-- (GrowlMailSummaryMode) summaryMode {
+- (GrowlMailSummaryMode) summaryMode 
+{
 	NSNumber *summaryModeNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMSummaryMode"];
 	return summaryModeNum ? [summaryModeNum intValue] : GrowlMailSummaryModeAutomatic;
 }
-- (BOOL) inboxOnly {
+- (BOOL) inboxOnly 
+{
 	NSNumber *inboxOnlyNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMInboxOnly"];
 	return inboxOnlyNum ? [inboxOnlyNum boolValue] : YES;
 }
 
-- (NSString *) titleFormat {
+- (NSString *) titleFormat 
+{
 	NSString *titleFormat = [[NSUserDefaults standardUserDefaults] stringForKey:@"GMTitleFormat"];
 	return titleFormat ? titleFormat : @"(%account) %sender";
 }
-- (NSString *) descriptionFormat {
+- (NSString *) descriptionFormat 
+{
 	NSString *descriptionFormat = [[NSUserDefaults standardUserDefaults] stringForKey:@"GMDescriptionFormat"];
 	return descriptionFormat ? descriptionFormat : @"%subject\n%body";
 }
@@ -526,7 +575,8 @@ static BOOL notifierEnabled = YES;
 #pragma mark Panic buttons
 
 //This is a suicide pill. GrowlMail calls this function any time it detects a change in Mail's implementation, such as a missing method or an object of the wrong class.
-void GMShutDownGrowlMailAndWarn(NSString *specificWarning) {
+void GMShutDownGrowlMailAndWarn(NSString *specificWarning) 
+{
 	NSLog(NSLocalizedString(@"WARNING: Mail is not behaving in the way that GrowlMail expects. This is probably because GrowlMail is incompatible with the version of Mail you're using. GrowlMail will now turn itself off. Please check the Growl website for a new version. If you're a programmer and want to debug this error, run gdb, load Mail, set a breakpoint on %s, and run.", /*comment*/ nil), __PRETTY_FUNCTION__);
 	if (specificWarning)
 		NSLog(@"Furthermore, the caller provided a more specific message: %@", specificWarning);

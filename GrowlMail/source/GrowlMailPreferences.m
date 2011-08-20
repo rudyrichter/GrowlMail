@@ -54,7 +54,8 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 
 //As of Mac OS X 10.5.6, Mail creates the +sharedPreferences object lazily, so the simplest way to install our prefpane is to swizzle the +sharedPreferences method.
 //We used to install our prefpane by posing as NSPreferences, but class-posing doesn't exist in 64-bit, and seemed to cause at least one crash on PowerPC machines in GrowlMail 1.1.5b1.
-+ (void) load {
++ (void) load 
+{
 	Class NSPreferencesClass = NSClassFromString(@"NSPreferences");
 	if (!NSPreferencesClass)
 		GMShutDownGrowlMailAndWarn(@"Couldn't install GrowlMail prefpane: NSPreferences class missing");
@@ -63,7 +64,8 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 		Method sharedPreferencesFromAppKit = class_getClassMethod(NSPreferencesClass, @selector(sharedPreferences));
 		if (!sharedPreferencesFromAppKit)
 			GMShutDownGrowlMailAndWarn(@"Couldn't install GrowlMail prefpane: +[NSPreferences sharedPreferences] method missing");
-		else {
+		else 
+        {
 			//+[GrowlMailPreferences sharedPreferencesForGrowlMail]
 			Method sharedPreferencesForGrowlMail = class_getClassMethod(self, @selector(sharedPreferencesForGrowlMail));
 
@@ -76,11 +78,13 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 
 @implementation NSPreferences (GMSwizzleSticks)
 
-+ (id) sharedPreferencesForGrowlMail {
++ (id) sharedPreferencesForGrowlMail 
+{
 	static BOOL	added = NO;
 	id preferences = [self sharedPreferencesFromAppKitSwizzledByGrowlMail];
 
-	if (preferences && !added) {
+	if (preferences && !added) 
+    {
 		added = YES;
 		[preferences addPreferenceNamed:[GrowlMail preferencesPanelName] owner:[GrowlMailPreferencesModule sharedInstance]];
 	}

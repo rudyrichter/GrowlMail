@@ -20,7 +20,8 @@
  *
  *	@par	The GMSummaryMode user default contains a number that specifies how GrowlMail should post notifications: always as single-message notifications, always as a summary, or automatically chosen based on number of messages added to the store in a single operation.
  */
-enum GrowlMailSummaryMode {
+enum GrowlMailSummaryMode 
+{
 	/*!	@brief	Automatically use summary mode or not based on how many messages the user receives within a span of time
 	 */
 	GrowlMailSummaryModeAutomatic = 0,

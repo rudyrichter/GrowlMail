@@ -52,7 +52,8 @@
 
 @implementation Message (GrowlMail)
 
-- (void) GMShowNotificationPart1 {
+- (void) GMShowNotificationPart1 
+{
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	MessageBody *messageBody = nil;
@@ -62,11 +63,13 @@
 	NSString *descriptionFormat = [notifier descriptionFormat];
 
 	if ([titleFormat rangeOfString:@"%body"].location != NSNotFound ||
-			[descriptionFormat rangeOfString:@"%body"].location != NSNotFound) {
+			[descriptionFormat rangeOfString:@"%body"].location != NSNotFound) 
+    {
 		/* We will need the body */
 		messageBody = [self messageBodyIfAvailable];
 		int nonBlockingAttempts = 0;
-		while (!messageBody && nonBlockingAttempts < 3) {
+		while (!messageBody && nonBlockingAttempts < 3) 
+        {
 			/* No message body available yet, but we need one */
 			nonBlockingAttempts++;
 			[NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:(0.5 * nonBlockingAttempts)]];
@@ -76,7 +79,8 @@
 		}
 
 		/* Already tried three times (3 seconds); this time, block this thread to get it. */ 
-		if (!messageBody) messageBody = [self messageBody];
+		if (!messageBody) 
+            messageBody = [self messageBody];
 	}
 
 	[self performSelectorOnMainThread:@selector(GMShowNotificationPart2:)
@@ -86,7 +90,8 @@
 	[pool drain];
 }
 
-- (void) GMShowNotificationPart2:(MessageBody *)messageBody {
+- (void) GMShowNotificationPart2:(MessageBody *)messageBody 
+{
 	NSString *account = (NSString *)[[[self mailbox] account] displayName];
 	NSString *sender = [self sender];
 	NSString *senderAddress = [sender uncommentedAddress];
@@ -102,7 +107,8 @@
 	else if ([sender addressComment])
 		sender = [sender addressComment];
 
-	if (messageBody) {
+	if (messageBody) 
+    {
 		NSString *originalBody = nil;
 		/* stringForIndexing selector: Mail.app 3.0 in OS X 10.4, not in 10.5. */
 		if ([messageBody respondsToSelector:@selector(stringForIndexing)])
@@ -111,22 +117,28 @@
 			originalBody = [[messageBody attributedString] string];
 		else if ([messageBody respondsToSelector:@selector(stringValueForJunkEvaluation:)])
 			originalBody = [messageBody stringValueForJunkEvaluation:NO];
-		if (originalBody) {
+		if (originalBody) 
+        {
 			NSMutableString *transformedBody = [[[originalBody stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy] autorelease];
 			NSUInteger lengthWithoutWhitespace = [transformedBody length];
 			[transformedBody trimStringToFirstNLines:4U];
 			NSUInteger length = [transformedBody length];
-			if (length > 200U) {
+			if (length > 200U) 
+            {
 				[transformedBody deleteCharactersInRange:NSMakeRange(200U, length - 200U)];
 				length = 200U;
 			}
 			if (length != lengthWithoutWhitespace)
 				[transformedBody appendString:[NSString stringWithUTF8String:"\xE2\x80\xA6"]];
 			body = (NSString *)transformedBody;
-		} else {
+		} 
+        else 
+        {
 			body = @"";	
 		}
-	} else {
+	} 
+    else 
+    {
 		body = @"";
 	}
 
@@ -178,12 +190,18 @@
 		image = [[NSImage imageNamed:@"NSApplicationIcon"] TIFFRepresentation];
 
 	NSString *notificationName;
-	if ([self isJunk] || ([[MailAccount junkMailboxUids] containsObject:[self mailbox]])) {
+	if ([self isJunk] || ([[MailAccount junkMailboxUids] containsObject:[self mailbox]])) 
+    {
 		notificationName = NEW_JUNK_MAIL_NOTIFICATION;
-	} else {
-		if ([self respondsToSelector:@selector(type)] && [self type] == MESSAGE_TYPE_NOTE) {
+	} 
+    else 
+    {
+		if ([self respondsToSelector:@selector(type)] && [self type] == MESSAGE_TYPE_NOTE) 
+        {
 			notificationName = NEW_NOTE_NOTIFICATION;
-		} else {
+		} 
+        else 
+        {
 			notificationName = NEW_MAIL_NOTIFICATION;
 		}
 	}
@@ -213,7 +231,8 @@
 
 	NSEnumerator *keywordsEnum = [keywords objectEnumerator], *valuesEnum = [values objectEnumerator];
 	NSString *keyword, *value;
-	while ((keyword = [keywordsEnum nextObject]) && (value = [valuesEnum nextObject])) {
+	while ((keyword = [keywordsEnum nextObject]) && (value = [valuesEnum nextObject])) 
+    {
 		[str replaceOccurrencesOfString:keyword
 		                     withString:value
 		                        options:0
@@ -226,7 +245,8 @@
 
 @implementation NSMutableString (GrowlMail_LineOrientedTruncation)
 
-- (void) trimStringToFirstNLines:(NSUInteger)n {
+- (void) trimStringToFirstNLines:(NSUInteger)n 
+{
 	NSRange range;
 	NSUInteger end = 0U;
 	NSUInteger length;
