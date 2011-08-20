@@ -174,6 +174,7 @@
 + (NSArray *)draftMailboxUids;
 + (NSArray *)junkMailboxUids;
 + (NSArray *)allMailboxUids;
++ (id)mailboxUidForMailboxID:(unsigned long long)arg1;
 + (id)accountWithPath:(id)fp8;
 + (id)newAccountWithPath:(id)fp8;
 + (id)createAccountWithDictionary:(id)fp8;
@@ -442,7 +443,12 @@ typedef struct {
 
 struct sqlite3;
 
-@interface Library : NSObject
+@protocol LibraryInterface <NSObject>
++ (long long)mailboxIDForMailboxUid:(id)arg1;
++ (id)urlForMailboxID:(long long)arg1;
+@end
+
+@interface Library : NSObject <LibraryInterface>
 {
 }
 
@@ -544,7 +550,7 @@ struct sqlite3;
 + (BOOL)isMessageContentsLocallyAvailable:(id)fp8;
 + (BOOL)hasCacheFileForMessage:(id)fp8 directoryContents:(id)fp12;
 + (BOOL)hasCacheFileForMessage:(id)fp8 part:(id)fp12 directoryContents:(id)fp16;
-+ (void)_markMessageAsViewed:(id)fp8 viewedDate:(id)fp12;
++ (void)markMessageAsViewed:(id)arg1 viewedDate:(id)arg2;
 + (void)markMessageAsViewed:(id)fp8;
 + (id)fixCriterionOnce:(id)fp8 expandedSmartMailboxes:(id)fp12;
 + (id)fixCriterionOnce:(id)fp8;
@@ -583,7 +589,7 @@ struct sqlite3;
 + (unsigned int)totalNumberOfMessages;
 + (BOOL)isBusy;
 + (void)cleanOldDatabases;
-
+- (long long)mailboxID;
 @end
 
 typedef struct {
@@ -1224,6 +1230,7 @@ typedef struct {
 	id _spotlightBar;
 }
 
++ (id)viewerForMessage:(id)arg1 hiddenCopies:(id)arg2 relatedMessages:(id)arg3 showRelatedMessages:(BOOL)arg4 showAllHeaders:(BOOL)arg5 viewingState:(id)arg6 expandedSelectedMailboxes:(id)arg7;
 + (id)viewerForMessage:(id)fp8 showAllHeaders:(BOOL)fp12 viewingState:(id)fp16;
 + (void)restoreFromDefaults;
 + (void)saveDefaultsOmittingViewer:(id)fp8;

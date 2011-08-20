@@ -69,6 +69,11 @@ static NSImage *growlMailIcon = nil;
 	}
 }
 
++ (void)registerBundle {
+    if(class_getClassMethod(NSClassFromString(@"MVMailBundle"), @selector(registerBundle)))
+       [NSClassFromString(@"MVMailBundle") performSelector:@selector(registerBundle)];
+}
+
 + (BOOL) hasPreferencesPanel {
 	return YES;
 }
