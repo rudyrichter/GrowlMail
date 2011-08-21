@@ -40,14 +40,14 @@
 @end
 
 @implementation MailAccount(GrowlMail)
-+ (NSArray *) remoteMailAccounts {
++ (NSArray *) remoteMailAccounts 
+{
 	NSArray *mailAccounts = [MailAccount mailAccounts];
-	NSMutableArray *remoteAccounts = [NSMutableArray arrayWithCapacity:[mailAccounts count]];
-	NSEnumerator *enumerator = [mailAccounts objectEnumerator];
-	id account;
-	Class localAccountClass = [LocalAccount class];
-	while ((account = [enumerator nextObject])) 
-    {
+	NSMutableArray *remoteAccounts = [NSMutableArray array];
+    Class localAccountClass = [LocalAccount class];
+
+	for(id account in mailAccounts)
+	{
 		if (![account isKindOfClass:localAccountClass])
 			[remoteAccounts addObject:account];
 	}
@@ -57,6 +57,9 @@
 @end
 
 @implementation GrowlMailPreferencesModule
+@synthesize view_preferences;
+@synthesize accountsView;
+
 - (void) awakeFromNib 
 {
 	NSTableColumn *activeColumn = [accountsView tableColumnWithIdentifier:@"active"];
