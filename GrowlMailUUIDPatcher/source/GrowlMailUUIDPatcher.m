@@ -14,6 +14,8 @@
 
 #import <objc/runtime.h>
 
+NSString *mailAppBundleID = @"com.apple.mail";
+
 @interface GrowlMailUUIDPatcher () <NSTableViewDelegate>
 
 //Returns the selected bundle or nil if none is selected.
@@ -32,9 +34,16 @@
 #define BUTTON_ENABLING_DELAY 15.0 /*seconds*/
 
 //This is due to be replaced by an appcast, as soon as we work out how we want to do that.
-static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
+static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3";
 
 @implementation GrowlMailUUIDPatcher
+
+@synthesize selectedBundleIndexes;
+@synthesize warningNotes;
+@synthesize window;
+@synthesize warningNotesTable;
+@synthesize confirmationSheet;
+@synthesize growlMailFoundBundles;
 
 + (NSSet *) keyPathsForValuesAffectingMultipleGrowlMailsInstalled {
 	return [NSSet setWithObject:@"growlMailFoundBundles"];
@@ -58,6 +67,15 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
 			if ([growlMailBundleURL checkResourceIsReachableAndReturnError:NULL]) {
 				[growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
 			}
+            
+			bundlesFolderPath = [mailFolderPath stringByAppendingPathComponent:@"Bundles (Disabled)"];
+			growlMailBundlePath = [bundlesFolderPath stringByAppendingPathComponent:@"GrowlMail.mailbundle"];
+            
+			growlMailBundleURL = [NSURL fileURLWithPath:growlMailBundlePath];
+			if ([growlMailBundleURL checkResourceIsReachableAndReturnError:NULL]) {
+				[growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
+			}
+
 		}
 
 		if ([growlMailFoundBundles count] > 0UL) {
@@ -101,12 +119,10 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
 	return [growlMailFoundBundles count] > 1UL;
 }
 
-@synthesize growlMailFoundBundles;
 - (void) setGrowlMailFoundBundles:(NSArray *)newBundles {
 	[growlMailFoundBundles setArray:newBundles];
 }
 
-@synthesize selectedBundleIndexes;
 - (void) setSelectedBundleIndexes:(NSIndexSet *)newIndexes {
 	[selectedBundleIndexes autorelease];
 	selectedBundleIndexes = [newIndexes copy];
@@ -117,8 +133,6 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
 - (BOOL) canAndShouldPatchSelectedBundle {
 	return self.selectedBundle && (!self.selectedBundle.isCompatibleWithCurrentMailAndMessageFramework) && ([[self.warningNotes valueForKeyPath:@"@sum.fatal"] unsignedIntegerValue] == 0UL);
 }
-
-@synthesize warningNotes;
 
 - (void) recomputeSelectedBundleNotes {
 	GrowlMailFoundBundle *selectedBundle = self.selectedBundle;
@@ -170,10 +184,6 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
 		: nil;
 }
 
-@synthesize window;
-@synthesize warningNotesTable;
-@synthesize confirmationSheet;
-
 //Ensure that the warning notes table never has a selection.
 - (NSIndexSet *) selectionIndexesOfWarningNotes {
 	return [NSIndexSet indexSet];
@@ -203,7 +213,12 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.2.3";
 		[window presentError:error];
 	} else {
 		NSMutableArray *UUIDs = [dict objectForKey:@"SupportedPluginCompatibilityUUIDs"];
-		if (![UUIDs containsObject:mailUUID])
+		if(!UUIDs)
+        {
+            [dict setValue:[NSMutableArray array] forKey:@"SupportedPluginCompatibilityUUIDs"];
+            UUIDs = [dict objectForKey:@"SupportedPluginCompatibilityUUIDs"];
+        }
+        if (![UUIDs containsObject:mailUUID])
 			[UUIDs addObject:mailUUID];
 		if (![UUIDs containsObject:messageFrameworkUUID])
 			[UUIDs addObject:messageFrameworkUUID];
@@ -277,6 +292,8 @@ static Class buttonClass = Nil;
 
 	if (returnCode == NSOKButton) {
 		[self applyChangeToFoundBundle:self.selectedBundle];
+        [self moveBundleBackToActiveLocation:[NSBundle bundleWithPath:self.selectedBundle.URL.path]];
+        [self relaunchMail];
 	}
 
 	[sheet close];
@@ -289,6 +306,70 @@ static Class buttonClass = Nil;
 - (IBAction) cancel:(id) sender {
 	NSWindow *dialog = [sender respondsToSelector:@selector(window)] ? [sender window] : sender;
 	[NSApp endSheet:dialog returnCode:NSCancelButton];
+}
+
+- (BOOL)moveBundleBackToActiveLocation:(NSBundle*)chosenOne
+{
+    BOOL result = YES;
+    NSString *path = [chosenOne bundlePath];
+    NSString *parentPath = [path stringByDeletingLastPathComponent];
+    NSString *destinationPath = [parentPath stringByDeletingLastPathComponent];
+    
+    if(![[parentPath lastPathComponent] isEqualToString:@"Bundles"])
+    {
+        destinationPath = [destinationPath stringByAppendingPathComponent:@"Bundles"];
+        BOOL dir = NO;
+        NSError *error = nil;
+        if(![[NSFileManager defaultManager] fileExistsAtPath:destinationPath isDirectory:&dir] || !dir)
+            [[NSFileManager defaultManager] createDirectoryAtPath:destinationPath withIntermediateDirectories:YES attributes:nil error:&error];
+        
+        if(error)
+            result = NO;
+        
+        if(result)
+            [[NSFileManager defaultManager] moveItemAtPath:[chosenOne bundlePath] toPath:[destinationPath stringByAppendingPathComponent:@"GrowlMail.mailbundle"] error:&error];
+        
+        if(error)
+            result = NO;
+    }
+    else
+        result = NO;
+    
+    return result;
+}
+
+- (BOOL)mailIsRunning
+{
+	BOOL result = NO;
+	NSArray *applications = [[NSWorkspace sharedWorkspace] runningApplications];
+	for(NSRunningApplication *application in applications)
+	{
+		if([[application bundleIdentifier] isEqualToString:@"com.apple.mail"])
+		{	
+			result = YES;
+			break;
+		}
+	}
+	return result;
+}
+
+- (void)relaunchMail
+{
+    NSArray *applications = [[NSWorkspace sharedWorkspace] runningApplications];
+    for(NSRunningApplication *application in applications)
+    {
+        if([[application bundleIdentifier] isEqualToString:mailAppBundleID])
+        {	
+            [application retain];
+            [application addObserver:self forKeyPath:@"terminated" options:NSKeyValueObservingOptionNew context:self];
+            if([application terminate])
+            {
+                [application removeObserver:self forKeyPath:@"terminated"];
+                [application release];
+                [[NSWorkspace sharedWorkspace] performSelector:@selector(launchApplication:) withObject:@"Mail.app" afterDelay:2.0f];
+            }
+        }
+    }
 }
 
 #pragma mark NSTableViewDelegate protocol conformance

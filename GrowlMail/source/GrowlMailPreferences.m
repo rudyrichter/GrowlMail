@@ -49,6 +49,7 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 
 //Make the swizzle more readable.
 #define sharedPreferencesFromAppKitSwizzledByGrowlMail sharedPreferencesForGrowlMail
+#define toolbarAllowedItemIdentifiersFromAppKitSwizzledByGrowlMail toolbarAllowedItemIdentifiersForGrowlMail
 
 @implementation GrowlMailPreferences
 
@@ -73,7 +74,6 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 		}
 	}
 }
-
 @end
 
 @implementation NSPreferences (GMSwizzleSticks)
@@ -87,11 +87,36 @@ static void GMExchangeMethodImplementations(Method a, Method b);
     {
 		added = YES;
 		[preferences addPreferenceNamed:[GrowlMail preferencesPanelName] owner:[GrowlMailPreferencesModule sharedInstance]];
-	}
+	
+        NSWindow *prefsWindow;
+        NSMutableArray *toolbarTitles;
+        if(object_getInstanceVariable(preferences, "_preferencesPanel", (void**)&prefsWindow) && object_getInstanceVariable(preferences, "_preferenceTitles", (void**)&toolbarTitles))
+        {
+            NSToolbar *toolbar = [prefsWindow toolbar];
+            NSArray *toolbarItems = [toolbar items];
+            NSUInteger itemsCount = [toolbarItems count];
+            NSUInteger titlesCount = [toolbarTitles count];
+            
+            if(itemsCount < titlesCount)
+            {
+                NSUInteger i;
+                for( i = 0 ; i < titlesCount ; i++ )
+                {
+                    NSString* title = [toolbarTitles objectAtIndex:i];
+                    if(i < itemsCount && [[(NSToolbarItem*)[toolbarItems objectAtIndex:i] itemIdentifier] isEqualToString:title] )
+                        continue;
+                    [toolbar insertItemWithItemIdentifier:title atIndex:i];
+                    toolbarItems = [toolbar items];
+                    itemsCount++;
+                }
+            }
+                
+        }
+    }
 
 	return preferences;
 }
-
+    
 @end
 
 static void GMExchangeMethodImplementations(Method a, Method b)

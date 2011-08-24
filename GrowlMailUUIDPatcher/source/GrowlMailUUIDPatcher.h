@@ -39,4 +39,11 @@
 - (IBAction) ok:(id) sender;
 - (IBAction) cancel:(id) sender;
 
+- (void) confirmationSheetDidEnd:(NSWindow *)sheet
+					  returnCode:(NSInteger)returnCode
+					 contextInfo:(void *)contextInfo;
+
+- (BOOL)moveBundleBackToActiveLocation:(NSBundle*)chosenOne;
+- (void)relaunchMail;
+
 @end
