@@ -261,14 +261,8 @@ static BOOL notifierEnabled = YES;
         return;
     
 	NSArray *mailboxes = nil;
-    @try 
-    {
+    if([store respondsToSelector:@selector(mailboxID)])
         mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
-    }
-    @catch (NSException *exception) 
-    {
-        NSLog(@"GrowlMail: failed to get a reference to the user's mailboxes");
-    }
 
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Adding messages to mailboxes %@", __PRETTY_FUNCTION__, mailboxes);
