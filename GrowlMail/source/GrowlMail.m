@@ -37,6 +37,7 @@
 #import "GrowlMailNotifier.h"
 
 #import <objc/runtime.h>
+#import "Sparkle/Sparkle.h"
 
 NSBundle *GMGetGrowlMailBundle(void) 
 {
@@ -76,6 +77,8 @@ static NSImage *growlMailIcon = nil;
 {
     if(class_getClassMethod(NSClassFromString(@"MVMailBundle"), @selector(registerBundle)))
        [NSClassFromString(@"MVMailBundle") performSelector:@selector(registerBundle)];
+    
+    [NSClassFromString(@"RRGMSUUpdater") sharedUpdater];
 }
 
 + (BOOL) hasPreferencesPanel 
@@ -105,13 +108,13 @@ static NSImage *growlMailIcon = nil;
         {
 			if ([growlBundle load]) 
             {
-				if ([GrowlApplicationBridge respondsToSelector:@selector(frameworkInfoDictionary)]) {
+				if ([NSClassFromString(@"GrowlApplicationBridge") respondsToSelector:@selector(frameworkInfoDictionary)]) {
 					//Create or obtain our singleton notifier instance.
 					notifier = [[GrowlMailNotifier alloc] init];
 					if (!notifier)
 						NSLog(@"Could not initialize GrowlMail notifier object");
 
-					NSDictionary *infoDictionary = [GrowlApplicationBridge frameworkInfoDictionary];
+					NSDictionary *infoDictionary = [NSClassFromString(@"GrowlApplicationBridge") frameworkInfoDictionary];
 					NSLog(@"Using Growl.framework %@ (%@)",
 						  [infoDictionary objectForKey:@"CFBundleShortVersionString"],
 						  [infoDictionary objectForKey:(NSString *)kCFBundleVersionKey]);
