@@ -38,10 +38,13 @@
 @interface GrowlMailPreferencesModule : NSPreferencesModule
 {
 	NSView		 *view_preferences;
+    NSTextView   *descriptionTextView;
 	NSTableView *accountsView;
 }
 - (IBAction)changeBackgroundOnlyMode:(id)sender;
+-(void)enableTextView:(BOOL)enableIt;
 
 @property (nonatomic, assign) IBOutlet NSView *view_preferences;
+@property (nonatomic, assign) IBOutlet NSTextView   *descriptionTextView;
 @property (nonatomic, assign) IBOutlet NSTableView *accountsView;
 @end

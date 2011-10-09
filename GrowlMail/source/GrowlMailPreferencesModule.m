@@ -59,9 +59,13 @@
 @implementation GrowlMailPreferencesModule
 @synthesize view_preferences;
 @synthesize accountsView;
+@synthesize descriptionTextView;
 
 - (void) awakeFromNib 
 {
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"GMEnableGrowlMailBundle" options:NSKeyValueObservingOptionNew context:&self];
+    [descriptionTextView setFont:[NSFont systemFontOfSize:13.0f]];
+    
 	NSTableColumn *activeColumn = [accountsView tableColumnWithIdentifier:@"active"];
 	[[activeColumn dataCell] setImagePosition:NSImageOnly]; // center the checkbox
 }
@@ -103,6 +107,23 @@
 - (BOOL) isResizable 
 {
 	return NO;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if([keyPath isEqualToString:@"GMEnableGrowlMailBundle"])
+    {
+        [self enableTextView:[[NSUserDefaults standardUserDefaults] boolForKey:@"GMEnableGrowlMailBundle"]];
+    }
+}
+-(void)enableTextView:(BOOL)enableIt
+{
+    [descriptionTextView setSelectable: enableIt];
+    [descriptionTextView setEditable: enableIt];
+    if (enableIt)
+        [descriptionTextView setTextColor: [NSColor controlTextColor]];
+    else
+        [descriptionTextView setTextColor: [NSColor disabledControlTextColor]];
 }
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView *)aTableView 
