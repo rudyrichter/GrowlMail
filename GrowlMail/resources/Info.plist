@@ -39,5 +39,15 @@
 		<string>B842F7D0-4D81-4DDF-A672-129CA5B32D57</string>
 		<string>E71BD599-351A-42C5-9B63-EA5C47F7CE8E</string>
 	</array>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+	<key>SUEnableSystemProfiling</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>http://www.bewarereactor.com/clog/appcast.php</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUPromptUserOnFirstLaunch</key>
+	<true/>
 </dict>
 </plist>

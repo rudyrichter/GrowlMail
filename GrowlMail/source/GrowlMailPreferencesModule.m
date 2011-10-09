@@ -34,6 +34,7 @@
 
 #import "GrowlMailPreferencesModule.h"
 #import "GrowlMailNotifier.h"
+#import "GMSparkleController.h"
 
 @interface MailAccount(GrowlMail)
 + (NSArray *) remoteMailAccounts;
@@ -132,6 +133,11 @@
 	return [[MailAccount remoteMailAccounts] count];
 }
 
+- (IBAction)checkForUpdates:(id)sender
+{
+    [[GMSparkleController sharedController] checkForUpdates:sender];
+}
+
 - (IBAction)changeBackgroundOnlyMode:(id)sender 
 {
 	[[GrowlMailNotifier sharedNotifier] configureForBackgroundOnly:[sender state]];
@@ -154,4 +160,8 @@
 	[[GrowlMailNotifier sharedNotifier] setAccount:account enabled:[anObject boolValue]];
 }
 
+- (IBAction)setCheckInterval:(id)sender
+{
+    [[GMSparkleController sharedController] setUpdateCheckInterval:[sender tag]];
+}
 @end

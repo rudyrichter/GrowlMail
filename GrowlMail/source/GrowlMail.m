@@ -37,7 +37,8 @@
 #import "GrowlMailNotifier.h"
 
 #import <objc/runtime.h>
-#import "Sparkle/Sparkle.h"
+#import "GMSparkleController.h"
+
 
 NSBundle *GMGetGrowlMailBundle(void) 
 {
@@ -49,11 +50,15 @@ static NSImage *growlMailIcon = nil;
 @implementation GrowlMail
 
 #pragma mark Boring bookkeeping stuff
++ (void) load
+{
+    [[GMSparkleController sharedController] checkForUpdatesInBackground];
+}
 
 + (void) initialize 
 {
 	[super initialize];
-
+    
 	//We attempt to get a reference to the MVMailBundle class so we can swap superclasses, failing that 
 	//we disable ourselves and are done since this is an undefined state
 	Class mvMailBundleClass = NSClassFromString(@"MVMailBundle");
@@ -69,16 +74,15 @@ static NSImage *growlMailIcon = nil;
 		
 		[GrowlMail registerBundle];
 		
-		NSLog(@"Loaded GrowlMail %@", [GMGetGrowlMailBundle() objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey]);
-	}
+		NSLog(@"Loaded GrowlMail %@", [GMGetGrowlMailBundle() objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey]);        
+        
+    }
 }
 
 + (void)registerBundle 
 {
     if(class_getClassMethod(NSClassFromString(@"MVMailBundle"), @selector(registerBundle)))
        [NSClassFromString(@"MVMailBundle") performSelector:@selector(registerBundle)];
-    
-    [NSClassFromString(@"RRGMSUUpdater") sharedUpdater];
 }
 
 + (BOOL) hasPreferencesPanel 
@@ -100,9 +104,9 @@ static NSImage *growlMailIcon = nil;
 {
 	if ((self = [super init])) 
     {
-		NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
-		NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
-
+        NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
+                
+        NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
 		NSBundle *growlBundle = [NSBundle bundleWithPath:growlBundlePath];
 		if (growlBundle) 
         {

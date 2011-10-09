@@ -18,6 +18,9 @@
 		93D7D840144218B700BFCFB6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83A144218B700BFCFB6 /* InfoPlist.strings */; };
 		93D7D841144218B700BFCFB6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83C144218B700BFCFB6 /* Localizable.strings */; };
 		93D7D842144218B700BFCFB6 /* GrowlMailPreferencesPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83E144218B700BFCFB6 /* GrowlMailPreferencesPanel.xib */; };
+		93D7D8441442237300BFCFB6 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D8431442237300BFCFB6 /* dsa_pub.pem */; };
+		93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; };
+		93D7D848144233C500BFCFB6 /* GMSparkleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D7D847144233C500BFCFB6 /* GMSparkleController.m */; };
 		93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; };
 		93E712B813FF674C0025D733 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; };
 		93E712B913FF67610025D733 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; };
@@ -105,6 +108,9 @@
 		93D7D83B144218B700BFCFB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		93D7D83D144218B700BFCFB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		93D7D83F144218B700BFCFB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = resources/en.lproj/GrowlMailPreferencesPanel.xib; sourceTree = "<group>"; };
+		93D7D8431442237300BFCFB6 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
+		93D7D846144233C500BFCFB6 /* GMSparkleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GMSparkleController.h; path = source/GMSparkleController.h; sourceTree = "<group>"; };
+		93D7D847144233C500BFCFB6 /* GMSparkleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GMSparkleController.m; path = source/GMSparkleController.m; sourceTree = "<group>"; };
 		93E7129C13FF66620025D733 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = externals/Sparkle/Sparkle.xcodeproj; sourceTree = "<group>"; };
 		93E712B713FF674C0025D733 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = externals/Growl/Release/Growl.framework; sourceTree = "<group>"; };
 		953EE18D082CC7420040C586 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
@@ -128,6 +134,7 @@
 				4B2E729606B5776B00386BF2 /* Message.framework in Frameworks */,
 				953EE18E082CC7420040C586 /* AddressBook.framework in Frameworks */,
 				93E712B813FF674C0025D733 /* Growl.framework in Frameworks */,
+				93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +167,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				93D7D8431442237300BFCFB6 /* dsa_pub.pem */,
 				9550E79F077A207E00436674 /* GrowlMail.png */,
 				31B94BEB1078255600A9EBC4 /* GrowlMail.icns */,
 				93D7D83A144218B700BFCFB6 /* InfoPlist.strings */,
@@ -246,6 +254,8 @@
 				4B7E5EA306B6AC1700137892 /* GrowlMail.m */,
 				31D72A850FB6DE5800C29D55 /* GrowlMailNotifier.h */,
 				31D72A860FB6DE5800C29D55 /* GrowlMailNotifier.m */,
+				93D7D846144233C500BFCFB6 /* GMSparkleController.h */,
+				93D7D847144233C500BFCFB6 /* GMSparkleController.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -395,6 +405,7 @@
 				93D7D840144218B700BFCFB6 /* InfoPlist.strings in Resources */,
 				93D7D841144218B700BFCFB6 /* Localizable.strings in Resources */,
 				93D7D842144218B700BFCFB6 /* GrowlMailPreferencesPanel.xib in Resources */,
+				93D7D8441442237300BFCFB6 /* dsa_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,6 +469,7 @@
 				934F4E6310284FD400B9DDC4 /* Message+GrowlMail.m in Sources */,
 				934F4E6410284FD400B9DDC4 /* GrowlMail.m in Sources */,
 				934F4E6510284FD400B9DDC4 /* GrowlMailNotifier.m in Sources */,
+				93D7D848144233C500BFCFB6 /* GMSparkleController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

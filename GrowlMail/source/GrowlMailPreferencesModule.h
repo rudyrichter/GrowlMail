@@ -41,6 +41,9 @@
     NSTextView   *descriptionTextView;
 	NSTableView *accountsView;
 }
+- (IBAction)checkForUpdates:(id)sender;
+- (IBAction)setCheckInterval:(id)sender;
+
 - (IBAction)changeBackgroundOnlyMode:(id)sender;
 -(void)enableTextView:(BOOL)enableIt;
 
