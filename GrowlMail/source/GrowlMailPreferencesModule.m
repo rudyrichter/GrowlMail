@@ -35,6 +35,7 @@
 #import "GrowlMailPreferencesModule.h"
 #import "GrowlMailNotifier.h"
 #import "GMSparkleController.h"
+#import <Sparkle/Sparkle.h>
 
 @interface MailAccount(GrowlMail)
 + (NSArray *) remoteMailAccounts;
@@ -162,6 +163,9 @@
 
 - (IBAction)setCheckInterval:(id)sender
 {
-    [[GMSparkleController sharedController] setUpdateCheckInterval:[sender tag]];
+    NSPopUpButton *button = (NSPopUpButton*)sender;
+    NSMenuItem *item = [button selectedItem];
+    NSTimeInterval time = [item tag];
+    [[GMSparkleController sharedController] setUpdateCheckInterval:time];
 }
 @end

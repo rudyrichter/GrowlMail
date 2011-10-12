@@ -57,4 +57,8 @@ static GMSparkleController *sharedControl = nil;
     return [NSArray arrayWithObject:[NSDictionary dictionaryWithObjectsAndKeys:@"1", @"value", @"id", @"key", nil]];
 }
 
+- (void)setUpdateCheckInterval:(NSTimeInterval)updateTime
+{
+    [sparkle setUpdateCheckInterval:updateTime];
+}
 @end
