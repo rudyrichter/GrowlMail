@@ -3,3 +3,5 @@ xcuserdata
 *.pbxuser
 *.perspectivev3
 *.xcworkspace
+dsa_pub.pem
+dsa_priv.pem
