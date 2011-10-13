@@ -24,6 +24,8 @@
 	<string>GrowlMail</string>
 	<key>SupportedPluginCompatibilityUUIDs</key>
 	<array>
+		<string>EF59EC5E-EFCD-4EA7-B617-6C5708397D24</string>
+		<string>6E7970A3-E5F1-4C41-A904-B18D3D8FAA7D</string>
 		<string>2DE49D65-B49E-4303-A280-8448872EFE87</string>
 		<string>1146A009-E373-4DB6-AB4D-47E59A7E50FD</string>
 		<string>9049EF7D-5873-4F54-A447-51D722009310</string>
@@ -44,7 +46,7 @@
 	<key>SUEnableSystemProfiling</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>http://www.bewarereactor.com/clog/appcast.php</string>
+	<string>http://sparkle.bewarereactor.com/clog/appcast.php</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUPromptUserOnFirstLaunch</key>
