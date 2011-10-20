@@ -83,6 +83,7 @@ static NSImage *growlMailIcon = nil;
 {
     if(class_getClassMethod(NSClassFromString(@"MVMailBundle"), @selector(registerBundle)))
        [NSClassFromString(@"MVMailBundle") performSelector:@selector(registerBundle)];
+    [[self class] setup];
 }
 
 + (BOOL) hasPreferencesPanel 
@@ -100,49 +101,37 @@ static NSImage *growlMailIcon = nil;
 	return @"GrowlMail";
 }
 
-- (id) init 
++ (void) setup 
 {
-	if ((self = [super init])) 
+    NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
+    
+    NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
+    NSBundle *growlBundle = [NSBundle bundleWithPath:growlBundlePath];
+    if (growlBundle) 
     {
-        NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
+        if ([growlBundle load]) 
+        {
+            if ([NSClassFromString(@"GrowlApplicationBridge") respondsToSelector:@selector(frameworkInfoDictionary)]) {
+                //Create or obtain our singleton notifier instance.
+                GrowlMailNotifier *sharedNotifier = [GrowlMailNotifier sharedNotifier];
+                if (!sharedNotifier)
+                    NSLog(@"Could not initialize GrowlMail notifier object");
                 
-        NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
-		NSBundle *growlBundle = [NSBundle bundleWithPath:growlBundlePath];
-		if (growlBundle) 
-        {
-			if ([growlBundle load]) 
+                NSDictionary *infoDictionary = [NSClassFromString(@"GrowlApplicationBridge") frameworkInfoDictionary];
+                NSLog(@"Using Growl.framework %@ (%@)",
+                      [infoDictionary objectForKey:@"CFBundleShortVersionString"],
+                      [infoDictionary objectForKey:(NSString *)kCFBundleVersionKey]);
+            } 
+            else 
             {
-				if ([NSClassFromString(@"GrowlApplicationBridge") respondsToSelector:@selector(frameworkInfoDictionary)]) {
-					//Create or obtain our singleton notifier instance.
-					notifier = [[GrowlMailNotifier alloc] init];
-					if (!notifier)
-						NSLog(@"Could not initialize GrowlMail notifier object");
-
-					NSDictionary *infoDictionary = [NSClassFromString(@"GrowlApplicationBridge") frameworkInfoDictionary];
-					NSLog(@"Using Growl.framework %@ (%@)",
-						  [infoDictionary objectForKey:@"CFBundleShortVersionString"],
-						  [infoDictionary objectForKey:(NSString *)kCFBundleVersionKey]);
-				} 
-                else 
-                {
-					NSLog(@"Using a version of Growl.framework older than 1.1. One of the other installed Mail plugins should be updated to Growl.framework 1.1 or later.");
-				}
-			}
-		} 
-        else 
-        {
-			NSLog(@"Could not load Growl.framework, GrowlMail disabled");
-		}
-	}
-
-	return self;
-}
-
-- (void) dealloc 
-{
-	[notifier release];
-
-	[super dealloc];
+                NSLog(@"Using a version of Growl.framework older than 1.1. One of the other installed Mail plugins should be updated to Growl.framework 1.1 or later.");
+            }
+        }
+    } 
+    else 
+    {
+        NSLog(@"Could not load Growl.framework, GrowlMail disabled");
+    }
 }
 
 @end

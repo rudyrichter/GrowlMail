@@ -72,7 +72,8 @@ static BOOL notifierEnabled = YES;
 			nil];
 		
 		[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
 		[GrowlApplicationBridge setGrowlDelegate:self];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self
@@ -95,7 +96,7 @@ static BOOL notifierEnabled = YES;
 		[self configureForBackgroundOnly:[self isBackgroundOnlyEnabled]];
 
 #ifdef GROWL_MAIL_DEBUG
-		
+		//[self informationSpew];
 		//[[NSNotificationCenter defaultCenter] addObserver:self
 		//										 selector:@selector(showAllNotifications:)
 		//											 name:nil object:nil];
@@ -229,7 +230,7 @@ static BOOL notifierEnabled = YES;
         return;
 	
 #ifdef GROWL_MAIL_DEBUG
-	NSLog(@"%s called", __PRETTY_FUNCTION__);
+	NSLog(@"%s called ", __PRETTY_FUNCTION__);
 #endif
 	
 	if (messageCopies) 
@@ -260,10 +261,17 @@ static BOOL notifierEnabled = YES;
     if([[userInfo objectForKey:@"MessageStoreMessagesAddedDuringOpen"] boolValue])
         return;
     
-	NSArray *mailboxes = nil;
-    if([store respondsToSelector:@selector(mailboxID)])
-        mailboxes = [NSArray arrayWithObject:[MailAccount mailboxUidForMailboxID:[store mailboxID]]];
-
+#ifdef GROWL_MAIL_DEBUG
+	NSLog(@"%s called: %@", __PRETTY_FUNCTION__, [notification userInfo]);
+#endif
+    NSArray *mailboxes = nil;
+    if([store respondsToSelector:@selector(mailboxUid)])
+    {
+        id mailBox = [store mailboxUid];
+        if([mailBox respondsToSelector:@selector(isStore)] && [mailBox respondsToSelector:@selector(isSmartMailbox)])
+            if([mailBox isStore] && ![mailBox isSmartMailbox])
+                mailboxes = [NSArray arrayWithObject:mailBox];        
+    }
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Adding messages to mailboxes %@", __PRETTY_FUNCTION__, mailboxes);
 #endif
@@ -542,7 +550,7 @@ static BOOL notifierEnabled = YES;
 - (BOOL) isEnabled 
 {
 	NSNumber *enabledNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMEnableGrowlMailBundle"];
-	return enabledNum ? [enabledNum boolValue] : YES;
+    return enabledNum ? [enabledNum boolValue] : YES;
 }
 - (GrowlMailSummaryMode) summaryMode 
 {
@@ -580,6 +588,18 @@ void GMShutDownGrowlMailAndWarn(NSString *specificWarning)
 
 	//Prevent ourselves from re-enabling later.
 	notifierEnabled = NO;
+}
+
+#pragma mark Spelunking
+
+- (void)informationSpew
+{
+    for(MailAccount *account in [MailAccount mailAccounts])
+    {
+        NSLog(@"%@", [account allMailboxUids]);
+    }
+    
+    NSLog(@"%@", [MailboxUid smartMailboxUids]);
 }
 
 @end

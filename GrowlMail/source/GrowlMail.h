@@ -29,15 +29,16 @@
 #import <Cocoa/Cocoa.h>
 #import "MailHeaders.h"
 
-@class GrowlMailNotifier;
-
 @interface GrowlMail : NSObject
 {
-	GrowlMailNotifier *notifier;
+
 }
 
 + (NSString *) preferencesPanelName;
 + (void)registerBundle;
+
+
++ (void) setup;
 
 @end
 
