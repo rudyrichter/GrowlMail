@@ -20,6 +20,7 @@ endif
 # The build style
 # Possible values are Development and Deployment
 BUILDCONFIGURATION?=Release
+GROWLMAIL_VERSION?=1.3.3
 
 .PHONY: all $(name) clean install uninstall
 
