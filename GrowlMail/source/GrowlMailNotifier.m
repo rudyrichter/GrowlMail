@@ -265,13 +265,21 @@ static BOOL notifierEnabled = YES;
 	NSLog(@"%s called: %@", __PRETTY_FUNCTION__, [notification userInfo]);
 #endif
     NSArray *mailboxes = nil;
+    id mailBox = nil;
     if([store respondsToSelector:@selector(mailboxUid)])
     {
-        id mailBox = [store mailboxUid];
-        if([mailBox respondsToSelector:@selector(isStore)] && [mailBox respondsToSelector:@selector(isSmartMailbox)])
-            if([mailBox isStore] && ![mailBox isSmartMailbox])
-                mailboxes = [NSArray arrayWithObject:mailBox];        
+        mailBox = [store performSelector:@selector(mailboxUid)];
     }
+    else if([store respondsToSelector:@selector(allMailboxUidRepresentations)])
+    {
+        NSArray *UIDs = [store performSelector:@selector(allMailboxUidRepresentations)];
+        if([UIDs count])
+            mailBox = [UIDs objectAtIndex:0U];
+    }
+    if([mailBox respondsToSelector:@selector(isStore)] && [mailBox respondsToSelector:@selector(isSmartMailbox)])
+        if([mailBox isStore] && ![mailBox isSmartMailbox])
+            mailboxes = [NSArray arrayWithObject:mailBox];
+
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Adding messages to mailboxes %@", __PRETTY_FUNCTION__, mailboxes);
 #endif
@@ -328,7 +336,7 @@ static BOOL notifierEnabled = YES;
 	}
 
 #ifdef GROWL_MAIL_DEBUG
-	NSLog(@"Got %lu new messages. Summary mode was %ld and is now %ld", count, [self summaryMode], summaryMode);
+	NSLog(@"Got %d new messages. Summary mode was %d and is now %d", (int)count, (int)[self summaryMode], (int)summaryMode);
 #endif
 
 	Class Message_class = NSClassFromString(@"Message");

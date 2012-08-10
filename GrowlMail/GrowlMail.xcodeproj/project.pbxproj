@@ -323,7 +323,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = 95E4A3630855C16F006B3F45 /* Build configuration list for PBXProject "GrowlMail" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -522,12 +522,15 @@
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/build/Debug\"",
 					"\"$(SRCROOT)/externals/Growl/Release\"",
 					"\"$(SRCROOT)/externals/Sparkle/build/$(CONFIGURATION)\"",
 				);
+				SYMROOT = "~/Library/Mail/Bundles";
 			};
 			name = Localization;
 		};
@@ -536,6 +539,8 @@
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/build/Debug\"",
@@ -543,6 +548,7 @@
 					"\"$(SRCROOT)/externals/Sparkle/build/$(CONFIGURATION)\"",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = GROWL_MAIL_DEBUG;
+				SYMROOT = "~/Library/Mail/Bundles";
 			};
 			name = Debug;
 		};
@@ -551,12 +557,15 @@
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(EFFECTIVE_PLATFORM_NAME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/build/Debug\"",
 					"\"$(SRCROOT)/externals/Growl/Release\"",
 					"\"$(SRCROOT)/externals/Sparkle/build/$(CONFIGURATION)\"",
 				);
+				SYMROOT = "~/Library/Mail/Bundles";
 			};
 			name = Release;
 		};
