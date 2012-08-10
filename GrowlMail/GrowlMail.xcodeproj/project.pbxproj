@@ -43,13 +43,6 @@
 			remoteGlobalIDString = 61B5F90209C4CEE200B25A18;
 			remoteInfo = "Sparkle Test App";
 		};
-		93E712AE13FF66630025D733 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 93E7129C13FF66620025D733 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DAAEFC960DA571DF0051E0D0;
-			remoteInfo = "relaunch tool";
-		};
 		93E712B013FF66630025D733 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93E7129C13FF66620025D733 /* Sparkle.xcodeproj */;
@@ -70,6 +63,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = Sparkle;
+		};
+		93F216CB15D4B34200343EB1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93E7129C13FF66620025D733 /* Sparkle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 55C14BB7136EEF1500649790;
+			remoteInfo = finish_installation;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -274,9 +274,9 @@
 			children = (
 				93E712AB13FF66630025D733 /* Sparkle.framework */,
 				93E712AD13FF66630025D733 /* Sparkle Test App.app */,
-				93E712AF13FF66630025D733 /* relaunch */,
 				93E712B113FF66630025D733 /* Sparkle Unit Tests.octest */,
 				93E712B313FF66630025D733 /* BinaryDelta */,
+				93F216CC15D4B34200343EB1 /* finish_installation.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -372,13 +372,6 @@
 			remoteRef = 93E712AC13FF66630025D733 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		93E712AF13FF66630025D733 /* relaunch */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = relaunch;
-			remoteRef = 93E712AE13FF66630025D733 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		93E712B113FF66630025D733 /* Sparkle Unit Tests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
@@ -391,6 +384,13 @@
 			fileType = "compiled.mach-o.executable";
 			path = BinaryDelta;
 			remoteRef = 93E712B213FF66630025D733 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93F216CC15D4B34200343EB1 /* finish_installation.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = finish_installation.app;
+			remoteRef = 93F216CB15D4B34200343EB1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

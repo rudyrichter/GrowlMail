@@ -1,0 +1,3 @@
+[submodule "GrowlMail/externals/Sparkle"]
+	path = GrowlMail/externals/Sparkle
+	url = git@github.com:rudyrichter/Sparkle.git
