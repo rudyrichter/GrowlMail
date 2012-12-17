@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>GrowlMail</string>
+	<string>${BR_PRODUCT_NAME}</string>
 	<key>CFBundleIconFile</key>
 	<string>GrowlMail.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.growl.GrowlMail</string>
+	<string>${BR_BUNDLE_ID}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -54,5 +54,7 @@
 	<true/>
 	<key>SUPromptUserOnFirstLaunch</key>
 	<true/>
+	<key>CFBundleName</key>
+	<string>${BR_PRODUCT_NAME}</string>
 </dict>
 </plist>

@@ -1,10 +1,10 @@
 /*
- Copyright (c) The Growl Project, 2004-2005
+ Copyright (c) Rudy Richter, 2011-2012
  All rights reserved.
-
+ 
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
-
+ 
  1. Redistributions of source code must retain the above copyright
  notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  3. Neither the name of Growl nor the names of its contributors
  may be used to endorse or promote products derived from this software
  without specific prior written permission.
-
+ 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -24,13 +24,7 @@
  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-//
-//  NSPreferencesModule.h
-//  GrowlMail
-//
-//  Created by Ingmar Stein on Fri Oct 29 2004.
-//  Copyright (c) 2004-2005 The Growl Project. All rights reserved.
+ */
 
 #import <Cocoa/Cocoa.h>
 
