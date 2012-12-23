@@ -587,7 +587,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/packagesutil --file $BUILT_PRODUCTS_DIR/installer/GrowlMail.pkgproj set package com.bewarereactor.GrowlMail version $BR_BUNDLE_VERSION";
+			shellScript = "/usr/local/bin/packagesutil --file $BUILT_PRODUCTS_DIR/installer/GrowlMail.pkgproj set package-1 version $BR_BUNDLE_VERSION";
 			showEnvVarsInLog = 0;
 		};
 		932D486016877E1000B8A913 /* Copy the localizations into the build root */ = {
