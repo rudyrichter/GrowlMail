@@ -7,54 +7,16 @@
 # - Relaunch Mail.
 
 name = GrowlMail
-PACKAGE_MAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
-datadir = $(HOME)/Library/Mail/Bundles
-
-CP = /usr/bin/ditto -v --rsrc
-BUILD_DIR?=$(shell defaults read com.apple.Xcode PBXProductDirectory 2> /dev/null)
-
-ifeq ($(strip $(BUILD_DIR)),)
-	BUILD_DIR=build
-endif
 
 # The build style
 # Possible values are Development and Deployment
 BUILDCONFIGURATION?=Release
-GROWLMAIL_VERSION?=1.3.3
-
-.PHONY: all $(name) clean install uninstall
-
-install uninstall: should_restart_mail := $(shell killall -s Mail 2>/dev/null)
-
-stopmail = $(if $(should_restart_mail),osascript -l AppleScript -e 'quit application "Mail"')
-
-startmail = $(if $(should_restart_mail),open -a Mail)
 
 all: $(name)
 
 $(name):
 	xcodebuild -configuration $(BUILDCONFIGURATION) build
-
-install: $(name)
-	$(PRE_INSTALL)
-	$(stopmail)
-	mkdir -p "$(datadir)"
-	$(CP) "$(BUILD_DIR)/$(BUILDCONFIGURATION)/$<.mailbundle" "$(datadir)/$(name).mailbundle"
-	defaults write com.apple.mail EnableBundles 1
-	defaults write com.apple.mail BundleCompatibilityVersion 3
-	$(POST_INSTALL)
-	$(startmail)
-
-uninstall:
-	$(PRE_UNINSTALL)
-	$(stopmail)
-	$(RM) -rf "$(datadir)/$(name).mailbundle"
-	$(POST_UNINSTALL)
-	$(startmail)
-
-
 clean:
 	xcodebuild clean
-
-dist: $(name)
-	$(PACKAGE_MAKER) --no-relocate --doc product/legacy/GrowlMail\ Installer.pmdoc --out build/$(BUILDCONFIGURATION)/GrowlMail.pkg --version $(GROWLMAIL_VERSION) --id com.growl.growlmail.pkg -v	
+dist:
+	xcodebuild -configuration $(BUILDCONFIGURATION) -workspace GrowlMail.xcworkspace -scheme "Package GrowlMail" build

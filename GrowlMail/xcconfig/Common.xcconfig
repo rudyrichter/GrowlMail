@@ -8,7 +8,7 @@
 BR_BUNDLE_VERSION = 1.3.4
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
-
+BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
 
 //product settings
 PRODUCT_NAME = $(BR_PRODUCT_NAME)
@@ -25,7 +25,6 @@ GCC_C_LANGUAGE_STANDARD = gnu99
 GCC_ENABLE_OBJC_EXCEPTIONS = YES
 
 OTHER_CFLAGS = -fsingle-precision-constant
-OTHER_LDFLAGS = -framework Growl
 
 //precompiled headers and search paths
 PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO
