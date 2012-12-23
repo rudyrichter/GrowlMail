@@ -325,7 +325,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GM;
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Rudy Richter";
 			};
 			buildConfigurationList = 95E4A3630855C16F006B3F45 /* Build configuration list for PBXProject "GrowlMail" */;
@@ -538,6 +538,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 			};
 			name = Localization;
 		};
@@ -545,6 +546,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 			};
 			name = Debug;
 		};
@@ -552,6 +554,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 			};
 			name = Release;
 		};
