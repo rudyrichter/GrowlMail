@@ -274,6 +274,7 @@
 				GCC_PREFIX_HEADER = source/GrowlMailUUIDPatcher_Prefix.pch;
 				INFOPLIST_FILE = "resources/GrowlMailUUIDPatcher-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = GrowlMailUUIDPatcher;
 			};
 			name = Debug;
@@ -289,6 +290,7 @@
 				GCC_PREFIX_HEADER = source/GrowlMailUUIDPatcher_Prefix.pch;
 				INFOPLIST_FILE = "resources/GrowlMailUUIDPatcher-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = GrowlMailUUIDPatcher;
 			};
 			name = Release;

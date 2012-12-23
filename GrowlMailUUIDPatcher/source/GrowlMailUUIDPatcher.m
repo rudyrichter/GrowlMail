@@ -273,12 +273,21 @@ static Class buttonClass = Nil;
 	//We search out the button rather than use an outlet so that the user cannot simply enable the button and disconnect the outlet.
 	okButton = [self buttonInWindow:confirmationSheet withAction:@selector(ok:)]; //Not retained because the window's view hierarchy owns it
 	[okButton setEnabled:NO];
+    
 	[delayedEnableTimer invalidate];
 	[delayedEnableTimer release];
-	delayedEnableTimer = [[NSTimer scheduledTimerWithTimeInterval:BUTTON_ENABLING_DELAY target:self selector:@selector(enableOKButton:) userInfo:nil repeats:NO] retain];
 	
-	[NSApp beginSheet:confirmationSheet modalForWindow:window modalDelegate:self didEndSelector:@selector(confirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+    if([[NSApp currentEvent] modifierFlags] & NSAlternateKeyMask)
+    {
+        [self enableOKButton:nil];
+    }
+    else
+    {
+        delayedEnableTimer = [[NSTimer scheduledTimerWithTimeInterval:BUTTON_ENABLING_DELAY target:self selector:@selector(enableOKButton:) userInfo:nil repeats:NO] retain];
+	}
+    [NSApp beginSheet:confirmationSheet modalForWindow:window modalDelegate:self didEndSelector:@selector(confirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:NULL];
 }
+
 - (void) enableOKButton:(NSTimer *)timer {
 	[okButton setEnabled:YES];
 }
