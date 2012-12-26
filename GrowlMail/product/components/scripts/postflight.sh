@@ -4,7 +4,8 @@
 mkdir -p ~/Library/Mail/Bundles
 rm -R ~/Library/Mail/Bundles/GrowlMail.mailbundle
 mv "/tmp/GrowlMail-Installation-Temp/GrowlMail.mailbundle" ~/Library/Mail/Bundles
-chown -R $USER ~/Library/Mail
+chown $USER ~/Library/Mail/
+chown -R $USER ~/Library/Mail/Bundles
 
 ######
 # Note that we are running sudo'd, so these defaults will be written to
