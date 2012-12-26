@@ -204,6 +204,11 @@ static BOOL notifierEnabled = YES;
 	return ticket;
 }
 
+- (BOOL)hasNetworkClientEntitlement
+{
+    return YES;
+}
+
 #pragma mark Mail notification handlers
 
 + (void)showNotificationForMessage:(id)message

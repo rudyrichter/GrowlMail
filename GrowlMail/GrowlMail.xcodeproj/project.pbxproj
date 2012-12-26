@@ -44,10 +44,10 @@
 		939A742A1627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 939A74281627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib */; };
 		93D7D840144218B700BFCFB6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83A144218B700BFCFB6 /* InfoPlist.strings */; };
 		93D7D8441442237300BFCFB6 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D8431442237300BFCFB6 /* dsa_pub.pem */; };
-		93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		93D7D848144233C500BFCFB6 /* GMSparkleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D7D847144233C500BFCFB6 /* GMSparkleController.m */; };
 		93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; };
-		93E712B813FF674C0025D733 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		93E712B813FF674C0025D733 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		93E712B913FF67610025D733 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; };
 		953EE18E082CC7420040C586 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 953EE18D082CC7420040C586 /* AddressBook.framework */; };
 /* End PBXBuildFile section */

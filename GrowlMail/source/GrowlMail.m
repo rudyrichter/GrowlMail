@@ -58,7 +58,7 @@ static NSImage *growlMailIcon = nil;
 	if(!mvMailBundleClass)
 		GMShutDownGrowlMailAndWarn(@"Mail.app does not have a MVMailBundle class available");
 	else
-	{		
+	{        
 		//finish setup
         growlMailIcon = [[GMGetGrowlMailBundle() imageForResource:@"GrowlMail"] retain];
 		[growlMailIcon setName:@"GrowlMail"];
