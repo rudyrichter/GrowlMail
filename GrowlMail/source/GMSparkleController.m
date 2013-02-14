@@ -1,5 +1,5 @@
 /*
- Copyright (c) Rudy Richter, 2011-2012
+ Copyright (c) 2011-2013, Rudy Richter.
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification,

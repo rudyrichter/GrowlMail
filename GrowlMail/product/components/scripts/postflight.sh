@@ -1,5 +1,7 @@
 #!/bin/sh
 
+running=/tmp/GrowlMail-Installation-Temp/running
+
 # Move our temporary installation into the real destination.
 mkdir -p ~/Library/Mail/Bundles
 rm -R ~/Library/Mail/Bundles/GrowlMail.mailbundle
@@ -17,7 +19,7 @@ if [ `whoami` == root ] ; then
     #defaults acts funky when asked to write to the root domain but seems to work with a full path
 	domain=/Library/Preferences/com.apple.mail
 else
-    domain=com.apple.mail
+    domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
 fi
 
 macosx_minor_version=$(sw_vers | /usr/bin/sed -Ene 's/.*[[:space:]]10\.([0-9][0-9]*)\.*[0-9]*/\1/p;')
@@ -34,6 +36,11 @@ defaults write "$domain" EnableBundles -bool YES
 
 # Mac OS X 10.5's Mail.app requires bundle version 3 or greater
 defaults write "$domain" BundleCompatibilityVersion -int "$bundle_compatibility_version"
+
+#relaunch mail if it was running before started
+if [ -f "$running" ]; then
+    osascript -e "activate app \"Mail\""
+fi
 
 # Remove our temporary directory so that another user account on the same system can install.
 rm -R /tmp/GrowlMail-Installation-Temp

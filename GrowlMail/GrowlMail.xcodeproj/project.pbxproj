@@ -168,6 +168,9 @@
 		9304DCB116876F3D00D5B8F5 /* GrowlMail.pkgproj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = GrowlMail.pkgproj; path = product/GrowlMail.pkgproj; sourceTree = "<group>"; };
 		932D48581687767800B8A913 /* postflight.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = postflight.sh; path = product/components/scripts/postflight.sh; sourceTree = "<group>"; };
 		932D48591687767800B8A913 /* preflight.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = preflight.sh; path = product/components/scripts/preflight.sh; sourceTree = "<group>"; };
+		932D49BF168C175800B8A913 /* process-install-name.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = "process-install-name.rb"; sourceTree = "<group>"; };
+		932D49C0168C175800B8A913 /* prune-headers.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = "prune-headers.rb"; sourceTree = "<group>"; };
+		932D49C1168C175800B8A913 /* prune-languages.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = "prune-languages.rb"; sourceTree = "<group>"; };
 		93947E7F13C8D00900E29642 /* GrowlMail_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GrowlMail_Prefix.pch; path = source/GrowlMail_Prefix.pch; sourceTree = "<group>"; };
 		93947E8313C8D04900E29642 /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = xcconfig/Release.xcconfig; sourceTree = "<group>"; };
 		93947E8413C8D04900E29642 /* Localization.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Localization.xcconfig; path = xcconfig/Localization.xcconfig; sourceTree = "<group>"; };
@@ -213,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				93947E8213C8D03A00E29642 /* xcconfigs */,
+				932D49BE168C175800B8A913 /* scripts */,
 				93E7129A13FF66560025D733 /* externals */,
 				9304DCB016876DB300D5B8F5 /* packaging */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
@@ -309,6 +313,16 @@
 				9550E79F077A207E00436674 /* GrowlMail.png */,
 			);
 			name = resources;
+			sourceTree = "<group>";
+		};
+		932D49BE168C175800B8A913 /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				932D49BF168C175800B8A913 /* process-install-name.rb */,
+				932D49C0168C175800B8A913 /* prune-headers.rb */,
+				932D49C1168C175800B8A913 /* prune-languages.rb */,
+			);
+			path = scripts;
 			sourceTree = "<group>";
 		};
 		93947E8213C8D03A00E29642 /* xcconfigs */ = {
@@ -420,7 +434,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GM;
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Rudy Richter";
 			};
 			buildConfigurationList = 95E4A3630855C16F006B3F45 /* Build configuration list for PBXProject "GrowlMail" */;
@@ -711,6 +725,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -719,6 +734,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Localization;
@@ -727,6 +743,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
