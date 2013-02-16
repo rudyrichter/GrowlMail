@@ -15,27 +15,23 @@ chown -R $USER ~/Library/Mail/Bundles
 #
 # Mail must NOT be running by the time this script executes
 ######
-if [ `whoami` == root ] ; then
-    #defaults acts funky when asked to write to the root domain but seems to work with a full path
-	domain=/Library/Preferences/com.apple.mail
-else
-    domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
-fi
-
 macosx_minor_version=$(sw_vers | /usr/bin/sed -Ene 's/.*[[:space:]]10\.([0-9][0-9]*)\.*[0-9]*/\1/p;')
-if [[ "$macosx_minor_version" == "" ]]; then
-	echo 'Unrecognized Mac OS X version!' > /dev/stderr
-	sw_vers > /dev/stderr
-elif [[ "$macosx_minor_version" -eq 5 ]]; then
-	bundle_compatibility_version=3
+bundle_compatibility_version=4
+if [[ "$macosx_minor_version" -eq 7 ]]; then
+    domain=com.apple.mail
+elif [[ "$macosx_minor_version" -eq 8 ]]; then
+    domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
 else
-	bundle_compatibility_version=4
+    echo 'Unrecognized Mac OS X version!' > /dev/stderr
+    sw_vers > /dev/stderr
 fi
 
-defaults write "$domain" EnableBundles -bool YES
+echo $domain
+
+sudo -u $USER defaults write "$domain" EnableBundles -bool YES
 
 # Mac OS X 10.5's Mail.app requires bundle version 3 or greater
-defaults write "$domain" BundleCompatibilityVersion -int "$bundle_compatibility_version"
+sudo -u $USER defaults write "$domain" BundleCompatibilityVersion -int "$bundle_compatibility_version"
 
 #relaunch mail if it was running before started
 if [ -f "$running" ]; then
