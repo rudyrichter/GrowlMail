@@ -60,7 +60,7 @@ static BOOL notifierEnabled = YES;
 	if (!sharedNotifier) 
     {
 		//-init and -dealloc will each assign to sharedNotifier.
-		[[[GrowlMailNotifier alloc] init] autorelease];
+		sharedNotifier = [[GrowlMailNotifier alloc] init];
 	}
 	return sharedNotifier;
 }
@@ -196,6 +196,7 @@ static BOOL notifierEnabled = YES;
 		allowedNotifications, GROWL_NOTIFICATIONS_ALL,
 		defaultNotifications, GROWL_NOTIFICATIONS_DEFAULT,
 		humanReadableNames, GROWL_NOTIFICATIONS_HUMAN_READABLE_NAMES,
+                            [self applicationNameForGrowl], GROWL_APP_NAME,
 		nil];
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Returning Growl dictionary %@", __PRETTY_FUNCTION__, ticket);

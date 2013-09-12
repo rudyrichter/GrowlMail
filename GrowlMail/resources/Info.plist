@@ -24,6 +24,8 @@
 	<string>GrowlMail</string>
 	<key>SupportedPluginCompatibilityUUIDs</key>
 	<array>
+		<string>2B98D2DD-000B-4521-83EB-7BFCB9B161C8</string>
+		<string>DAFFB2B4-77BC-4C25-8CE1-2405E652D54B</string>
 		<string>2183B2CD-BEDF-4AA6-AC18-A1BBED2E3354</string>
 		<string>19B53E95-0964-4AAB-88F9-6D2F8B7B6037</string>
 		<string>758F235A-2FD0-4660-9B52-102CD0EA897F</string>
