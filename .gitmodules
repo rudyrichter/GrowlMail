@@ -1,3 +1,6 @@
 [submodule "GrowlMail/externals/Sparkle"]
 	path = GrowlMail/externals/Sparkle
 	url = git@github.com:rudyrichter/Sparkle.git
+[submodule "GrowlMail/externals/MAObjCRuntime"]
+	path = GrowlMail/externals/MAObjCRuntime
+	url = https://github.com/rudyrichter/MAObjCRuntime.git

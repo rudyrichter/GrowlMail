@@ -31,8 +31,9 @@
 #import "GrowlMail.h"
 #import "Message+GrowlMail.h"
 #import <objc/objc-runtime.h>
-
+#import "MailHeaders.h"
 #import "MessageFrameworkHeaders.h"
+#import "GMUserDefaults.h"
 
 #define AUTO_THRESHOLD	10
 #define	MAX_NOTIFICATION_THREADS	5
@@ -41,6 +42,9 @@ static int activeNotificationThreads = 0;
 static int messageCopies = 0;
 static GrowlMailNotifier *sharedNotifier = nil;
 static BOOL notifierEnabled = YES;
+
+@interface GrowlMailNotifier ()
+@end
 
 @implementation GrowlMailNotifier
 
@@ -91,15 +95,19 @@ static BOOL notifierEnabled = YES;
 			[NSNumber numberWithBool:NO],  @"GMInboxOnly",
 			[NSNumber numberWithBool:YES], @"GMBackgroundOnly",
 			nil];
-		
-		[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        GMUserDefaults *defaults = [[[GMUserDefaults alloc] initWithPersistentDomainName:[[NSBundle bundleForClass:[self class]] bundleIdentifier]] autorelease];
+
+		[defaults registerDefaults:defaultsDictionary];
+        [defaults synchronize];
         
+        //make sure our shared user defaults controller is set to use our domain for preferences
+        self.userDefaultsController = [[[NSUserDefaultsController alloc] initWithDefaults:defaults initialValues:defaultsDictionary] autorelease];
+
 		[GrowlApplicationBridge setGrowlDelegate:self];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(messageStoreDidAddMessages:)
-													 name:@"MessageStoreMessagesAdded_inMainThread_"
+													 name:@"MessageStoreMessagesAdded"
 												   object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(monitoredActivityStarted:)
@@ -118,9 +126,9 @@ static BOOL notifierEnabled = YES;
 
 #ifdef GROWL_MAIL_DEBUG
 		//[self informationSpew];
-		//[[NSNotificationCenter defaultCenter] addObserver:self
-		//										 selector:@selector(showAllNotifications:)
-		//											 name:nil object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//										 selector:@selector(showAllNotifications:)
+//											 name:nil object:nil];
 #endif
 		sharedNotifier = self;
 	}
@@ -131,6 +139,7 @@ static BOOL notifierEnabled = YES;
 {
 	[self shutDownGrowlMail];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[sharedNotifier release];
 	sharedNotifier = nil;
 
 	[super dealloc];
@@ -153,27 +162,28 @@ static BOOL notifierEnabled = YES;
 	if ([clickContext length]) 
     {
 		//Make sure we have all the methods we need.
-		
-		if (!class_getClassMethod(NSClassFromString(@"SingleMessageViewer"), @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:)))
+		Class singleMessageViewerClass = NSClassFromString(GM_SingleMessageViewer);
+        Class libraryClass = NSClassFromString(GM_Library);
+        
+		if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:");
-		if (!class_getInstanceMethod(NSClassFromString(@"SingleMessageViewer"), @selector(showAndMakeKey:)))
+		if (!class_getInstanceMethod(singleMessageViewerClass, @selector(showAndMakeKey:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
-        if(!class_getClassMethod(NSClassFromString(@"Library"), @selector(markMessageAsViewed:viewedDate:)))
+        
+        if(!class_getClassMethod(libraryClass, @selector(markMessageAsViewed:viewedDate:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
-        if(!class_getClassMethod(NSClassFromString(@"Library"), @selector(messageWithMessageID:)))
+        if(!class_getClassMethod(libraryClass, @selector(messageWithMessageID:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +messageWithMessageID:");
         
-		id message = [Library messageWithMessageID:clickContext];
-		id viewingState = [[NSClassFromString(@"MessageViewingState") alloc] init];
+		id message = [libraryClass messageWithMessageID:clickContext];
 		id messageViewer = nil;
 		
-        if (class_getClassMethod(NSClassFromString(@"SingleMessageViewer"), @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:)))
-            messageViewer = [NSClassFromString(@"SingleMessageViewer") viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO viewingState:viewingState expandedSelectedMailboxes:nil];
+        if (class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
+            messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO expandedSelectedMailboxes:nil];
         
-		[viewingState release];
         [NSApp activateIgnoringOtherApps:YES];
 		[messageViewer showAndMakeKey:YES];
-		[Library markMessageAsViewed:message viewedDate:[NSDate date]];
+		[libraryClass markMessageAsViewed:message viewedDate:[NSDate date]];
 	}
 }
 
@@ -198,9 +208,6 @@ static BOOL notifierEnabled = YES;
 		humanReadableNames, GROWL_NOTIFICATIONS_HUMAN_READABLE_NAMES,
                             [self applicationNameForGrowl], GROWL_APP_NAME,
 		nil];
-#ifdef GROWL_MAIL_DEBUG
-	NSLog(@"%s: Returning Growl dictionary %@", __PRETTY_FUNCTION__, ticket);
-#endif
 
 	return ticket;
 }
@@ -243,7 +250,7 @@ static BOOL notifierEnabled = YES;
 	}
 }
 
-- (void)didFinishNotificationForMessage:(Message *)message
+- (void)didFinishNotificationForMessage:(/*Message **/id)message
 {
 #pragma unused(message)
 	activeNotificationThreads--;	
@@ -255,11 +262,7 @@ static BOOL notifierEnabled = YES;
         return;
 	if(!shouldNotify && [self isBackgroundOnlyEnabled]) 
         return;
-	
-#ifdef GROWL_MAIL_DEBUG
-	NSLog(@"%s called ", __PRETTY_FUNCTION__);
-#endif
-	
+		
 	if (messageCopies) 
     {
 #ifdef GROWL_MAIL_DEBUG
@@ -268,7 +271,7 @@ static BOOL notifierEnabled = YES;
 		return;
 	}
 
-	Library *store = [notification object];
+	id store = [notification object];
 	if (!store) 
     {
 		GMShutDownGrowlMailAndWarn([NSString stringWithFormat:@"'%@' notification has no object", [notification name]]);
@@ -293,15 +296,9 @@ static BOOL notifierEnabled = YES;
 #endif
     NSArray *mailboxes = nil;
     id mailBox = nil;
-    if([store respondsToSelector:@selector(mailboxUid)])
+    if([store respondsToSelector:@selector(mailbox)])
     {
-        mailBox = [store performSelector:@selector(mailboxUid)];
-    }
-    else if([store respondsToSelector:@selector(allMailboxUidRepresentations)])
-    {
-        NSArray *UIDs = [store performSelector:@selector(allMailboxUidRepresentations)];
-        if([UIDs count])
-            mailBox = [UIDs objectAtIndex:0U];
+        mailBox = [store performSelector:@selector(mailbox)];
     }
     if([mailBox respondsToSelector:@selector(isStore)] && [mailBox respondsToSelector:@selector(isSmartMailbox)])
         if([mailBox isStore] && ![mailBox isSmartMailbox])
@@ -316,26 +313,26 @@ static BOOL notifierEnabled = YES;
         return;
 
 	//Ignore a notification if we're ignoring all of the mailboxes involved.
-	Class MailAccount_class = [MailAccount class];
-	if (!class_getClassMethod(MailAccount_class, @selector(draftMailboxUids)))
+	Class MailAccount_class = NSClassFromString(GM_MailAccount);
+	if (!class_getClassMethod(MailAccount_class, @selector(draftMailboxes)))
 		GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +draftMailboxUids");
-	if (!class_getClassMethod(MailAccount_class, @selector(outboxMailboxUids)))
+	if (!class_getClassMethod(MailAccount_class, @selector(outboxMailboxes)))
 		GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +outboxMailboxUids");
-	if (!class_getClassMethod(MailAccount_class, @selector(sentMessagesMailboxUids)))
+	if (!class_getClassMethod(MailAccount_class, @selector(sentMessagesMailboxes)))
 		GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +sentMessagesMailboxUids");
-	if (!class_getClassMethod(MailAccount_class, @selector(trashMailboxUids)))
+	if (!class_getClassMethod(MailAccount_class, @selector(trashMailboxes)))
 		GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +trashMailboxUids");
 	//We need this method to support the Inbox Only preference.
-	if (!class_getClassMethod(MailAccount_class, @selector(inboxMailboxUids)))
+	if (!class_getClassMethod(MailAccount_class, @selector(inboxMailboxes)))
 		GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +inboxMailboxUids");
 
 	//Ignore messages being written.
-	NSMutableSet *mailboxesToIgnore = [NSMutableSet setWithArray:[MailAccount draftMailboxUids]];
+	NSMutableSet *mailboxesToIgnore = [NSMutableSet setWithArray:[MailAccount_class draftMailboxes]];
 	//Ignore messages being sent.
-	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount outboxMailboxUids]]];
-	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount sentMessagesMailboxUids]]];
+	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount_class outboxMailboxes]]];
+	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount_class sentMessagesMailboxes]]];
 	//Ignore messages being deleted.
-	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount trashMailboxUids]]];
+	[mailboxesToIgnore unionSet:[NSSet setWithArray:[MailAccount_class trashMailboxes]]];
 
 	NSSet *mailboxesSet = [NSSet setWithArray:mailboxes];
 	NSMutableSet *mailboxesNotIgnored = [[mailboxesSet mutableCopy] autorelease];
@@ -366,7 +363,7 @@ static BOOL notifierEnabled = YES;
 	NSLog(@"Got %d new messages. Summary mode was %d and is now %d", (int)count, (int)[self summaryMode], (int)summaryMode);
 #endif
 
-	Class Message_class = NSClassFromString(@"Message");
+	Class Message_class = NSClassFromString(GM_Message);
 
 	switch (summaryMode) 
     {
@@ -376,12 +373,12 @@ static BOOL notifierEnabled = YES;
 			NSEnumerator *messagesEnum = [messages objectEnumerator];
 			id message;
 			while ((message = [messagesEnum nextObject])) {
-				MailboxUid *mailbox = [message mailbox];
+				id mailbox = [message mailbox];
 				//If this mailbox is not an inbox, and we only care about inboxes, then skip this message.
-				if ([self inboxOnly] && ![[MailAccount inboxMailboxUids] containsObject:mailbox])
+				if ([self inboxOnly] && ![[MailAccount_class inboxMailboxes] containsObject:mailbox])
 					continue;
 
-				MailAccount *account = [mailbox account];
+				id account = [mailbox account];
 				if (![self isAccountEnabled:account])
 					continue;
 
@@ -397,30 +394,30 @@ static BOOL notifierEnabled = YES;
 		}
 		case GrowlMailSummaryModeAlways: 
         {
-			if (!class_getClassMethod([MailAccount class], @selector(mailAccounts)))
+			if (!class_getClassMethod(MailAccount_class, @selector(mailAccounts)))
 				GMShutDownGrowlMailAndWarn(@"MailAccount does not respond to +mailAccounts");
 			if (!class_getInstanceMethod(Message_class, @selector(mailbox)))
 				GMShutDownGrowlMailAndWarn(@"Message does not respond to -mailbox");
 
-			NSArray *accounts = [MailAccount mailAccounts];
+			NSArray *accounts = [MailAccount_class mailAccounts];
 			NSUInteger accountsCount = [accounts count];
 			NSCountedSet *accountSummary = [NSCountedSet setWithCapacity:accountsCount];
 			NSCountedSet *accountJunkSummary = [NSCountedSet setWithCapacity:accountsCount];
 			NSEnumerator *messagesEnum = [messages objectEnumerator];
-			NSArray *junkMailboxUids = [MailAccount junkMailboxUids];
-			Message *message;
+			NSArray *junkMailboxes = [MailAccount_class junkMailboxes];
+			id message;
 			while ((message = [messagesEnum nextObject])) 
             {
-				MailboxUid *mailbox = [message mailbox];
+				id mailbox = [message mailbox];
 				//If this mailbox is not an inbox, and we only care about inboxes, then skip this message.
-				if ([self inboxOnly] && ![[MailAccount inboxMailboxUids] containsObject:mailbox])
+				if ([self inboxOnly] && ![[MailAccount_class inboxMailboxes] containsObject:mailbox])
 					continue;
 
-				MailAccount *account = [mailbox account];
+				id account = [mailbox account];
 				if (![self isAccountEnabled:account])
 					continue;
 
-				if (([message isJunk]) || [junkMailboxUids containsObject:[message mailbox]])
+				if (([message isJunk]) || [junkMailboxes containsObject:[message mailbox]])
 					[accountJunkSummary addObject:account];
 				else
 					[accountSummary addObject:account];
@@ -429,7 +426,7 @@ static BOOL notifierEnabled = YES;
 			NSString *titleJunk = NSLocalizedStringFromTableInBundle(@"New junk mail", NULL, GMGetGrowlMailBundle(), "");
 			NSString *description;
 
-			MailAccount *account;
+			id account;
 
 			NSEnumerator *accountSummaryEnum = [accountSummary objectEnumerator];
 			while ((account = [accountSummaryEnum nextObject])) 
@@ -551,10 +548,10 @@ static BOOL notifierEnabled = YES;
 	}
 }
 
-- (BOOL) isAccountEnabled:(MailAccount *)account 
+- (BOOL) isAccountEnabled:(id)account
 {
 	BOOL isEnabled = YES;
-	NSDictionary *accountSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMAccounts"];
+	NSDictionary *accountSettings = [self.userDefaultsController.defaults objectForKey:@"GMAccounts"];
 	if (accountSettings) 
     {
 		NSNumber *value = [accountSettings objectForKey:[account path]];
@@ -564,48 +561,50 @@ static BOOL notifierEnabled = YES;
 	return isEnabled;
 }
 
-- (void) setAccount:(MailAccount *)account enabled:(BOOL)yesOrNo 
+- (void) setAccount:(id)account enabled:(BOOL)yesOrNo
 {
-	NSDictionary *accountSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMAccounts"];
+	NSDictionary *accountSettings = [self.userDefaultsController.defaults objectForKey:@"GMAccounts"];
 	NSMutableDictionary *newSettings = [[accountSettings mutableCopy] autorelease];
 	if (!newSettings)
 		newSettings = [NSMutableDictionary dictionaryWithCapacity:1U];
 	[newSettings setObject:[NSNumber numberWithBool:yesOrNo] forKey:[account path]];
-	[[NSUserDefaults standardUserDefaults] setObject:newSettings forKey:@"GMAccounts"];
+	[self.userDefaultsController.defaults setObject:newSettings forKey:@"GMAccounts"];
 }
 
 #pragma mark Accessors
 
 - (BOOL) isBackgroundOnlyEnabled 
 {
-	NSNumber *backgroundNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMBackgroundOnly"];
+	NSNumber *backgroundNum = [self.userDefaultsController.defaults objectForKey:@"GMBackgroundOnly"];
 	return (backgroundNum ? [backgroundNum boolValue] : NO);
 }
 
 - (BOOL) isEnabled 
 {
-	NSNumber *enabledNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMEnableGrowlMailBundle"];
+	NSNumber *enabledNum = [self.userDefaultsController.defaults objectForKey:@"GMEnableGrowlMailBundle"];
     return enabledNum ? [enabledNum boolValue] : YES;
 }
 - (GrowlMailSummaryMode) summaryMode 
 {
-	NSNumber *summaryModeNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMSummaryMode"];
+	NSNumber *summaryModeNum = [self.userDefaultsController.defaults objectForKey:@"GMSummaryMode"];
 	return summaryModeNum ? [summaryModeNum intValue] : GrowlMailSummaryModeAutomatic;
 }
+
 - (BOOL) inboxOnly 
 {
-	NSNumber *inboxOnlyNum = [[NSUserDefaults standardUserDefaults] objectForKey:@"GMInboxOnly"];
+	NSNumber *inboxOnlyNum = [self.userDefaultsController.defaults objectForKey:@"GMInboxOnly"];
 	return inboxOnlyNum ? [inboxOnlyNum boolValue] : YES;
 }
 
 - (NSString *) titleFormat 
 {
-	NSString *titleFormat = [[NSUserDefaults standardUserDefaults] stringForKey:@"GMTitleFormat"];
+	NSString *titleFormat = [self.userDefaultsController.defaults stringForKey:@"GMTitleFormat"];
 	return titleFormat ? titleFormat : @"(%account) %sender";
 }
+
 - (NSString *) descriptionFormat 
 {
-	NSString *descriptionFormat = [[NSUserDefaults standardUserDefaults] stringForKey:@"GMDescriptionFormat"];
+	NSString *descriptionFormat = [self.userDefaultsController.defaults stringForKey:@"GMDescriptionFormat"];
 	return descriptionFormat ? descriptionFormat : @"%subject\n%body";
 }
 
@@ -629,12 +628,12 @@ void GMShutDownGrowlMailAndWarn(NSString *specificWarning)
 
 - (void)informationSpew
 {
-    for(MailAccount *account in [MailAccount mailAccounts])
+    for(id account in [NSClassFromString(GM_MailAccount) mailAccounts])
     {
-        NSLog(@"%@", [account allMailboxUids]);
+        NSLog(@"%@", [account allMailboxes]);
     }
     
-    NSLog(@"%@", [MailboxUid smartMailboxUids]);
+    NSLog(@"%@", [NSClassFromString(GM_MailAccount) smartMailboxes]);
 }
 
 @end

@@ -26,91 +26,84 @@
  OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "Message+GrowlMail.h"
+#import "GrowlMail.h"
 #import "GrowlMailNotifier.h"
+#import "NSString+GrowlMail.h"
+#import "Message+GrowlMail.h"
+#import "MailHeaders.h"
+#import "MessageFrameworkHeaders.h"
+
 #import <AddressBook/AddressBook.h>
 #import <Growl/Growl.h>
+#import <objc/objc-runtime.h>
 
-@interface NSString (GrowlMail_KeywordReplacing)
+void GMShowNotificationPart1(id self, SEL _cmd);
+void GMShowNotificationPart2(id self, SEL _cmd, id messageBody);
 
-- (NSString *) stringByReplacingKeywords:(NSArray *)keywords
-                              withValues:(NSArray *)values;
+@implementation GrowlMessage
 
-@end
-
-@interface NSMutableString (GrowlMail_LineOrientedTruncation)
-
-- (void) trimStringToFirstNLines:(NSUInteger)n;
-
-@end
-
-@implementation Message (GrowlMail)
-
-- (void) GMShowNotificationPart1 
++ (void)load
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-	MessageBody *messageBody = nil;
-
-	GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];
-	NSString *titleFormat = [notifier titleFormat];
-	NSString *descriptionFormat = [notifier descriptionFormat];
-
-	if ([titleFormat rangeOfString:@"%body"].location != NSNotFound ||
-			[descriptionFormat rangeOfString:@"%body"].location != NSNotFound) 
-    {
-		/* We will need the body */
-		messageBody = [self messageBodyIfAvailable];
-		int nonBlockingAttempts = 0;
-		while (!messageBody && nonBlockingAttempts < 3) 
-        {
-			/* No message body available yet, but we need one */
-			nonBlockingAttempts++;
-			[NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:(0.5 * nonBlockingAttempts)]];
-			
-			/* We'd prefer to let whatever Mail process might want the message body get it on its own terms rather than blocking on this thread */
-			messageBody = [self messageBodyIfAvailable];
-		}
-
-		/* Already tried three times (3 seconds); this time, block this thread to get it. */ 
-		if (!messageBody) 
-            messageBody = [self messageBody];
-	}
-
-	[self performSelectorOnMainThread:@selector(GMShowNotificationPart2:)
-						   withObject:messageBody
-						waitUntilDone:NO];
-
-	[pool drain];
+    Class mailMessageClass = NSClassFromString(GM_Message);
+    
+    class_addMethod(mailMessageClass, @selector(GMShowNotificationPart1), (IMP)GMShowNotificationPart1, "v@:");
+    class_addMethod(mailMessageClass, @selector(GMShowNotificationPart2:), (IMP)GMShowNotificationPart2, "v@:@");
 }
 
-- (void) GMShowNotificationPart2:(MessageBody *)messageBody 
+void GMShowNotificationPart1(id self, SEL _cmd)
+{
+	@autoreleasepool
+    {
+        id messageBody = nil;
+        
+        GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];
+        NSString *titleFormat = [notifier titleFormat];
+        NSString *descriptionFormat = [notifier descriptionFormat];
+        
+        if ([titleFormat rangeOfString:@"%body"].location != NSNotFound ||
+			[descriptionFormat rangeOfString:@"%body"].location != NSNotFound)
+        {
+            /* We will need the body */
+            messageBody = [self messageBodyIfAvailable];
+            int nonBlockingAttempts = 0;
+            while (!messageBody && nonBlockingAttempts < 3)
+            {
+                /* No message body available yet, but we need one */
+                nonBlockingAttempts++;
+                [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:(0.5 * nonBlockingAttempts)]];
+                
+                /* We'd prefer to let whatever Mail process might want the message body get it on its own terms rather than blocking on this thread */
+                messageBody = [self messageBodyIfAvailable];
+            }
+            
+            /* Already tried three times (3 seconds); this time, block this thread to get it. */
+            if (!messageBody) 
+                messageBody = [self messageBody];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self performSelector:@selector(GMShowNotificationPart2:) withObject:messageBody];
+        });
+    };
+}
+
+
+void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 {
 	NSString *account = (NSString *)[[[self mailbox] account] displayName];
-	NSString *sender = [self sender];
-	NSString *senderAddress = [sender uncommentedAddress];
+	NSString *sender = [self senderDisplayName];
+	NSString *senderAddress = [self sender];
 	NSString *subject = (NSString *)[self subject];
-	NSString *body;
+	NSString *body = @"";
 	GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];
 	NSString *titleFormat = [notifier titleFormat];
 	NSString *descriptionFormat = [notifier descriptionFormat];
-
-	/* The fullName selector is not available in Mail.app 2.0. */
-	if ([sender respondsToSelector:@selector(fullName)])
-		sender = [sender fullName];
-	else if ([sender addressComment])
-		sender = [sender addressComment];
-
+    
 	if (messageBody) 
     {
 		NSString *originalBody = nil;
-		/* stringForIndexing selector: Mail.app 3.0 in OS X 10.4, not in 10.5. */
-		if ([messageBody respondsToSelector:@selector(stringForIndexing)])
-			originalBody = [messageBody stringForIndexing];
-		else if ([messageBody respondsToSelector:@selector(attributedString)])
+		if ([messageBody respondsToSelector:@selector(attributedString)])
 			originalBody = [[messageBody attributedString] string];
-		else if ([messageBody respondsToSelector:@selector(stringValueForJunkEvaluation:)])
-			originalBody = [messageBody stringValueForJunkEvaluation:NO];
 		if (originalBody) 
         {
 			NSMutableString *transformedBody = [[[originalBody stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy] autorelease];
@@ -126,47 +119,13 @@
 				[transformedBody appendString:[NSString stringWithUTF8String:"\xE2\x80\xA6"]];
 			body = (NSString *)transformedBody;
 		} 
-        else 
-        {
-			body = @"";	
-		}
-	} 
-    else 
-    {
-		body = @"";
 	}
 
-	NSArray *keywords = [NSArray arrayWithObjects:
-		@"%sender",
-		@"%subject",
-		@"%body",
-		@"%account",
-		nil];
-	NSArray *values = [NSArray arrayWithObjects:
-		(sender ? sender : @""),
-		(subject ? subject : @""),
-		(body ? body : @""),
-		(account ? account : @""),
-		 nil];
+	NSArray *keywords = @[@"%sender", @"%subject", @"%body", @"%account"];
+	NSArray *values = @[(sender ? : @""), (subject ? : @""), (body ? : @""), (account ? : @"")];
 	NSString *title = [titleFormat stringByReplacingKeywords:keywords withValues:values];
 	NSString *description = [descriptionFormat stringByReplacingKeywords:keywords withValues:values];
 
-	/*
-	NSLog(@"Subject: '%@'", subject);
-	NSLog(@"Sender: '%@'", sender);
-	NSLog(@"Account: '%@'", account);
-	NSLog(@"Body: '%@'", body);
-	*/
-
-	/*
-	 * MailAddressManager fetches images asynchronously so they might arrive
-	 * after we have sent our notification.
-	 */
-	/*
-	MailAddressManager *addressManager = [MailAddressManager addressManager];
-	[addressManager fetchImageForAddress:senderAddress];
-	NSImage *image = [addressManager imageForMailAddress:senderAddress];
-	*/
 	ABSearchElement *personSearch = [ABPerson searchElementForProperty:kABEmailProperty
 																 label:nil
 																   key:nil
@@ -184,7 +143,7 @@
 		image = [[NSImage imageNamed:@"NSApplicationIcon"] TIFFRepresentation];
 
 	NSString *notificationName;
-	if ([self isJunk] || ([[MailAccount junkMailboxUids] containsObject:[self mailbox]])) 
+	if ([self isJunk] || ([[NSClassFromString(GM_MailAccount) junkMailboxes] containsObject:[self mailbox]]))
     {
 		notificationName = NEW_JUNK_MAIL_NOTIFICATION;
 	} 
@@ -211,48 +170,6 @@
 							   clickContext:clickContext];	// non-nil click context
 
 	[notifier didFinishNotificationForMessage:self];
-}
-
-@end
-
-@implementation NSString (GrowlMail_KeywordReplacing)
-
-- (NSString *) stringByReplacingKeywords:(NSArray *)keywords
-                              withValues:(NSArray *)values
-{
-	NSParameterAssert([keywords count] == [values count]);
-	NSMutableString *str = [[self mutableCopy] autorelease];
-
-	NSEnumerator *keywordsEnum = [keywords objectEnumerator], *valuesEnum = [values objectEnumerator];
-	NSString *keyword, *value;
-	while ((keyword = [keywordsEnum nextObject]) && (value = [valuesEnum nextObject])) 
-    {
-		[str replaceOccurrencesOfString:keyword
-		                     withString:value
-		                        options:0
-		                          range:NSMakeRange(0, [str length])];
-	}
-	return str;
-}
-
-@end
-
-@implementation NSMutableString (GrowlMail_LineOrientedTruncation)
-
-- (void) trimStringToFirstNLines:(NSUInteger)n 
-{
-	NSRange range;
-	NSUInteger end = 0U;
-	NSUInteger length;
-
-	range.location = 0;
-	range.length = 0;
-	for (NSUInteger i = 0U; i < n; ++i)
-		[self getLineStart:NULL end:&range.location contentsEnd:&end forRange:range];
-
-	length = [self length];
-	if (length > end)
-		[self deleteCharactersInRange:NSMakeRange(end, length - end)];
 }
 
 @end

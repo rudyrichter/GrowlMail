@@ -27,7 +27,13 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "MailHeaders.h"
+
+#define GM_MailAccount @"MFMailAccount"
+#define GM_Message @"MCMessage"
+#define GM_Mailbox @"MFMailbox"
+#define GM_SingleMessageViewer @"SingleMessageViewer"
+#define GM_Library @"MFLibrary"
+#define GM_MessageStore @"MFMessageStore"
 
 @interface GrowlMail : NSObject
 {

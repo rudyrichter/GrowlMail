@@ -26,57 +26,50 @@
  OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import "MailHeaders.h"
+#import "MessageFrameworkHeaders.h"
+
 #import "GrowlMail.h"
 #import "GrowlMailPreferencesModule.h"
 #import "GrowlMailNotifier.h"
 #import "GMSparkleController.h"
+#import "GMUserDefaults.h"
+
 #import <Sparkle/Sparkle.h>
 
-@interface MailAccount(GrowlMail)
-+ (NSArray *) remoteMailAccounts;
-@end
-
-@implementation MailAccount(GrowlMail)
-+ (NSArray *) remoteMailAccounts 
-{
-	NSArray *mailAccounts = [MailAccount mailAccounts];
-	NSMutableArray *remoteAccounts = [NSMutableArray array];
-    Class localAccountClass = [LocalAccount class];
-
-	for(id account in mailAccounts)
-	{
-		if (![account isKindOfClass:localAccountClass])
-			[remoteAccounts addObject:account];
-	}
-
-	return remoteAccounts;
-}
+@interface GrowlMailPreferencesModule ()
+@property (nonatomic, assign) IBOutlet NSUserDefaultsController *defaultsController;
 @end
 
 @implementation GrowlMailPreferencesModule
-@synthesize view_preferences;
-@synthesize accountsView;
-@synthesize descriptionTextView;
 
 - (void) awakeFromNib 
 {
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"GMEnableGrowlMailBundle" options:NSKeyValueObservingOptionNew context:&self];
-    [descriptionTextView setFont:[NSFont systemFontOfSize:13.0f]];
+    self.defaultsController = [GrowlMailNotifier sharedNotifier].userDefaultsController;
+
+    [self.defaultsController.defaults addObserver:self forKeyPath:@"GMEnableGrowlMailBundle" options:NSKeyValueObservingOptionNew context:&self];
+    [_descriptionTextView setFont:[NSFont systemFontOfSize:13.0f]];
     
-	NSTableColumn *activeColumn = [accountsView tableColumnWithIdentifier:@"active"];
+	NSTableColumn *activeColumn = [_accountsView tableColumnWithIdentifier:@"active"];
 	[[activeColumn dataCell] setImagePosition:NSImageOnly]; // center the checkbox
 }
 
-- (NSString *) preferencesNibName 
+- (void)dealloc
+{
+    [self.defaultsController.defaults removeObserver:self forKeyPath:@"GMEnableGrowlMailBundle"];
+    
+    [super dealloc];
+}
+- (NSString *) preferencesNibName
 {
 	return @"GrowlMailPreferencesPanel";
 }
 
 - (NSView *)preferencesView
 {
-	if (!view_preferences)
-		[NSBundle loadNibNamed:[self preferencesNibName] owner:self];
-	return view_preferences;
+	if (!_view_preferences)
+		[[NSBundle bundleForClass:[self class]] loadNibNamed:[self preferencesNibName] owner:self topLevelObjects:nil];
+	return _view_preferences;
 }
 
 - (NSString*)version
@@ -115,23 +108,23 @@
 {
     if([keyPath isEqualToString:@"GMEnableGrowlMailBundle"])
     {
-        [self enableTextView:[[NSUserDefaults standardUserDefaults] boolForKey:@"GMEnableGrowlMailBundle"]];
+        [self enableTextView:[self.defaultsController.defaults boolForKey:@"GMEnableGrowlMailBundle"]];
     }
 }
+
 -(void)enableTextView:(BOOL)enableIt
 {
-    [descriptionTextView setSelectable: enableIt];
-    [descriptionTextView setEditable: enableIt];
+    [_descriptionTextView setSelectable: enableIt];
+    [_descriptionTextView setEditable: enableIt];
     if (enableIt)
-        [descriptionTextView setTextColor: [NSColor controlTextColor]];
+        [_descriptionTextView setTextColor: [NSColor controlTextColor]];
     else
-        [descriptionTextView setTextColor: [NSColor disabledControlTextColor]];
+        [_descriptionTextView setTextColor: [NSColor disabledControlTextColor]];
 }
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView *)aTableView 
 {
-#pragma unused(aTableView)
-	return [[MailAccount remoteMailAccounts] count];
+	return [[NSClassFromString(GM_MailAccount) remoteAccounts] count];
 }
 
 - (IBAction)checkForUpdates:(id)sender
@@ -147,7 +140,7 @@
 - (id) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex 
 {
 #pragma unused(aTableView)
-	MailAccount *account = [[MailAccount remoteMailAccounts] objectAtIndex:rowIndex];
+	id account = [[NSClassFromString(GM_MailAccount) remoteAccounts] objectAtIndex:rowIndex];
 	if ([[aTableColumn identifier] isEqualToString:@"active"])
 		return [NSNumber numberWithBool:[[GrowlMailNotifier sharedNotifier] isAccountEnabled:account]];
 	else
@@ -157,7 +150,7 @@
 - (void) tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex 
 {
 #pragma unused(aTableView,aTableColumn)
-	MailAccount *account = [[MailAccount remoteMailAccounts] objectAtIndex:rowIndex];
+	id account = [[NSClassFromString(GM_MailAccount) remoteAccounts] objectAtIndex:rowIndex];
 	[[GrowlMailNotifier sharedNotifier] setAccount:account enabled:[anObject boolValue]];
 }
 

@@ -31,11 +31,7 @@
 #import "NSPreferencesModule.h"
 
 @interface GrowlMailPreferencesModule : NSPreferencesModule
-{
-	NSView		 *view_preferences;
-    NSTextView   *descriptionTextView;
-	NSTableView *accountsView;
-}
+
 - (IBAction)checkForUpdates:(id)sender;
 - (IBAction)setCheckInterval:(id)sender;
 
@@ -43,6 +39,6 @@
 -(void)enableTextView:(BOOL)enableIt;
 
 @property (nonatomic, assign) IBOutlet NSView *view_preferences;
-@property (nonatomic, assign) IBOutlet NSTextView   *descriptionTextView;
+@property (nonatomic, assign) IBOutlet NSTextView *descriptionTextView;
 @property (nonatomic, assign) IBOutlet NSTableView *accountsView;
 @end

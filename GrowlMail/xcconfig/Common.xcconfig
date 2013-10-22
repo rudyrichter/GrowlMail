@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2013, Rudy Richter. All rights reserved.
 //
 
-BR_BUNDLE_VERSION = 1.3.8
+BR_BUNDLE_VERSION = 1.4.0
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
@@ -35,10 +35,10 @@ GCC_PREFIX_HEADER = source/GrowlMail_Prefix.pch
 FRAMEWORK_SEARCH_PATHS = $(BUILT_PRODUCTS_DIR) $(SRCROOT)/externals/Growl/Release
 
 //target platform
-SDKROOT = macosx10.7
-MACOSX_DEPLOYMENT_TARGET = 10.7
-ARCHS = $(ARCHS_STANDARD_32_64_BIT)
-VALID_ARCHS = i386 x86_64
+SDKROOT = macosx10.9
+MACOSX_DEPLOYMENT_TARGET = 10.9
+ARCHS = $(ARCHS_STANDARD_64_BIT)
+VALID_ARCHS = x86_64
 
 //warnings 
 // -- no-format-nonliteral is /required/ for our CF extensions to compile with -Wall -Werror -Wformat enabled.

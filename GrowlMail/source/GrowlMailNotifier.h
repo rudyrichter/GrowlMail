@@ -29,7 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Growl/Growl.h>
-#import "MailHeaders.h"
 
 #define NEW_MAIL_NOTIFICATION		@"New mail"
 #define NEW_JUNK_MAIL_NOTIFICATION	@"New junk mail"
@@ -66,7 +65,7 @@ typedef NSInteger GrowlMailSummaryMode;
 
 /*!	@brief	Return the One True \c GrowlMailNotifier Instance, creating it if necessary.
  */
-+ (id) sharedNotifier;
++ (instancetype) sharedNotifier;
 
 /*!	@brief	Creates or retains, then returns, the One True \c GrowlMailNotifier instance.
  *
@@ -101,13 +100,13 @@ typedef NSInteger GrowlMailSummaryMode;
  *
  *	@return	\c YES if GrowlMail will post notifications for this account; \c NO if it won't.
  */
-- (BOOL) isAccountEnabled:(MailAccount *)account;
+- (BOOL) isAccountEnabled:(/*MailAccount **/id)account;
 /*!	@brief	Change whether the given account is enabled for notifications
  *
  *	@param	account	The account to enable or disable.
  *	@param	yesOrNo	If \c YES, post notifications for messages for \a account in the future; if \c NO, don't post notifications for messages for that account.
  */
-- (void) setAccount:(MailAccount *)account enabled:(BOOL)yesOrNo;
+- (void) setAccount:(/*MailAccount **/id)account enabled:(BOOL)yesOrNo;
 
 /*!	@brief	Determine whether the notifier only notifies while the app is in the background.
  *
@@ -129,8 +128,10 @@ typedef NSInteger GrowlMailSummaryMode;
 - (void) growlNotificationWasClicked:(NSString *)clickContext;
 - (NSDictionary *) registrationDictionaryForGrowl;
 
-- (void)didFinishNotificationForMessage:(Message *)message;
+- (void)didFinishNotificationForMessage:(id /*Message **/)message;
 
+
+@property (nonatomic, retain) NSUserDefaultsController *userDefaultsController;
 
 /*!	@brief	Disable GrowlMail and print a warning message
  *
