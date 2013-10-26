@@ -9,10 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface GMUserDefaults : NSUserDefaults
-{
-    NSString *_domain;
-    NSDictionary *_registeredDefaults;
-}
 
 @property (nonatomic, retain) NSString *domain;
 @property (nonatomic, retain) NSDictionary *registeredDefaults;

@@ -27,6 +27,22 @@
 @interface MFMailAccount : MFAccount
 + (id)mailAccounts;
 + (id)remoteAccounts;
++ (NSArray *)_activeAccountsFromArray:(NSArray *)accountsArray;
+
+- (id)rootMailbox;
+- (id)primaryMailbox;
+- (id)allMailboxes;
+- (id)_outboxMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)archiveMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)trashMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)sentMessagesMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)junkMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)draftsMailboxCreateIfNeeded:(BOOL)arg1;
+- (id)allMailMailbox;
+- (id)_notesMailboxUnlessUsingLocal;
+- (id)_todosMailboxUnlessUsingLocal;
+- (id)notesMailbox;
+- (id)todosMailbox;
 
 + (id)allMailboxes;
 + (id)archiveMailboxes;
@@ -39,13 +55,20 @@
 + (id)specialMailboxes;
 + (id)smartMailboxes;
 
+- (NSString *)uniqueId;
+
 @property(copy) NSString *displayName;
 @end
 
 @interface MFMailbox : NSObject
++ (id)mailboxWithPersistentIdentifier:(id)arg1;
+- (id)persistenceIdentifier;
+- (id)mailboxName;
+- (id)realFullPath;
 - (MFMailAccount *)account;
 @property BOOL isSmartMailbox;
 - (BOOL)isStore;
+- (NSString *)uuid;
 @end
 
 @interface MFMessageStore : NSObject

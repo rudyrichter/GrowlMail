@@ -132,12 +132,14 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 																 value:senderAddress
 															comparison:kABEqualCaseInsensitive];
 
-	NSData *image = nil;
-	NSEnumerator *matchesEnum = [[[ABAddressBook sharedAddressBook] recordsMatchingSearchElement:personSearch] objectEnumerator];
-	ABPerson *person;
-	while ((!image) && (person = [matchesEnum nextObject]))
-		image = [person imageData];
-
+	NSArray *matchArray = [[ABAddressBook sharedAddressBook] recordsMatchingSearchElement:personSearch];
+    __block NSData *image = nil;
+    [matchArray enumerateObjectsUsingBlock:^(ABPerson *person, NSUInteger idx, BOOL *stop) {
+        image = [person imageData];
+        if(image)
+            *stop = YES;
+    }];
+    
 	//no matches in the Address Book with an icon, so use Mail's icon instead.
 	if (!image)
 		image = [[NSImage imageNamed:@"NSApplicationIcon"] TIFFRepresentation];

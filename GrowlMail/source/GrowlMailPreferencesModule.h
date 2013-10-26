@@ -35,10 +35,9 @@
 - (IBAction)checkForUpdates:(id)sender;
 - (IBAction)setCheckInterval:(id)sender;
 
-- (IBAction)changeBackgroundOnlyMode:(id)sender;
 -(void)enableTextView:(BOOL)enableIt;
 
 @property (nonatomic, assign) IBOutlet NSView *view_preferences;
 @property (nonatomic, assign) IBOutlet NSTextView *descriptionTextView;
-@property (nonatomic, assign) IBOutlet NSTableView *accountsView;
+@property (nonatomic, assign) IBOutlet NSOutlineView *accountsView;
 @end

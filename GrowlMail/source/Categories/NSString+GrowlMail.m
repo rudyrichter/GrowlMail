@@ -14,17 +14,16 @@
                               withValues:(NSArray *)values
 {
 	NSParameterAssert([keywords count] == [values count]);
-	NSMutableString *str = [[self mutableCopy] autorelease];
     
-	NSEnumerator *keywordsEnum = [keywords objectEnumerator], *valuesEnum = [values objectEnumerator];
-	NSString *keyword, *value;
-	while ((keyword = [keywordsEnum nextObject]) && (value = [valuesEnum nextObject]))
+	__block NSMutableString *str = [[self mutableCopy] autorelease];
+    [keywords enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL *stop)
     {
-		[str replaceOccurrencesOfString:keyword
+        NSString *value = [values objectAtIndex:idx];
+        [str replaceOccurrencesOfString:keyword
 		                     withString:value
 		                        options:0
 		                          range:NSMakeRange(0, [str length])];
-	}
+    }];
 	return str;
 }
 

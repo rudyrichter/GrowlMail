@@ -9,8 +9,6 @@
 #import "GMUserDefaults.h"
 
 @implementation GMUserDefaults
-@synthesize domain = _domain;
-@synthesize registeredDefaults = _registeredDefaults;
 
 - (id)initWithPersistentDomainName:(NSString*)domain
 {
@@ -36,12 +34,15 @@
 
 - (void)setObject:(id)value forKey:(NSString *)defaultName
 {
-    CFPreferencesSetAppValue((CFStringRef)defaultName, (CFPropertyListRef)value, (CFStringRef)self.domain);
+    [self willChangeValueForKey:defaultName];
+    CFPreferencesSetValue((CFStringRef)defaultName, value, (CFStringRef)self.domain,  kCFPreferencesCurrentUser,  kCFPreferencesAnyHost);
+    [self didChangeValueForKey:defaultName];
+    [self synchronize];
 }
 
 - (id)objectForKey:(NSString *)defaultName
 {
-    id result = [(id)CFPreferencesCopyAppValue((CFStringRef)defaultName, (CFStringRef)self.domain) autorelease];
+    id result = [(id)CFPreferencesCopyValue((CFStringRef)defaultName, (CFStringRef)self.domain, kCFPreferencesCurrentUser,  kCFPreferencesAnyHost) autorelease];
     if(!result)
         result = [self.registeredDefaults objectForKey:defaultName];
     return result;
@@ -49,7 +50,9 @@
 
 - (void)removeObjectForKey:(NSString *)defaultName
 {
+    [self willChangeValueForKey:defaultName];
     CFPreferencesSetAppValue((CFStringRef)defaultName, NULL, (CFStringRef)self.domain);
+    [self didChangeValueForKey:defaultName];
 }
 
 - (BOOL)synchronize

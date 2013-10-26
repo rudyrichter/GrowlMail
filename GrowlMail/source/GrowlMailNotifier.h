@@ -40,7 +40,7 @@
  *
  *	@par	The GMSummaryMode user default contains a number that specifies how GrowlMail should post notifications: always as single-message notifications, always as a summary, or automatically chosen based on number of messages added to the store in a single operation.
  */
-enum GrowlMailSummaryMode 
+typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
 {
 	/*!	@brief	Automatically use summary mode or not based on how many messages the user receives within a span of time
 	 */
@@ -52,7 +52,6 @@ enum GrowlMailSummaryMode
 	 */
 	GrowlMailSummaryModeAlways = 2
 };
-typedef NSInteger GrowlMailSummaryMode;
 
 /*!	@brief	Object that posts GrowlMail notifications
  *
@@ -100,13 +99,15 @@ typedef NSInteger GrowlMailSummaryMode;
  *
  *	@return	\c YES if GrowlMail will post notifications for this account; \c NO if it won't.
  */
-- (BOOL) isAccountEnabled:(/*MailAccount **/id)account;
+- (BOOL)isAccountEnabled:(id)account;
+
 /*!	@brief	Change whether the given account is enabled for notifications
  *
  *	@param	account	The account to enable or disable.
  *	@param	yesOrNo	If \c YES, post notifications for messages for \a account in the future; if \c NO, don't post notifications for messages for that account.
  */
-- (void) setAccount:(/*MailAccount **/id)account enabled:(BOOL)yesOrNo;
+- (void) setAccount:(id)account enabled:(BOOL)enabled;
+- (NSCellStateValue) accountState:(id)account;
 
 /*!	@brief	Determine whether the notifier only notifies while the app is in the background.
  *
@@ -129,6 +130,7 @@ typedef NSInteger GrowlMailSummaryMode;
 - (NSDictionary *) registrationDictionaryForGrowl;
 
 - (void)didFinishNotificationForMessage:(id /*Message **/)message;
+- (void)newMessagesReceived:(NSArray *)messages forMailboxes:(NSArray *)mailboxes;
 
 
 @property (nonatomic, retain) NSUserDefaultsController *userDefaultsController;

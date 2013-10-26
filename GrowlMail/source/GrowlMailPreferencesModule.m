@@ -34,6 +34,7 @@
 #import "GrowlMailNotifier.h"
 #import "GMSparkleController.h"
 #import "GMUserDefaults.h"
+#import "GMPreferenceConstants.h"
 
 #import <Sparkle/Sparkle.h>
 
@@ -47,7 +48,10 @@
 {
     self.defaultsController = [GrowlMailNotifier sharedNotifier].userDefaultsController;
 
-    [self.defaultsController.defaults addObserver:self forKeyPath:@"GMEnableGrowlMailBundle" options:NSKeyValueObservingOptionNew context:&self];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefEnabled options:NSKeyValueObservingOptionNew context:&self];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefInboxOnlyMode options:NSKeyValueObservingOptionNew context:&self];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefBackgroundOnlyMode options:NSKeyValueObservingOptionNew context:&self];
+
     [_descriptionTextView setFont:[NSFont systemFontOfSize:13.0f]];
     
 	NSTableColumn *activeColumn = [_accountsView tableColumnWithIdentifier:@"active"];
@@ -60,6 +64,12 @@
     
     [super dealloc];
 }
+
+- (void) willBeDisplayed
+{
+    [self.accountsView reloadData];
+}
+
 - (NSString *) preferencesNibName
 {
 	return @"GrowlMailPreferencesPanel";
@@ -101,14 +111,24 @@
 
 - (BOOL) isResizable 
 {
-	return NO;
+	return YES;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if([keyPath isEqualToString:@"GMEnableGrowlMailBundle"])
+    if([keyPath isEqualToString:GMPrefEnabled])
     {
-        [self enableTextView:[self.defaultsController.defaults boolForKey:@"GMEnableGrowlMailBundle"]];
+        BOOL enabled = [self.defaultsController.defaults boolForKey:GMPrefEnabled];
+        [self enableTextView:enabled];
+    }
+    else if([keyPath isEqualToString:GMPrefInboxOnlyMode])
+    {
+        [self.accountsView reloadData];
+    }
+    else if([keyPath isEqualToString:GMPrefBackgroundOnlyMode])
+    {
+        BOOL backgroundOnly = [self.defaultsController.defaults boolForKey:GMPrefBackgroundOnlyMode];
+        [[GrowlMailNotifier sharedNotifier] configureForBackgroundOnly:backgroundOnly];
     }
 }
 
@@ -122,36 +142,16 @@
         [_descriptionTextView setTextColor: [NSColor disabledControlTextColor]];
 }
 
-- (NSInteger) numberOfRowsInTableView:(NSTableView *)aTableView 
+- (BOOL)inboxOnly
 {
-	return [[NSClassFromString(GM_MailAccount) remoteAccounts] count];
+    return ![self.defaultsController.defaults boolForKey:GMPrefInboxOnlyMode];
 }
+
+#pragma mark - Sparkle
 
 - (IBAction)checkForUpdates:(id)sender
 {
     [[GMSparkleController sharedController] checkForUpdates:sender];
-}
-
-- (IBAction)changeBackgroundOnlyMode:(id)sender 
-{
-	[[GrowlMailNotifier sharedNotifier] configureForBackgroundOnly:[sender state]];
-}
-
-- (id) tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex 
-{
-#pragma unused(aTableView)
-	id account = [[NSClassFromString(GM_MailAccount) remoteAccounts] objectAtIndex:rowIndex];
-	if ([[aTableColumn identifier] isEqualToString:@"active"])
-		return [NSNumber numberWithBool:[[GrowlMailNotifier sharedNotifier] isAccountEnabled:account]];
-	else
-		return [account displayName];
-}
-
-- (void) tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex 
-{
-#pragma unused(aTableView,aTableColumn)
-	id account = [[NSClassFromString(GM_MailAccount) remoteAccounts] objectAtIndex:rowIndex];
-	[[GrowlMailNotifier sharedNotifier] setAccount:account enabled:[anObject boolValue]];
 }
 
 - (IBAction)setCheckInterval:(id)sender
@@ -161,4 +161,96 @@
     NSTimeInterval time = [item tag];
     [[GMSparkleController sharedController] setUpdateCheckInterval:time];
 }
+
+#pragma mark - Mail support
+
+- (NSArray *)mailboxesForAccount:(id)account
+{
+    NSMutableArray *mailboxes = [NSMutableArray array];
+    if([account respondsToSelector:@selector(allMailboxes)])
+        [mailboxes addObjectsFromArray:[account allMailboxes]];
+    
+    if([account respondsToSelector:@selector(rootMailbox)])
+        [mailboxes removeObject:[account rootMailbox]];
+    
+    return mailboxes;
+}
+
+- (NSArray *)enabledRemoteAccounts
+{
+    Class mailAccountClass = NSClassFromString(GM_MailAccount);
+    NSArray *remoteAccounts = [mailAccountClass remoteAccounts];
+   
+    return [mailAccountClass _activeAccountsFromArray:remoteAccounts];
+}
+
+#pragma mark - NSTableViewDelegate
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+{
+    Class mailAccountClass = NSClassFromString(GM_MailAccount);
+	NSInteger count = 0;
+    
+    if(!item)
+        count = [[self enabledRemoteAccounts] count];
+    else if([item isKindOfClass:mailAccountClass])
+        count = [[self mailboxesForAccount:item] count];
+    return count;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+{
+    BOOL expandable = NO;
+    if([[self enabledRemoteAccounts] containsObject:item] && [self inboxOnly])
+    {
+        expandable = YES;
+    }
+    return expandable;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+{
+    Class mailAccountClass = NSClassFromString(GM_MailAccount);
+
+    id child = nil;
+    if(!item)
+    {
+        child = [[self enabledRemoteAccounts] objectAtIndex:index];
+    }
+    else if([item isKindOfClass:mailAccountClass] && [self inboxOnly])
+    {
+        NSArray *mailboxes = [self mailboxesForAccount:item];
+        child = [mailboxes objectAtIndex:index];
+    }
+    return child;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+    id objectValue = nil;
+	id account = item;
+	if ([[tableColumn identifier] isEqualToString:@"active"])
+    {
+		objectValue = [NSNumber numberWithInteger:[[GrowlMailNotifier sharedNotifier] accountState:account]];
+	}
+    else
+        if([account respondsToSelector:@selector(mailboxName)])
+        {
+            NSString *displayName = [account mailboxName];
+            if([displayName isEqualToString:@"INBOX"])
+                displayName = @"Inbox";
+            objectValue = displayName;
+        }
+        else
+            objectValue = [account displayName];
+    return objectValue;
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+	id account = item;
+	[[GrowlMailNotifier sharedNotifier] setAccount:account enabled:[object boolValue]];
+    [outlineView reloadData];
+}
+
 @end

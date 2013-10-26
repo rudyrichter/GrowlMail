@@ -41,7 +41,6 @@ static NSImage *growlMailIcon = nil;
 
 @implementation GrowlMail
 
-#pragma mark Boring bookkeeping stuff
 + (void) load
 {
     [[GMSparkleController sharedController] checkForUpdatesInBackground];
@@ -117,58 +116,5 @@ static NSImage *growlMailIcon = nil;
         NSLog(@"Could not load Growl.framework, GrowlMail disabled");
     }
 }
-
-//+ (BOOL)classesAndMethods
-//{
-//    NSArray *classesAnMethods = @[
-//
-//  @{@"class":GM_MailAccount, @"instanceMethods":@[@"displayName"], @"classMethods":@[@"mailAccounts", @"remoteAccounts", @"allMailboxes", @"inboxMailboxes", @"archiveMailboxes", @"junkMailboxes", @"draftMailboxes", @"sentMessagesMailboxes", @"outboxMailboxes", @"trashMailboxes", @"inboxMailboxes", @"specialMailboxes", @"smartMailboxes"]},
-//                                  
-//  @{@"class":GM_Message, @"instanceMethods":@[@"messageBody", @"messageBodyIfAvailable", @"mailbox", @"sender", @"senderDisplayName", @"subject", @"isJunk", @"messageID", @"type"], @"classMethods":@[]},
-//                                  
-//  @{@"class":GM_Mailbox, @"instanceMethods":@[@"account", @"isSmartMailbox", @"isStore"], @"classMethods":@[]},
-//  
-//  @{@"class":GM_SingleMessageViewer, @"instanceMethods":@[@"showAndMakeKey:", @"viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:", @""],
-//    @"classMethods":@[]},
-//  
-//  @{@"class":GM_Library, @"instanceMethods":@[@"isRead"], @"classMethods":@[@"messageWithMessageID:", @"markMessageAsViewed:viewedDate:"]},
-//
-//  @{@"class":GM_MessageStore, @"instanceMethods":@[@"isSmartMailbox", @"mailbox"], @"classMethods":@[]}
-//  
-//  ];
-//
-//    BOOL allPresent = YES;
-//    for (NSDictionary *classDescription in classesAnMethods)
-//    {
-//        Class classClass = NSClassFromString([classDescription objectForKey:@"class"]);
-//        NSLog(@"%@ %@", [classClass rt_methods], [classClass rt_classMethods]);
-//
-//        NSArray *instanceMethods = [classDescription objectForKey:@"instanceMethods"];
-//        for(NSString *method in instanceMethods)
-//        {
-//            allPresent = allPresent && ([classClass instancesRespondToSelector:@selector(method)]);
-//            if(allPresent == NO)
-//            {
-//                NSLog(@"%@ %@", NSStringFromClass(classClass), method);
-//                break;
-//            }
-//        }
-//        
-//        NSArray *classMethods = [classDescription objectForKey:@"classMethods"];
-//        for(NSString *method in classMethods)
-//        {
-//            allPresent = allPresent && [classClass respondsToSelector:@selector(method)];
-//            if(allPresent == NO)
-//            {
-//                NSLog(@"%@ %@", NSStringFromClass(classClass), method);
-//                break;
-//            }
-//        }
-//        if(allPresent == NO)
-//            break;
-//    }
-//
-//    return allPresent;
-//}
 
 @end
