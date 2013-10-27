@@ -108,6 +108,8 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
  */
 - (void) setAccount:(id)account enabled:(BOOL)enabled;
 - (NSCellStateValue) accountState:(id)account;
+- (NSArray *)mailboxesForAccount:(id)account;
+- (NSArray *)enabledRemoteAccounts;
 
 /*!	@brief	Determine whether the notifier only notifies while the app is in the background.
  *

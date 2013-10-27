@@ -123,10 +123,17 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 		} 
 	}
 
-	NSArray *keywords = @[@"%sender", @"%subject", @"%body", @"%account"];
-	NSArray *values = @[(sender ? : @""), (subject ? : @""), (body ? : @""), (account ? : @"")];
-	NSString *title = [titleFormat stringByReplacingKeywords:keywords withValues:values];
-	NSString *description = [descriptionFormat stringByReplacingKeywords:keywords withValues:values];
+    __block NSMutableArray *activeEnabledAccounts = [NSMutableArray array];
+    [[notifier enabledRemoteAccounts] enumerateObjectsUsingBlock:^(id enabledRemoteAccount, NSUInteger idx, BOOL *stop) {
+        if([notifier isAccountEnabled:enabledRemoteAccount])
+            [activeEnabledAccounts addObject:enabledRemoteAccount];
+    }];
+    
+    NSString *accountValue = ([activeEnabledAccounts count] > 1 ? account : @"");
+	NSArray *keywords = @[@"%sender", @"%subject", @"%body", @"(%account)", @"%account"];
+	NSArray *values = @[(sender ? : @""), (subject ? : @""), (body ? : @""), accountValue, accountValue];
+	NSString *title = [[titleFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	NSString *description = [[descriptionFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
 	ABSearchElement *personSearch = [ABPerson searchElementForProperty:kABEmailProperty
 																 label:nil

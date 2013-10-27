@@ -162,27 +162,6 @@
     [[GMSparkleController sharedController] setUpdateCheckInterval:time];
 }
 
-#pragma mark - Mail support
-
-- (NSArray *)mailboxesForAccount:(id)account
-{
-    NSMutableArray *mailboxes = [NSMutableArray array];
-    if([account respondsToSelector:@selector(allMailboxes)])
-        [mailboxes addObjectsFromArray:[account allMailboxes]];
-    
-    if([account respondsToSelector:@selector(rootMailbox)])
-        [mailboxes removeObject:[account rootMailbox]];
-    
-    return mailboxes;
-}
-
-- (NSArray *)enabledRemoteAccounts
-{
-    Class mailAccountClass = NSClassFromString(GM_MailAccount);
-    NSArray *remoteAccounts = [mailAccountClass remoteAccounts];
-   
-    return [mailAccountClass _activeAccountsFromArray:remoteAccounts];
-}
 
 #pragma mark - NSTableViewDelegate
 
@@ -192,16 +171,16 @@
 	NSInteger count = 0;
     
     if(!item)
-        count = [[self enabledRemoteAccounts] count];
+        count = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] count];
     else if([item isKindOfClass:mailAccountClass])
-        count = [[self mailboxesForAccount:item] count];
+        count = [[[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item] count];
     return count;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
     BOOL expandable = NO;
-    if([[self enabledRemoteAccounts] containsObject:item] && [self inboxOnly])
+    if([[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] containsObject:item] && [self inboxOnly])
     {
         expandable = YES;
     }
@@ -215,11 +194,11 @@
     id child = nil;
     if(!item)
     {
-        child = [[self enabledRemoteAccounts] objectAtIndex:index];
+        child = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] objectAtIndex:index];
     }
     else if([item isKindOfClass:mailAccountClass] && [self inboxOnly])
     {
-        NSArray *mailboxes = [self mailboxesForAccount:item];
+        NSArray *mailboxes = [[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item];
         child = [mailboxes objectAtIndex:index];
     }
     return child;

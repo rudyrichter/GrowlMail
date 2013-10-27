@@ -392,7 +392,7 @@ static BOOL notifierEnabled = YES;
                 if (![message isKindOfClass:Message_class])
                     GMShutDownGrowlMailAndWarn([NSString stringWithFormat:@"Message in notification was not a Message; it is %@", message]);
 
-                id mailbox = [message mailbox];
+                id mailbox = (mailboxes ? [mailboxes firstObject] : [message mailbox]);
 				if ([self inboxOnly] && ![[MailAccount_class inboxMailboxes] containsObject:mailbox])
                     return;
                 
@@ -548,9 +548,25 @@ static BOOL notifierEnabled = YES;
      }];
     
     NSArray *singularMailbox = nil;
+    __block id mailboxToSave = nil;
     if([enabledMailboxes count])
         singularMailbox = [NSArray arrayWithObject:[enabledMailboxes firstObject]];
-    if([disabledMessages count] && [singularMailbox count])
+    if(!singularMailbox)
+        [mailboxes enumerateObjectsUsingBlock:^(id mailbox, BOOL *stop) {
+            if([[mailbox account] isGmailAccount])
+            {
+                if([[mailbox labelName] isEqualToString:@"\\Inbox"])
+                {
+                    mailboxToSave = mailbox;
+                    *stop = YES;
+                }
+            }
+        }];
+    if(mailboxToSave)
+        singularMailbox = [NSArray arrayWithObject:mailboxToSave];
+    if([disabledMessages count] == 0 && [singularMailbox count])
+        [self newMessagesReceived:messages forMailboxes:singularMailbox];
+    else if([disabledMessages count] && [singularMailbox count])
         [self newMessagesReceived:disabledMessages forMailboxes:singularMailbox];
 }
 
@@ -742,6 +758,28 @@ return isEnabled;
 {
 	NSString *descriptionFormat = [self.userDefaultsController.defaults stringForKey:@"GMDescriptionFormat"];
 	return descriptionFormat ? descriptionFormat : @"%subject\n%body";
+}
+
+#pragma mark - Mail support
+
+- (NSArray *)mailboxesForAccount:(id)account
+{
+    NSMutableArray *mailboxes = [NSMutableArray array];
+    if([account respondsToSelector:@selector(allMailboxes)])
+        [mailboxes addObjectsFromArray:[account allMailboxes]];
+    
+    if([account respondsToSelector:@selector(rootMailbox)])
+        [mailboxes removeObject:[account rootMailbox]];
+    
+    return mailboxes;
+}
+
+- (NSArray *)enabledRemoteAccounts
+{
+    Class mailAccountClass = NSClassFromString(GM_MailAccount);
+    NSArray *remoteAccounts = [mailAccountClass remoteAccounts];
+    
+    return [mailAccountClass _activeAccountsFromArray:remoteAccounts];
 }
 
 #pragma mark Panic buttons

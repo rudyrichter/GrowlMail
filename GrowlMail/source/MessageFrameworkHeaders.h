@@ -58,7 +58,7 @@
 + (id)smartMailboxes;
 
 - (NSString *)uniqueId;
-
+- (BOOL)isGmailAccount;
 @property(copy) NSString *displayName;
 @end
 
@@ -70,7 +70,9 @@
 - (MFMailAccount *)account;
 @property BOOL isSmartMailbox;
 - (BOOL)isStore;
+- (BOOL)isInbox;
 - (NSString *)uuid;
+- (NSString *)labelName;
 @end
 
 @interface MFMessageStore : NSObject
