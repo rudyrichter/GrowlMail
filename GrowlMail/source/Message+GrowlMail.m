@@ -102,8 +102,10 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 	if (messageBody) 
     {
 		NSString *originalBody = nil;
-		if ([messageBody respondsToSelector:@selector(attributedString)])
-			originalBody = [[messageBody attributedString] string];
+		if ([self respondsToSelector:@selector(stringForBodyContent)])
+		{
+            originalBody = [self stringForBodyContent];
+        }
 		if (originalBody) 
         {
 			NSMutableString *transformedBody = [[[originalBody stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy] autorelease];
@@ -152,13 +154,9 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
     else 
     {
 		if ([self respondsToSelector:@selector(type)] && [self type] == MESSAGE_TYPE_NOTE) 
-        {
 			notificationName = NEW_NOTE_NOTIFICATION;
-		} 
-        else 
-        {
+        else
 			notificationName = NEW_MAIL_NOTIFICATION;
-		}
 	}
 
 	NSString *clickContext = [self messageID];

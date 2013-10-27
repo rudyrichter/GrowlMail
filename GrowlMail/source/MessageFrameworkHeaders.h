@@ -4,6 +4,7 @@
 @class MFMailbox;
 
 @interface MCMessage : NSObject
+- (NSString *)stringForBodyContent;
 - (id)messageBody;
 - (id)messageBodyIfAvailable;
 - (MFMailbox*)mailbox;
