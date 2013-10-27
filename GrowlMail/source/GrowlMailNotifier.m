@@ -166,11 +166,12 @@ static BOOL notifierEnabled = YES;
 {
 	if ([clickContext length]) 
     {
-		//Make sure we have all the methods we need.
-		Class singleMessageViewerClass = NSClassFromString(GM_SingleMessageViewer);
         Class libraryClass = NSClassFromString(GM_Library);
-        
-		if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
+        Class singleMessageViewerClass = NSClassFromString(GM_SingleMessageViewer);
+        Class messageViewerClass = NSClassFromString(@"MessageViewer");
+
+        //Make sure we have all the methods we need.
+        if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:");
 		if (!class_getInstanceMethod(singleMessageViewerClass, @selector(showAndMakeKey:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
@@ -179,16 +180,30 @@ static BOOL notifierEnabled = YES;
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
         if(!class_getClassMethod(libraryClass, @selector(messageWithMessageID:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +messageWithMessageID:");
+
         
-		id message = [libraryClass messageWithMessageID:clickContext];
-		id messageViewer = nil;
-		
-        if (class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
-            messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO expandedSelectedMailboxes:nil];
-        
-        [NSApp activateIgnoringOtherApps:YES];
-		[messageViewer showAndMakeKey:YES];
-		[libraryClass markMessageAsViewed:message viewedDate:[NSDate date]];
+        id message = [libraryClass messageWithMessageID:clickContext];
+
+        if([[self.userDefaultsController.defaults objectForKey:GMPrefMessagesRevealedInMainWindow] boolValue])
+        {
+            id mailbox = [message mailbox];
+            id messageViewer = [messageViewerClass frontmostMessageViewerWithOptions:0];
+            if(!messageViewer)
+                messageViewer = [messageViewerClass newDefaultMessageViewer];
+            
+            [NSApp activateIgnoringOtherApps:YES];
+            [messageViewer showAndMakeKey:self];
+            
+            [messageViewer revealMessage:message inMailbox:mailbox forceMailboxSelection:YES];
+        }
+        else
+        {
+            id messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO expandedSelectedMailboxes:nil];
+            
+            [NSApp activateIgnoringOtherApps:YES];
+            [messageViewer showAndMakeKey:YES];
+            [libraryClass markMessageAsViewed:message viewedDate:[NSDate date]];
+        }
 	}
 }
 

@@ -88,10 +88,12 @@
 @end
 
 @interface MessageViewer : NSResponder
+- (void)revealMessage:(id)arg1 inMailbox:(id)arg2 forceMailboxSelection:(BOOL)arg3;
++ (id)frontmostMessageViewerWithOptions:(unsigned long long)arg1;
++ (id)newDefaultMessageViewer;
+- (void)showAndMakeKey:(BOOL)arg1;
 @end
 
 @interface SingleMessageViewer : MessageViewer
 + (id)viewerForMessage:(id)arg1 hiddenCopies:(id)arg2 relatedMessages:(id)arg3 showRelatedMessages:(BOOL)arg4 showAllHeaders:(BOOL)arg5 expandedSelectedMailboxes:(id)arg6;
-- (void)showAndMakeKey:(BOOL)arg1;
 @end
-

@@ -15,6 +15,7 @@ extern NSString * const GMPrefMailAccounts;
 extern NSString * const GMPrefTitleFormat;
 extern NSString * const GMPrefGMDescriptionFormat;
 extern NSString * const GMPrefGMSummaryMode;
+extern NSString * const GMPrefMessagesRevealedInMainWindow;
 
 extern NSString * const GMDefaultTitleFormat;
 extern NSString * const GMDefaultDescriptionFormat;

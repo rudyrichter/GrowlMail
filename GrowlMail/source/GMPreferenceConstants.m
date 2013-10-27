@@ -15,6 +15,7 @@ NSString * const GMPrefMailAccounts = @"GMAccounts";
 NSString * const GMPrefTitleFormat = @"GMTitleFormat";
 NSString * const GMPrefGMDescriptionFormat = @"GMDescriptionFormat";
 NSString * const GMPrefGMSummaryMode = @"GMSummaryMode";
+NSString * const GMPrefMessagesRevealedInMainWindow = @"GMMessageRevealedInMainWindow";
 
 NSString * const GMDefaultTitleFormat = @"(%account) %sender";
 NSString * const GMDefaultDescriptionFormat = @"%subject\n%body";
