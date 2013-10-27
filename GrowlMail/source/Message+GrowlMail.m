@@ -91,8 +91,8 @@ void GMShowNotificationPart1(id self, SEL _cmd)
 void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 {
 	NSString *account = (NSString *)[[[self mailbox] account] displayName];
+	NSString *senderAddress = [self senderIfAvailable];
 	NSString *sender = [self senderDisplayName];
-	NSString *senderAddress = [self sender];
 	NSString *subject = (NSString *)[self subject];
 	NSString *body = @"";
 	GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];

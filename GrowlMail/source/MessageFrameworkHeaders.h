@@ -9,6 +9,7 @@
 - (id)messageBodyIfAvailable;
 - (MFMailbox*)mailbox;
 - (NSString *)sender;
+- (NSString *)senderIfAvailable;
 - (NSString *)senderDisplayName;
 - (NSString *)subject;
 - (BOOL)isJunk;
