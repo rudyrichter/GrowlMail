@@ -93,6 +93,8 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 	NSString *account = (NSString *)[[[self mailbox] account] displayName];
 	NSString *senderAddress = [self senderIfAvailable];
 	NSString *sender = [self senderDisplayName];
+    NSArray *receivers = [self to];
+    NSString *receiver = ([receivers count] ? [receivers componentsJoinedByString:@", "] : account);
 	NSString *subject = (NSString *)[self subject];
 	NSString *body = @"";
 	GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];
@@ -130,8 +132,8 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
     }];
     
     NSString *accountValue = ([activeEnabledAccounts count] > 1 ? account : @"");
-	NSArray *keywords = @[@"%sender", @"%subject", @"%body", @"(%account)", @"%account"];
-	NSArray *values = @[(sender ? : @""), (subject ? : @""), (body ? : @""), accountValue, accountValue];
+	NSArray *keywords = @[@"%sender", @"%receiver", @"%subject", @"%body", @"(%account)", @"%account"];
+	NSArray *values = @[(sender ? : @""), (receiver ? : @""), (subject ? : @""), (body ? : @""), accountValue, accountValue];
 	NSString *title = [[titleFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	NSString *description = [[descriptionFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 

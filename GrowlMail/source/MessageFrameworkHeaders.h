@@ -11,6 +11,7 @@
 - (NSString *)sender;
 - (NSString *)senderIfAvailable;
 - (NSString *)senderDisplayName;
+- (NSArray *)to;
 - (NSString *)subject;
 - (BOOL)isJunk;
 - (id)messageID;
