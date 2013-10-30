@@ -733,7 +733,7 @@
 						<key>IC_REQUIREMENT_OS_DISTRIBUTION_TYPE</key>
 						<integer>0</integer>
 						<key>IC_REQUIREMENT_OS_MINIMUM_VERSION</key>
-						<integer>100700</integer>
+						<integer>100900</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>0</integer>
@@ -745,7 +745,7 @@
 							<key>LANGUAGE</key>
 							<string>English</string>
 							<key>SECONDARY_VALUE</key>
-							<string>This Installer package requires Mac OS X 10.7 or later.</string>
+							<string>This Installer package requires Mac OS X 10.9 or later.</string>
 							<key>VALUE</key>
 							<string>Your version of Mac OS X is too old</string>
 						</dict>
