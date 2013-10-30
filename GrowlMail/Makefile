@@ -1,7 +1,7 @@
 # Makefile for installing GrowlMail
 #
 # - Build GrowlMail
-# - Possibly move old GrowlMail to teh Trash
+# - Possibly move old GrowlMail to the Trash
 # - Install new GrowlMail
 # - Enable the plugin in Mail.
 # - Relaunch Mail.
@@ -9,7 +9,7 @@
 name = GrowlMail
 
 # The build style
-# Possible values are Development and Deployment
+# Possible values are Debug and Release
 BUILDCONFIGURATION?=Release
 
 all: $(name)

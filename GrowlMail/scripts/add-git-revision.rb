@@ -27,8 +27,12 @@ def main
 	path = ARGV[0]
     configuration = ENV['CONFIGURATION']
 
-    if configuration == 'Release' && git_clean()
-        add_git_hash(path, git_hash())
+    if configuration == 'Release'
+        if(git_clean())
+            add_git_hash(path, git_hash())
+        else
+            raise "working directory is not clean"
+        end
     end
 end
 
