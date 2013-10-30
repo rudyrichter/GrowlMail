@@ -6,7 +6,7 @@ require File.dirname(__FILE__) +'/plist-buddy.rb'
 
 def git_clean
     clean = %x{git status --porcelain}
-    return !clean
+    return clean.length == 0
 end
 
 def git_hash
