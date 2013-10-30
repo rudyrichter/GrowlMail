@@ -4,6 +4,11 @@ require 'fileutils'
 require 'getoptlong'
 require File.dirname(__FILE__) +'/plist-buddy.rb'
 
+def git_clean
+    clean = %x{git status --porcelain}
+    return !clean
+end
+
 def git_hash
     hash = %x{git rev-parse HEAD};
     return hash
@@ -16,13 +21,15 @@ def add_git_hash(app_base, hash)
     #get the app's bundle id, this will be our base ID
     plist = PlistBuddy.new(info_path)
     plist['BRCommitHash'] = hash
-
 end
 
 def main
 	path = ARGV[0]
+    configuration = ENV['CONFIGURATION']
 
-    add_git_hash(path, git_hash())
+    if configuration == 'Release' && git_clean()
+        add_git_hash(path, git_hash())
+    end
 end
 
 if __FILE__ == $0
