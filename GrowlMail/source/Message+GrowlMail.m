@@ -170,7 +170,7 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 
 	NSString *clickContext = [self messageID];
 
-	[GrowlApplicationBridge notifyWithTitle:title
+	[NSClassFromString(@"GrowlApplicationBridge") notifyWithTitle:title
 								description:description
 						   notificationName:notificationName
 								   iconData:image

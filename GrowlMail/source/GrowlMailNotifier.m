@@ -56,7 +56,7 @@ static BOOL notifierEnabled = YES;
 - (void) shutDownGrowlMail 
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[GrowlApplicationBridge setGrowlDelegate:nil];
+	[NSClassFromString(@"GrowlApplicationBridge") setGrowlDelegate:nil];
 }
 
 #pragma mark The circle of life
@@ -103,7 +103,7 @@ static BOOL notifierEnabled = YES;
         self.userDefaultsController = [[[NSUserDefaultsController alloc] initWithDefaults:defaults initialValues:defaultsDictionary] autorelease];
         [self.userDefaultsController setAppliesImmediately:YES];
         
-		[GrowlApplicationBridge setGrowlDelegate:self];
+		[NSClassFromString(@"GrowlApplicationBridge") setGrowlDelegate:self];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(messageStoreDidAddMessages:)
@@ -449,7 +449,7 @@ static BOOL notifierEnabled = YES;
                         {
                             description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n %u new mails", NULL, GMGetGrowlMailBundle(), "%@ is an account name; %u becomes a number"), [account displayName], summaryCount];
                         }
-                        [GrowlApplicationBridge notifyWithTitle:title
+                        [NSClassFromString(@"GrowlApplicationBridge") notifyWithTitle:title
                                                     description:description
                                                notificationName:NEW_MAIL_NOTIFICATION
                                                        iconData:nil
@@ -473,7 +473,7 @@ static BOOL notifierEnabled = YES;
                         } else {
                             description = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ \n %u new mails", NULL, GMGetGrowlMailBundle(), "%@ is an account name; %u becomes a number"), [account displayName], summaryCount];
                         }
-                        [GrowlApplicationBridge notifyWithTitle:titleJunk
+                        [NSClassFromString(@"GrowlApplicationBridge") notifyWithTitle:titleJunk
                                                     description:description
                                                notificationName:NEW_JUNK_MAIL_NOTIFICATION
                                                        iconData:nil
