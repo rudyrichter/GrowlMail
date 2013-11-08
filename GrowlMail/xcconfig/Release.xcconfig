@@ -5,7 +5,7 @@
 #include "Common.xcconfig"
 
 //code signing
-CODE_SIGN_IDENTITY = Developer ID Application
+CODE_SIGN_IDENTITY = Developer ID Application: Rudolf Richter (YE543XD26W)
 
 //compiler settings
 GCC_OPTIMIZATION_LEVEL = s
