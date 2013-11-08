@@ -46,6 +46,16 @@ static GrowlMailNotifier *sharedNotifier = nil;
 static BOOL notifierEnabled = YES;
 
 @interface GrowlMailNotifier ()
+
+@property (nonatomic, retain) NSMutableArray *recentNotifications;
+@property (nonatomic) BOOL shouldNotify;
+
+@property (nonatomic, retain) id messageStoreAddedMessages;
+@property (nonatomic, retain) id gmailLabelsSet;
+@property (nonatomic, retain) id mailFetchFinished;
+@property (nonatomic, retain) id monitoredActivityStarted;
+@property (nonatomic, retain) id monitoredActivityFinished;
+
 @end
 
 @implementation GrowlMailNotifier
@@ -105,30 +115,29 @@ static BOOL notifierEnabled = YES;
         
 		[NSClassFromString(@"GrowlApplicationBridge") setGrowlDelegate:self];
 
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(messageStoreDidAddMessages:)
-													 name:@"MessageStoreMessagesAdded"
-												   object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(gmailLabelsSet:)			 name:@"LibraryMessagesGmailLabelsChangedNotification"
-												   object:nil];
+        self.messageStoreAddedMessages = [[NSNotificationCenter defaultCenter] addObserverForName:@"MessageStoreMessagesAdded" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self messageStoreDidAddMessages:note];
+        }];
+        self.gmailLabelsSet = [[NSNotificationCenter defaultCenter] addObserverForName:@"LibraryMessagesGmailLabelsChangedNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self gmailLabelsSet:note];
+        }];
+        self.mailFetchFinished = [[NSNotificationCenter defaultCenter] addObserverForName:@"MailAccountFetchCompleted" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [_recentNotifications removeAllObjects];
+        }];
+        self.monitoredActivityStarted = [[NSNotificationCenter defaultCenter] addObserverForName:@"MonitoredActivityStarted" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self monitoredActivityStarted:note];
+        }];
+        self.monitoredActivityFinished = [[NSNotificationCenter defaultCenter] addObserverForName:@"MonitoredActivityEnded" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self monitoredActivityEnded:note];
+        }];
         
-        
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(monitoredActivityStarted:)
-													 name:@"MonitoredActivityStarted_inMainThread_"
-												   object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(monitoredActivityEnded:)
-													 name:@"MonitoredActivityEnded_inMainThread_"
-												   object:nil];
 		//If the user wants to they can disable notifications for when Mail.app is in the foreground
 		
-		shouldNotify = YES;
+		_shouldNotify = YES;
 		if([self isBackgroundOnlyEnabled])
-			shouldNotify = ![NSApp isActive];
+			_shouldNotify = ![NSApp isActive];
 		[self configureForBackgroundOnly:[self isBackgroundOnlyEnabled]];
-
+        self.recentNotifications = [NSMutableArray array];
 #ifdef GROWL_MAIL_DEBUG
 		//[self informationSpew];
 //        [[NSNotificationCenter defaultCenter] addObserver:self
@@ -143,8 +152,27 @@ static BOOL notifierEnabled = YES;
 - (void) dealloc 
 {
 	[self shutDownGrowlMail];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[sharedNotifier release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self.messageStoreAddedMessages];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.gmailLabelsSet];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.mailFetchFinished];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.monitoredActivityStarted];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.monitoredActivityFinished];
+
+    [_messageStoreAddedMessages release];
+    _messageStoreAddedMessages = nil;
+    [_gmailLabelsSet release];
+    _gmailLabelsSet = nil;
+    [_mailFetchFinished release];
+    _mailFetchFinished = nil;
+    [_monitoredActivityStarted release];
+    _monitoredActivityStarted = nil;
+    [_monitoredActivityFinished release];
+    _monitoredActivityFinished = nil;
+    
+	[_recentNotifications release];
+    _recentNotifications = nil;
+    [sharedNotifier release];
 	sharedNotifier = nil;
 
 	[super dealloc];
@@ -282,7 +310,7 @@ static BOOL notifierEnabled = YES;
 	if (![self isEnabled])
         return;
     
-	if(!shouldNotify && [self isBackgroundOnlyEnabled])
+	if(!_shouldNotify && [self isBackgroundOnlyEnabled])
         return;
     
 	if (messageCopies)
@@ -365,7 +393,7 @@ static BOOL notifierEnabled = YES;
 
 - (void)newMessagesReceived:(NSArray *)messages forMailboxes:(NSArray *)mailboxes
 {
-	NSUInteger count = [messages count];
+    NSUInteger count = [messages count];
     Class MailAccount_class = NSClassFromString(GM_MailAccount);
 	Class Message_class = NSClassFromString(GM_Message);
 	GrowlMailSummaryMode summaryMode = [self summaryMode];
@@ -398,7 +426,26 @@ static BOOL notifierEnabled = YES;
                 
                 if (![message respondsToSelector:@selector(isRead)] || ![message isRead])
                 {
-                    [[self class] showNotificationForMessage:message];
+                    BOOL shouldNotify = YES;
+                    if([message respondsToSelector:@selector(messageID)])
+                    {
+                        id messageID = [message messageID];
+                        if(![self.recentNotifications containsObject:messageID])
+                        {
+                            [self.recentNotifications addObject:messageID];
+                        }
+                        else
+                        {
+                            shouldNotify = NO;
+                        }
+                        
+                    }
+                    
+                    if(shouldNotify)
+                    {
+                        [[self class] showNotificationForMessage:message];
+                    }
+                    
                 }
             }];
 			break;
@@ -611,13 +658,13 @@ static BOOL notifierEnabled = YES;
 - (void) backgroundOnlyActivate:(NSNotification*)sender 
 {
 #pragma unused(sender)
-	shouldNotify = NO;
+	_shouldNotify = NO;
 }
 
 - (void) backgroundOnlyResign:(NSNotification*)sender 
 {
 #pragma unused(sender)
-	shouldNotify = YES;
+	_shouldNotify = YES;
 }
 
 #pragma mark Preferences

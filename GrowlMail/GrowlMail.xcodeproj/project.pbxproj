@@ -487,8 +487,13 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GM;
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Rudy Richter";
+				TargetAttributes = {
+					8D5B49AC048680CD000E48DA = {
+						DevelopmentTeam = YE543XD26W;
+					};
+				};
 			};
 			buildConfigurationList = 95E4A3630855C16F006B3F45 /* Build configuration list for PBXProject "GrowlMail" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -788,7 +793,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -799,6 +803,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Localization;
 		};
@@ -833,7 +838,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -844,6 +848,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -851,7 +856,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -862,12 +866,14 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
 		95E4A3640855C16F006B3F45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};

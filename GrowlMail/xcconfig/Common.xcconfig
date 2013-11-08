@@ -11,6 +11,9 @@ BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
 
+//code signing
+CODE_SIGN_IDENTITY = Mac Developer
+
 //product settings
 PRODUCT_NAME = $(BR_PRODUCT_NAME)
 PRODUCT_VERSION = $(BR_BUNDLE_VERSION)

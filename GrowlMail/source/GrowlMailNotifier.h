@@ -58,9 +58,6 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
  *	This is a singleton object because the current Growl API can only handle one delegate at a time.
  */
 @interface GrowlMailNotifier : NSObject <GrowlApplicationBridgeDelegate>
-{
-	BOOL shouldNotify;
-}
 
 /*!	@brief	Return the One True \c GrowlMailNotifier Instance, creating it if necessary.
  */

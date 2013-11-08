@@ -24,7 +24,7 @@
 	<string>GrowlMail</string>
 	<key>SupportedPluginCompatibilityUUIDs</key>
 	<array>
-		<string>0941BB9F-231F-452D-A26F-47A43863C991</string>
+		<string>FBE5B158-5602-4A6D-9CC5-8461B9B7054E</string>
 	</array>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>

@@ -4,6 +4,9 @@
 
 #include "Common.xcconfig"
 
+//code signing
+CODE_SIGN_IDENTITY = Developer ID Application
+
 //compiler settings
 GCC_OPTIMIZATION_LEVEL = s
 GCC_PREPROCESSOR_DEFINITIONS = NDEBUG NS_BLOCK_ASSERTIONS
