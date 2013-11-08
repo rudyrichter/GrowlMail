@@ -6,7 +6,6 @@
 
 //code signing
 CODE_SIGN_IDENTITY = Developer ID Application
-PROVISIONING_PROFILE =
 
 //compiler settings
 GCC_OPTIMIZATION_LEVEL = s

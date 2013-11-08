@@ -801,7 +801,6 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Localization;
 		};
@@ -846,7 +845,6 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -864,7 +862,6 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
