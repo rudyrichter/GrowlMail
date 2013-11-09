@@ -17,9 +17,7 @@ chown -R $USER ~/Library/Mail/Bundles
 ######
 macosx_minor_version=$(sw_vers | /usr/bin/sed -Ene 's/.*[[:space:]]10\.([0-9][0-9]*)\.*[0-9]*/\1/p;')
 bundle_compatibility_version=4
-if [[ "$macosx_minor_version" -eq 7 ]]; then
-    domain=com.apple.mail
-elif [[ "$macosx_minor_version" -eq 8 ]]; then
+if [[ "$macosx_minor_version" -eq 9 ]]; then
     domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
 else
     echo 'Unrecognized Mac OS X version!' > /dev/stderr
