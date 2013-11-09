@@ -162,10 +162,7 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 	} 
     else 
     {
-		if ([self respondsToSelector:@selector(type)] && [self type] == MESSAGE_TYPE_NOTE) 
-			notificationName = NEW_NOTE_NOTIFICATION;
-        else
-			notificationName = NEW_MAIL_NOTIFICATION;
+        notificationName = NEW_MAIL_NOTIFICATION;
 	}
 
 	NSString *clickContext = [self messageID];

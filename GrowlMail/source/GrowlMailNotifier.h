@@ -32,7 +32,6 @@
 
 #define NEW_MAIL_NOTIFICATION		@"New mail"
 #define NEW_JUNK_MAIL_NOTIFICATION	@"New junk mail"
-#define NEW_NOTE_NOTIFICATION		@"New note"
 
 /*!	@brief	Summary mode constants
  *

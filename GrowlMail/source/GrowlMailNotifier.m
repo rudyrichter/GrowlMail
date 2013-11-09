@@ -241,12 +241,10 @@ static BOOL notifierEnabled = YES;
 	NSArray *allowedNotifications = [NSArray arrayWithObjects:
 		NEW_MAIL_NOTIFICATION,
 		NEW_JUNK_MAIL_NOTIFICATION,
-		NEW_NOTE_NOTIFICATION,
 		nil];
 	NSDictionary *humanReadableNames = [NSDictionary dictionaryWithObjectsAndKeys:
 										NSLocalizedStringFromTableInBundle(@"New mail", nil, GMGetGrowlMailBundle(), ""), NEW_MAIL_NOTIFICATION,
 										NSLocalizedStringFromTableInBundle(@"New junk mail", nil, GMGetGrowlMailBundle(), ""), NEW_JUNK_MAIL_NOTIFICATION,
-										NSLocalizedStringFromTableInBundle(@"New note", nil, GMGetGrowlMailBundle(), ""), NEW_NOTE_NOTIFICATION,
 										nil];
 	NSArray *defaultNotifications = [NSArray arrayWithObject:NEW_MAIL_NOTIFICATION];
 
