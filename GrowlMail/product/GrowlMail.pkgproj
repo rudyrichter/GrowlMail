@@ -783,7 +783,7 @@
 				<key>NAME</key>
 				<string>Developer ID Installer: Rudolf Richter (YE543XD26W)</string>
 				<key>PATH</key>
-				<string>/Users/rudy/Library/Keychains/login.keychain</string>
+				<string>/Users/rudy/Library/Keychains/personal.keychain</string>
 			</dict>
 			<key>EXCLUDED_FILES</key>
 			<array>
