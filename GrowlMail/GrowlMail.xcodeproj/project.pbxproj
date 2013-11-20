@@ -842,7 +842,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer: Rudy Richter (J7CU2797M8)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

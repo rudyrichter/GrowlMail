@@ -84,7 +84,7 @@
 
 - (NSString*)version
 {
-    return [GMGetGrowlMailBundle() objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
+    return [NSString stringWithFormat:@"%@[%@]", [GMGetGrowlMailBundle() objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey], ([GMGetGrowlMailBundle() objectForInfoDictionaryKey:@"BRCommitHash"]?:@"Local Changes")];
 }
 
 - (id) viewForPreferenceNamed:(NSString *)aName
