@@ -694,7 +694,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$SRCROOT/scripts/resign-binaries.rb \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" --signing-identity \"Mac Developer: Rudy Richter (J7CU2797M8)\"";
+			shellScript = "$SRCROOT/scripts/resign-binaries.rb \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" --signing-identity \"Developer ID Application: Rudolf Richter (YE543XD26W)\"";
 		};
 		935AC2DB1024C1C700BFD7F2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
