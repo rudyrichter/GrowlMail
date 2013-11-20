@@ -42,12 +42,11 @@
 		934F4E6410284FD400B9DDC4 /* GrowlMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7E5EA306B6AC1700137892 /* GrowlMail.m */; };
 		934F4E6510284FD400B9DDC4 /* GrowlMailNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 31D72A860FB6DE5800C29D55 /* GrowlMailNotifier.m */; };
 		93583EA4181207A00091ACC0 /* NSString+GrowlMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 93583EA3181207A00091ACC0 /* NSString+GrowlMail.m */; };
-		93648E751821403800FB50D4 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712B713FF674C0025D733 /* Growl.framework */; };
 		939A74271627AD5F00AF72FB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 939A74251627AD5F00AF72FB /* Localizable.strings */; };
 		939A742A1627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 939A74281627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib */; };
+		93B885BE183C580600CCC368 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93B885BC183C57F400CCC368 /* Growl.framework */; };
 		93D7D840144218B700BFCFB6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83A144218B700BFCFB6 /* InfoPlist.strings */; };
 		93D7D8441442237300BFCFB6 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D8431442237300BFCFB6 /* dsa_pub.pem */; };
-		93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		93D7D848144233C500BFCFB6 /* GMSparkleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D7D847144233C500BFCFB6 /* GMSparkleController.m */; };
 		93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; };
 		953EE18E082CC7420040C586 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 953EE18D082CC7420040C586 /* AddressBook.framework */; };
@@ -112,8 +111,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				93B885BE183C580600CCC368 /* Growl.framework in CopyFiles */,
 				93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */,
-				93648E751821403800FB50D4 /* Growl.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,12 +200,12 @@
 		93947E8613C8D04900E29642 /* Common.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Common.xcconfig; path = xcconfig/Common.xcconfig; sourceTree = SOURCE_ROOT; };
 		939A74261627AD5F00AF72FB /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		939A74291627B0AC00AF72FB /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = resources/en.lproj/GrowlMailPreferencesPanel.xib; sourceTree = "<group>"; };
+		93B885BC183C57F400CCC368 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = externals/Growl/Release/Growl.framework; sourceTree = "<group>"; };
 		93D7D83B144218B700BFCFB6 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		93D7D8431442237300BFCFB6 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		93D7D846144233C500BFCFB6 /* GMSparkleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GMSparkleController.h; path = source/GMSparkleController.h; sourceTree = "<group>"; };
 		93D7D847144233C500BFCFB6 /* GMSparkleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GMSparkleController.m; path = source/GMSparkleController.m; sourceTree = "<group>"; };
 		93E7129C13FF66620025D733 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = externals/Sparkle/Sparkle.xcodeproj; sourceTree = "<group>"; };
-		93E712B713FF674C0025D733 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = externals/Growl/Release/Growl.framework; sourceTree = "<group>"; };
 		953EE18D082CC7420040C586 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		9550E79F077A207E00436674 /* GrowlMail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GrowlMail.png; path = resources/GrowlMail.png; sourceTree = "<group>"; };
 		9553469C0732BD4800D12875 /* GrowlMailPreferencesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GrowlMailPreferencesModule.h; path = source/GrowlMailPreferencesModule.h; sourceTree = "<group>"; };
@@ -226,7 +225,6 @@
 			files = (
 				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
 				953EE18E082CC7420040C586 /* AddressBook.framework in Frameworks */,
-				93D7D845144227FB00BFCFB6 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,11 +234,7 @@
 		089C166AFE841209C02AAC07 /* MailGrowl */ = {
 			isa = PBXGroup;
 			children = (
-				93583EA718120BEB0091ACC0 /* Mail.dump */,
-				93583EA818120BEB0091ACC0 /* MailCoreFramework.dump */,
-				93583EA918120BEC0091ACC0 /* MailFramework.dump */,
-				93583EAA18120BEC0091ACC0 /* MailServiceFramework.dump */,
-				93583EAB18120BEC0091ACC0 /* MailUIFramework.dump */,
+				93B885BF183C590900CCC368 /* API Dumps */,
 				93947E8213C8D03A00E29642 /* xcconfigs */,
 				934542E5181C869B005CA166 /* scripts */,
 				93E7129A13FF66560025D733 /* externals */,
@@ -418,11 +412,23 @@
 			name = Core;
 			sourceTree = "<group>";
 		};
+		93B885BF183C590900CCC368 /* API Dumps */ = {
+			isa = PBXGroup;
+			children = (
+				93583EA718120BEB0091ACC0 /* Mail.dump */,
+				93583EA818120BEB0091ACC0 /* MailCoreFramework.dump */,
+				93583EA918120BEC0091ACC0 /* MailFramework.dump */,
+				93583EAA18120BEC0091ACC0 /* MailServiceFramework.dump */,
+				93583EAB18120BEC0091ACC0 /* MailUIFramework.dump */,
+			);
+			name = "API Dumps";
+			sourceTree = "<group>";
+		};
 		93E7129A13FF66560025D733 /* externals */ = {
 			isa = PBXGroup;
 			children = (
+				93B885BC183C57F400CCC368 /* Growl.framework */,
 				934542C918161D80005CA166 /* MAObjCRuntime */,
-				93E712B713FF674C0025D733 /* Growl.framework */,
 				93E7129C13FF66620025D733 /* Sparkle.xcodeproj */,
 			);
 			name = externals;
@@ -465,8 +471,8 @@
 				935AC2DB1024C1C700BFD7F2 /* ShellScript */,
 				310EE298107661310070CD78 /* Set Bundle Bit */,
 				310BAD8D1078272800741E3D /* Set Custom Icon */,
-				939A743B1627B69000AF72FB /* install */,
 				934542E4181C8624005CA166 /* Resign Recursively */,
+				939A743B1627B69000AF72FB /* install */,
 			);
 			buildRules = (
 			);
@@ -688,7 +694,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$SRCROOT/scripts/resign-binaries.rb \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" --signing-identity \"Developer ID\"";
+			shellScript = "$SRCROOT/scripts/resign-binaries.rb \"$BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\" --signing-identity \"Mac Developer: Rudy Richter (J7CU2797M8)\"";
 		};
 		935AC2DB1024C1C700BFD7F2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -795,13 +801,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+					$SRCROOT/externals/Growl/Release,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Localization;
 		};
@@ -836,17 +842,18 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer: Rudy Richter (J7CU2797M8)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+					$SRCROOT/externals/Growl/Release,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -858,13 +865,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+					$SRCROOT/externals/Growl/Release,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
