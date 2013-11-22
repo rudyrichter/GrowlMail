@@ -41,7 +41,6 @@
 #define	MAX_NOTIFICATION_THREADS	5
 
 static int activeNotificationThreads = 0;
-static int messageCopies = 0;
 static GrowlMailNotifier *sharedNotifier = nil;
 static BOOL notifierEnabled = YES;
 
@@ -50,11 +49,7 @@ static BOOL notifierEnabled = YES;
 @property (nonatomic, retain) NSMutableArray *recentNotifications;
 @property (nonatomic) BOOL shouldNotify;
 
-@property (nonatomic, retain) id messageStoreAddedMessages;
-@property (nonatomic, retain) id gmailLabelsSet;
 @property (nonatomic, retain) id mailFetchFinished;
-@property (nonatomic, retain) id monitoredActivityStarted;
-@property (nonatomic, retain) id monitoredActivityFinished;
 
 @end
 
@@ -115,20 +110,11 @@ static BOOL notifierEnabled = YES;
         
 		[NSClassFromString(@"GrowlApplicationBridge") setGrowlDelegate:self];
 
-        self.messageStoreAddedMessages = [[NSNotificationCenter defaultCenter] addObserverForName:@"MessageStoreMessagesAdded" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self messageStoreDidAddMessages:note];
-        }];
-        self.gmailLabelsSet = [[NSNotificationCenter defaultCenter] addObserverForName:@"LibraryMessagesGmailLabelsChangedNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self gmailLabelsSet:note];
-        }];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageStoreDidAddMessages:) name:@"MessageStoreMessagesAdded" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gmailLabelsSet:) name:@"LibraryMessagesGmailLabelsChangedNotification" object:nil];
+        
         self.mailFetchFinished = [[NSNotificationCenter defaultCenter] addObserverForName:@"MailAccountFetchCompleted" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             [_recentNotifications removeAllObjects];
-        }];
-        self.monitoredActivityStarted = [[NSNotificationCenter defaultCenter] addObserverForName:@"MonitoredActivityStarted" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self monitoredActivityStarted:note];
-        }];
-        self.monitoredActivityFinished = [[NSNotificationCenter defaultCenter] addObserverForName:@"MonitoredActivityEnded" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self monitoredActivityEnded:note];
         }];
         
 		//If the user wants to they can disable notifications for when Mail.app is in the foreground
@@ -153,22 +139,11 @@ static BOOL notifierEnabled = YES;
 {
 	[self shutDownGrowlMail];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self.messageStoreAddedMessages];
-    [[NSNotificationCenter defaultCenter] removeObserver:self.gmailLabelsSet];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self.mailFetchFinished];
-    [[NSNotificationCenter defaultCenter] removeObserver:self.monitoredActivityStarted];
-    [[NSNotificationCenter defaultCenter] removeObserver:self.monitoredActivityFinished];
 
-    [_messageStoreAddedMessages release];
-    _messageStoreAddedMessages = nil;
-    [_gmailLabelsSet release];
-    _gmailLabelsSet = nil;
     [_mailFetchFinished release];
     _mailFetchFinished = nil;
-    [_monitoredActivityStarted release];
-    _monitoredActivityStarted = nil;
-    [_monitoredActivityFinished release];
-    _monitoredActivityFinished = nil;
     
 	[_recentNotifications release];
     _recentNotifications = nil;
@@ -310,14 +285,6 @@ static BOOL notifierEnabled = YES;
     
 	if(!_shouldNotify && [self isBackgroundOnlyEnabled])
         return;
-    
-	if (messageCopies)
-    {
-#ifdef GROWL_MAIL_DEBUG
-		NSLog(@"Ignoring because %i message copies are in process", messageCopies);
-#endif
-		return;
-	}
     
 	id store = [notification object];
 	if (!store)
@@ -622,32 +589,6 @@ static BOOL notifierEnabled = YES;
 		([[notification name] rangeOfString:@"_NSThread"].location == NSNotFound)) 
     {
 		NSLog(@"%@", notification);
-	}
-}
-
-- (void)monitoredActivityStarted:(NSNotification *)notification
-{
-	if ([[[notification object] description] isEqualToString:@"Copying messages"]) 
-    {
-		messageCopies++;
-#ifdef GROWL_MAIL_DEBUG
-		NSLog(@"Copying a message: messageCopies is now %i", messageCopies);
-#endif
-		if (messageCopies <= 0)
-			GMShutDownGrowlMailAndWarn(@"Number of message-copying operations overflowed. How on earth did you accomplish starting more than 2 billion copying operations at a time?!");
-	}
-}
-
-- (void)monitoredActivityEnded:(NSNotification *)notification
-{
-	if ([[[notification object] description] isEqualToString:@"Copying messages"]) 
-    {
-		if (messageCopies <= 0)
-			GMShutDownGrowlMailAndWarn(@"Number of message-copying operations went below 0. It is not possible to have a negative number of copying operations!");
-		messageCopies--;
-#ifdef GROWL_MAIL_DEBUG
-		NSLog(@"Finished copying a message: messageCopies is now %i", messageCopies);
-#endif
 	}
 }
 
