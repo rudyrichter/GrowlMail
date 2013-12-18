@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2013, Rudy Richter. All rights reserved.
 //
 
-BR_BUNDLE_VERSION = 1.4.0b1
+BR_BUNDLE_VERSION = 1.4.0b2
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
@@ -19,6 +19,8 @@ PRODUCT_NAME = $(BR_PRODUCT_NAME)
 PRODUCT_VERSION = $(BR_BUNDLE_VERSION)
 WRAPPER_EXTENSION = mailbundle
 INSTALL_PATH = $(HOME)/Library/Mail/Bundles
+LD_RUNPATH_SEARCH_PATHS = @loader_path/../Frameworks
+
 INFOPLIST_FILE = resources/Info.plist
 
 //compiler settings

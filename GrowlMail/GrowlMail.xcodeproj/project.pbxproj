@@ -707,7 +707,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ruby $SRCROOT/scripts/process-install-name.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\nruby $SRCROOT/scripts/prune-languages.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME --valid-languages en\nruby $SRCROOT/scripts/prune-headers.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\nruby $SRCROOT/scripts/add-git-revision.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME";
+			shellScript = "ruby $SRCROOT/scripts/prune-languages.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME --valid-languages en\nruby $SRCROOT/scripts/prune-headers.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME\nruby $SRCROOT/scripts/add-git-revision.rb $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME";
 			showEnvVarsInLog = 0;
 		};
 		939A743B1627B69000AF72FB /* install */ = {
