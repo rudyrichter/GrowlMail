@@ -218,9 +218,9 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
             [dict setValue:[NSMutableArray array] forKey:@"SupportedPluginCompatibilityUUIDs"];
             UUIDs = [dict objectForKey:@"SupportedPluginCompatibilityUUIDs"];
         }
-        if (![UUIDs containsObject:mailUUID])
+        if (mailUUID && ![UUIDs containsObject:mailUUID])
 			[UUIDs addObject:mailUUID];
-		if (![UUIDs containsObject:messageFrameworkUUID])
+		if (messageFrameworkUUID && ![UUIDs containsObject:messageFrameworkUUID])
 			[UUIDs addObject:messageFrameworkUUID];
 
 		NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict

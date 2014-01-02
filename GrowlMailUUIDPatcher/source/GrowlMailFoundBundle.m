@@ -33,7 +33,7 @@
 	NSURL *infoPlistURL = [[URL URLByAppendingPathComponent:@"Contents"] URLByAppendingPathComponent:@"Info.plist"];
 	NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfURL:infoPlistURL];
 	NSArray *compatibilityUUIDs = [infoPlist objectForKey:@"SupportedPluginCompatibilityUUIDs"];
-	return [compatibilityUUIDs containsObject:GMCurrentMailCompatibilityUUID()] && [compatibilityUUIDs containsObject:GMCurrentMessageFrameworkCompatibilityUUID()];
+	return [compatibilityUUIDs containsObject:GMCurrentMailCompatibilityUUID()];//&& [compatibilityUUIDs containsObject:GMCurrentMessageFrameworkCompatibilityUUID()];
 }
 
 - (NSString *) bundleVersion {
