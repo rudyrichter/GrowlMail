@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+
 =begin
  Copyright (c) 2011-2014, Rudy Richter.
  All rights reserved.
