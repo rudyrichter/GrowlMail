@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 =begin
- Copyright (c) 2011-2013, Rudy Richter.
+ Copyright (c) 2011-2014, Rudy Richter.
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification,

@@ -3,7 +3,7 @@
 //  GrowlMail
 //
 //  Created by rudy on 10/26/13.
-//  Copyright (c) 2013 Rudy Richter. All rights reserved.
+//  Copyright (c) 2013-2014 Rudy Richter. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
