@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2014, Rudy Richter. All rights reserved.
 //
 
-BR_BUNDLE_VERSION = 1.4.0b2
+BR_BUNDLE_VERSION = 1.4.0b3
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
@@ -49,7 +49,6 @@ VALID_ARCHS = x86_64
 // -- no-format-nonliteral is /required/ for our CF extensions to compile with -Wall -Werror -Wformat enabled.
 //    If it is not there, all NSLog(CFSTR()) calls in .c files will generate an error. :(
 WARNING_CFLAGS = -W -Wall -Wpointer-arith -Wformat=2 -Wfloat-equal -Wno-unused-parameter -Wno-format-nonliteral
-
 GCC_WARN_SIGN_COMPARE = YES
 GCC_ENABLE_FIX_AND_CONTINUE = NO
 GCC_WARN_64_TO_32_BIT_CONVERSION = YES
