@@ -102,13 +102,13 @@ typedef void(^GrowlNoteStatusUpdateBlock)(GrowlNoteStatus status, GrowlNote *not
  * @property (nonatomic, assign) BOOL sticky;
  * @property (nonatomic, assign) NSInteger priority;
  */
-@property (nonatomic, retain) NSString *noteName;
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *description;
-@property (nonatomic, retain) NSData *iconData;
-@property (nonatomic, retain) id clickContext;
-@property (nonatomic, retain) NSURL *clickCallbackURL;
-@property (nonatomic, retain) NSString *overwriteIdentifier;
+@property (nonatomic, copy) NSString *noteName;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *description;
+@property (nonatomic, copy) NSData *iconData;
+@property (nonatomic, copy) id clickContext;
+@property (nonatomic, copy) NSURL *clickCallbackURL;
+@property (nonatomic, copy) NSString *overwriteIdentifier;
 @property (nonatomic, assign) BOOL sticky;
 @property (nonatomic, assign) NSInteger priority;
 

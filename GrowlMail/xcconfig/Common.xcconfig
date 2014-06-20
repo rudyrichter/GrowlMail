@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2014, Rudy Richter. All rights reserved.
 //
 
-BR_BUNDLE_VERSION = 1.4.0b5
+BR_BUNDLE_VERSION = 1.4.0b6
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
