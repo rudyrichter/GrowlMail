@@ -144,17 +144,16 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
 															comparison:kABEqualCaseInsensitive];
 
 	NSArray *matchArray = [[ABAddressBook sharedAddressBook] recordsMatchingSearchElement:personSearch];
-    __block NSData *image = nil;
-    [matchArray enumerateObjectsUsingBlock:^(ABPerson *person, NSUInteger idx, BOOL *stop) {
+    NSData *image = nil;
+    for (ABPerson *person in matchArray)
+    {
         image = [person imageData];
         if(image)
-            *stop = YES;
-    }];
+        {
+            break;
+        }
+    }
     
-	//no matches in the Address Book with an icon, so use Mail's icon instead.
-	if (!image)
-		image = [[NSImage imageNamed:@"NSApplicationIcon"] TIFFRepresentation];
-
 	NSString *notificationName;
 	if ([self isJunk] || ([[NSClassFromString(GM_MailAccount) junkMailboxes] containsObject:[self mailbox]]))
     {
