@@ -15,7 +15,7 @@
 @property(nonatomic, readonly) NSURL *URL;
 @property(nonatomic, readonly, getter=isCompatibleWithCurrentMailAndMessageFramework) BOOL compatibleWithCurrentMailAndMessageFramework;
 @property(nonatomic, readonly) NSSearchPathDomainMask domain;
-@property(nonatomic, readonly) NSString *bundleVersion;
+@property(unsafe_unretained, nonatomic, readonly) NSString *bundleVersion;
 
 @end
 

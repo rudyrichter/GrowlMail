@@ -12,7 +12,7 @@
 @implementation GrowlMailFoundBundle
 
 + (id) foundBundleWithURL:(NSURL *)newURL {
-	return [[[self alloc] initWithURL:newURL] autorelease];
+	return [[self alloc] initWithURL:newURL];
 }
 - (id) initWithURL:(NSURL *)newURL {
 	if ((self = [super init])) {
@@ -21,10 +21,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	[URL release];
-	[super dealloc];
-}
 
 @synthesize URL;
 
@@ -32,7 +28,7 @@
 	//Can't use -[NSBundle objectForInfoDictionaryKey:] or -[NSBundle infoDictionary] here because NSBundle caches it, and that value is stale after the patcher does its work.
 	NSURL *infoPlistURL = [[URL URLByAppendingPathComponent:@"Contents"] URLByAppendingPathComponent:@"Info.plist"];
 	NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfURL:infoPlistURL];
-	NSArray *compatibilityUUIDs = [infoPlist objectForKey:@"SupportedPluginCompatibilityUUIDs"];
+	NSArray *compatibilityUUIDs = infoPlist[@"SupportedPluginCompatibilityUUIDs"];
 	return [compatibilityUUIDs containsObject:GMCurrentMailCompatibilityUUID()];//&& [compatibilityUUIDs containsObject:GMCurrentMessageFrameworkCompatibilityUUID()];
 }
 

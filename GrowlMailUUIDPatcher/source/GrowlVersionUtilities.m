@@ -192,19 +192,20 @@ NSString* createVersionDescription(const struct Version v) {
 	 *thus, the maximum length of a version description is:
 	 *	5 + 5 + 3 + 5 + 10 = 28.
 	 */
-	CFMutableStringRef str = CFStringCreateMutable(kCFAllocatorDefault, /*capacity*/ 28);
-	CFStringAppendFormat(str, /*formatOptions*/ NULL, CFSTR("%hu.%hu"), v.major, v.minor);
+	NSMutableString *str = [NSMutableString stringWithCapacity:28];
+	[str appendFormat:@"%hu.%hu", v.major, v.minor];
 	if (v.incremental) {
-		CFStringAppendFormat(str, /*formatOptions*/ NULL, CFSTR(".%hhu"), v.incremental);
+		[str appendFormat:@".%hhu", v.incremental];
 	}
-	if (v.releaseType != releaseType_release) {
-		if (v.releaseType >= numberOfReleaseTypes) {
-			CFRelease(str);
+	if (v.releaseType != releaseType_release)
+    {
+		if (v.releaseType >= numberOfReleaseTypes)
+        {
 			return nil;
 		}
-		CFStringAppendFormat(str, /*formatOptions*/ NULL, CFSTR("%@%u"), releaseTypeNames[v.releaseType], v.development);
+		[str appendFormat:@"%@%u", releaseTypeNames[v.releaseType], v.development];
 	}
-	return (NSString*)str;
+	return str;
 }
 
 #pragma mark -
@@ -236,11 +237,6 @@ CFComparisonResult compareVersionStrings(NSString *a, NSString *b) {
 
 	parsed_a = parseVersionString(a, &v_a);
 	parsed_b = parseVersionString(b, &v_b);
-
-	CFStringRef aDesc = (CFStringRef)createVersionDescription(v_a), bDesc = (CFStringRef)createVersionDescription(v_b);
-
-	if (aDesc) CFRelease(aDesc);
-	if (bDesc) CFRelease(bDesc);
 
 	//strings that could not be parsed sort above strings that could.
 	if (!parsed_a) {

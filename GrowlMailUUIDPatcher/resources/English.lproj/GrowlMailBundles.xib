@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13B3116" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1060" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="GrowlMailUUIDPatcher">
             <connections>
                 <outlet property="confirmationSheet" destination="49" id="69"/>
+                <outlet property="okButton" destination="61" id="zQw-i0-mH8"/>
                 <outlet property="warningNotesTable" destination="73" id="89"/>
                 <outlet property="window" destination="1" id="65"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application"/>
-        <window title="GrowlMail bundles you have installed" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" wantsToBeColor="NO" animationBehavior="default" id="1">
+        <window title="GrowlMail bundles you have installed" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="209" width="371" height="301"/>
@@ -229,13 +230,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Fyj-Va-zP3">
                             <rect key="frame" x="0.0" y="0.0" width="505" height="262"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" drawsBackground="NO" importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="60">
-                                    <rect key="frame" x="0.0" y="3" width="490" height="262"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="490" height="262"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="490" height="262"/>
+                                    <size key="minSize" width="505" height="262"/>
                                     <size key="maxSize" width="594" height="10000000"/>
                                     <attributedString key="textStorage">
                                         <fragment content="The version of GrowlMail you're running is ">
@@ -327,7 +328,7 @@ Cgo
                                         </fragment>
                                     </attributedString>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="490" height="262"/>
+                                    <size key="minSize" width="505" height="262"/>
                                     <size key="maxSize" width="594" height="10000000"/>
                                 </textView>
                             </subviews>
@@ -376,12 +377,12 @@ Gw
                 <string>fatalityImage</string>
             </declaredKeys>
             <connections>
+                <binding destination="-2" name="selectionIndexes" keyPath="selectionIndexesOfWarningNotes" id="94"/>
                 <binding destination="-2" name="contentArray" keyPath="warningNotes" id="92">
                     <dictionary key="options">
                         <bool key="NSConditionallySetsEditable" value="NO"/>
                     </dictionary>
                 </binding>
-                <binding destination="-2" name="selectionIndexes" keyPath="selectionIndexesOfWarningNotes" id="94"/>
             </connections>
         </arrayController>
     </objects>

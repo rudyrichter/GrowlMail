@@ -2,7 +2,7 @@
 //  GrowlMailUUIDPatcher.m
 //  GrowlMailUUIDPatcher
 //
-//  Copyright 2010–2011 The Growl Project. All rights reserved.
+//  Copyright 2010–2014 The Growl Project. All rights reserved.
 //
 
 #import "GrowlMailUUIDPatcher.h"
@@ -12,11 +12,30 @@
 
 #include "GrowlVersionUtilities.h"
 
-#import <objc/runtime.h>
+NSString * const mailAppBundleID = @"com.apple.mail";
 
-NSString *mailAppBundleID = @"com.apple.mail";
 
 @interface GrowlMailUUIDPatcher () <NSTableViewDelegate>
+
+@property (nonatomic, strong) NSTimer *delayedEnableTimer;
+
+@property (nonatomic, copy) NSString *mailUUID;
+
+@property (nonatomic, readonly) BOOL multipleGrowlMailsInstalled;
+@property (nonatomic, strong) NSMutableArray *growlMailFoundBundles;
+@property (nonatomic, strong) NSIndexSet *selectedBundleIndexes;
+@property (nonatomic, readonly) BOOL canAndShouldPatchSelectedBundle;
+
+@property (nonatomic, copy) NSArray *warningNotes;
+
+@property (nonatomic, strong) IBOutlet NSWindow *window;
+@property (nonatomic, strong) IBOutlet NSTableView *warningNotesTable;
+@property (nonatomic, strong) IBOutlet NSPanel *confirmationSheet;
+@property (unsafe_unretained, nonatomic, readonly) NSIndexSet *selectionIndexesOfWarningNotes;
+
+@property (nonatomic, strong) IBOutlet NSButton *okButton;
+
+@property (nonatomic, copy) NSString *currentVersionOfGrowlMail; //Current as in latest. Retrieved from website.
 
 //Returns the selected bundle or nil if none is selected.
 - (GrowlMailFoundBundle *) selectedBundle;
@@ -24,48 +43,53 @@ NSString *mailAppBundleID = @"com.apple.mail";
 - (void) recomputeSelectedBundleNotes;
 
 - (void) applyChangeToFoundBundle:(GrowlMailFoundBundle *)bundle;
-
-- (NSButton *) buttonInWindow:(NSWindow *)window withAction:(SEL)action;
-- (NSButton *) buttonDescendantOfView:(NSView *)view withAction:(SEL)action;
 - (void) enableOKButton:(NSTimer *)timer;
+- (IBAction) patchSelectedBundle:(id)sender;
+- (IBAction) ok:(id) sender;
+- (IBAction) cancel:(id) sender;
+
+- (void) confirmationSheetDidEnd:(NSWindow *)sheet
+					  returnCode:(NSInteger)returnCode
+					 contextInfo:(void *)contextInfo;
+
+- (BOOL)moveBundleBackToActiveLocation:(NSBundle*)chosenOne;
+- (void)relaunchMail;
 
 @end
 
 #define BUTTON_ENABLING_DELAY 15.0 /*seconds*/
 
 //This is due to be replaced by an appcast, as soon as we work out how we want to do that.
-static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
+static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.0";
 
 @implementation GrowlMailUUIDPatcher
 
-@synthesize selectedBundleIndexes;
-@synthesize warningNotes;
-@synthesize window;
-@synthesize warningNotesTable;
-@synthesize confirmationSheet;
-@synthesize growlMailFoundBundles;
-
-+ (NSSet *) keyPathsForValuesAffectingMultipleGrowlMailsInstalled {
++ (NSSet *) keyPathsForValuesAffectingMultipleGrowlMailsInstalled
+{
 	return [NSSet setWithObject:@"growlMailFoundBundles"];
 }
 
-+ (NSSet *) keyPathsForValuesAffectingCanAndShouldPatchSelectedBundle {
++ (NSSet *) keyPathsForValuesAffectingCanAndShouldPatchSelectedBundle
+{
 	return [NSSet setWithObject:@"selectedBundleIndexes"];
 }
 
-- (id) init {
-	if ((self = [super init])) {
-		growlMailFoundBundles = [[NSMutableArray alloc] init];
+- (id) init
+{
+	if ((self = [super init]))
+    {
+		self.growlMailFoundBundles = [NSMutableArray array];
 
 		NSArray *libraryFolders = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
-		for (NSString *libraryPath in libraryFolders) {
+		for (NSString *libraryPath in libraryFolders)
+        {
 			NSString *mailFolderPath = [libraryPath stringByAppendingPathComponent:@"Mail"];
 			NSString *bundlesFolderPath = [mailFolderPath stringByAppendingPathComponent:@"Bundles"];
 			NSString *growlMailBundlePath = [bundlesFolderPath stringByAppendingPathComponent:@"GrowlMail.mailbundle"];
 
 			NSURL *growlMailBundleURL = [NSURL fileURLWithPath:growlMailBundlePath];
 			if ([growlMailBundleURL checkResourceIsReachableAndReturnError:NULL]) {
-				[growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
+				[self.growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
 			}
             
 			bundlesFolderPath = [mailFolderPath stringByAppendingPathComponent:@"Bundles (Disabled)"];
@@ -73,79 +97,76 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
             
 			growlMailBundleURL = [NSURL fileURLWithPath:growlMailBundlePath];
 			if ([growlMailBundleURL checkResourceIsReachableAndReturnError:NULL]) {
-				[growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
+				[self.growlMailFoundBundles addObject:[GrowlMailFoundBundle foundBundleWithURL:growlMailBundleURL]];
 			}
 
 		}
 
-		if ([growlMailFoundBundles count] > 0UL) {
-			selectedBundleIndexes = [[NSIndexSet indexSetWithIndex:0UL] copy];
+		if ([self.growlMailFoundBundles count] > 0UL) {
+			self.selectedBundleIndexes = [NSIndexSet indexSetWithIndex:0UL];
 		} else {
-			selectedBundleIndexes = [[NSIndexSet indexSet] copy];
+			self.selectedBundleIndexes = [NSIndexSet indexSet];
 		}
 
 		NSBundle *mailAppBundle = [NSBundle bundleWithPath:@"/Applications/Mail.app"];
-		NSBundle *messageFrameworkBundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/Message.framework"];
-		mailUUID = [[mailAppBundle objectForInfoDictionaryKey:@"PluginCompatibilityUUID"] copy];
-		messageFrameworkUUID = [[messageFrameworkBundle objectForInfoDictionaryKey:@"PluginCompatibilityUUID"] copy];
+		self.mailUUID = [mailAppBundle objectForInfoDictionaryKey:@"PluginCompatibilityUUID"];
 
-		currentVersionOfGrowlMail = [hardCodedGrowlMailCurrentVersionNumber copy];
+		self.currentVersionOfGrowlMail = hardCodedGrowlMailCurrentVersionNumber;
 
 		[NSBundle loadNibNamed:@"GrowlMailBundles" owner:self];
 		
 		[self recomputeSelectedBundleNotes];
-		[warningNotesTable selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO];
+		[self.warningNotesTable selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO];
+        
+        [self addObserver:self forKeyPath:@"selectedBundleIndexes" options:NSKeyValueObservingOptionNew context:nil];
 	}
 	return self;
 }
 
-- (void) dealloc {
-	[delayedEnableTimer invalidate];
-	[delayedEnableTimer release];
-	[confirmationSheet close];
-	[confirmationSheet release];
-	[window close];
-	[window release];
-
-	[growlMailFoundBundles release];
-
-	[mailUUID release];
-	[messageFrameworkUUID release];
-
-	[super dealloc];
+- (void) dealloc
+{
+	[self removeObserver:self forKeyPath:@"selectedBundleIndexes"];
+    [self.delayedEnableTimer invalidate];
+    
+	[self.confirmationSheet close];
+	[self.window close];
 }
 
-- (BOOL) multipleGrowlMailsInstalled {
-	return [growlMailFoundBundles count] > 1UL;
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if([keyPath isEqualToString:@"selectedBundleIndexes"])
+    {
+        [self recomputeSelectedBundleNotes];
+    }
 }
 
-- (void) setGrowlMailFoundBundles:(NSArray *)newBundles {
-	[growlMailFoundBundles setArray:newBundles];
+- (BOOL) multipleGrowlMailsInstalled
+{
+	return [self.growlMailFoundBundles count] > 1UL;
 }
 
-- (void) setSelectedBundleIndexes:(NSIndexSet *)newIndexes {
-	[selectedBundleIndexes autorelease];
-	selectedBundleIndexes = [newIndexes copy];
-
-	[self recomputeSelectedBundleNotes];
-}
-
-- (BOOL) canAndShouldPatchSelectedBundle {
+- (BOOL) canAndShouldPatchSelectedBundle
+{
 	return self.selectedBundle && (!self.selectedBundle.isCompatibleWithCurrentMailAndMessageFramework) && ([[self.warningNotes valueForKeyPath:@"@sum.fatal"] unsignedIntegerValue] == 0UL);
 }
 
-- (void) recomputeSelectedBundleNotes {
+- (void) recomputeSelectedBundleNotes
+{
 	GrowlMailFoundBundle *selectedBundle = self.selectedBundle;
 	NSMutableArray *newNotes = [NSMutableArray array];
 
-	if ([self.growlMailFoundBundles count] > 1UL) {
-		[newNotes addObject:[GrowlMailWarningNote warningNoteForMultipleGrowlMailsWithCurrentVersion:currentVersionOfGrowlMail]];
+	if ([self.growlMailFoundBundles count] > 1UL)
+    {
+		[newNotes addObject:[GrowlMailWarningNote warningNoteForMultipleGrowlMailsWithCurrentVersion:self.currentVersionOfGrowlMail]];
 	}
-	if (selectedBundle) {
-		if (compareVersionStrings(selectedBundle.bundleVersion, currentVersionOfGrowlMail) == kCFCompareLessThan) {
-			[newNotes addObject:[GrowlMailWarningNote warningNoteForGrowlMailOlderThanCurrentVersion:currentVersionOfGrowlMail]];
+	if (selectedBundle)
+    {
+		if (compareVersionStrings(selectedBundle.bundleVersion, self.currentVersionOfGrowlMail) == kCFCompareLessThan)
+        {
+			[newNotes addObject:[GrowlMailWarningNote warningNoteForGrowlMailOlderThanCurrentVersion:self.currentVersionOfGrowlMail]];
 		}
-		if (selectedBundle.domain != NSUserDomainMask) {
+		if (selectedBundle.domain != NSUserDomainMask)
+        {
 			[newNotes addObject:[GrowlMailWarningNote warningNoteForGrowlMailInTheWrongPlace]];
 		}
 	}
@@ -153,20 +174,24 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
 	self.warningNotes = newNotes;
 
 	//Recompute window size.
-	NSView *scrollView = [warningNotesTable superview];
+	NSView *scrollView = [self.warningNotesTable superview];
 	NSRect tableFrameInWindowSpace = [scrollView convertRect:[scrollView bounds] toView:nil];
-	NSRect windowFrame = [window frame];
+	NSRect windowFrame = [self.window frame];
 	CGFloat heightOfWindow = windowFrame.size.height;
 	CGFloat heightBelow = NSMinY(tableFrameInWindowSpace);
 	CGFloat heightAbove = heightOfWindow - NSMaxY(tableFrameInWindowSpace);
 
 	CGFloat newHeightOfTable = 0.0f;
-	for (NSUInteger i = 0UL, numNotes = [warningNotes count]; i < numNotes; ++i) {
-		newHeightOfTable += [self tableView:warningNotesTable heightOfRow:i];
+	for (NSUInteger i = 0UL, numNotes = [self.warningNotes count]; i < numNotes; ++i)
+    {
+		newHeightOfTable += [self tableView:self.warningNotesTable heightOfRow:i];
 	}
 	if (newHeightOfTable < 1.0f)
-		newHeightOfTable = 1.0f;
-	else {
+	{
+        newHeightOfTable = 1.0f;
+	}
+    else
+    {
 		//Icky fudge factor to avoid the descent of the last line of the last row being cut off in some cases.
 		newHeightOfTable += 4.0f;
 	}
@@ -175,25 +200,30 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
 	CGFloat windowTop = windowFrame.origin.y + windowFrame.size.height;
 	windowFrame.size.height = newHeightOfWindow;
 	windowFrame.origin.y = windowTop - newHeightOfWindow;
-	[window setFrame:windowFrame display:YES animate:YES];
+	[self.window setFrame:windowFrame display:YES animate:YES];
 }
 
-- (GrowlMailFoundBundle *) selectedBundle {
+- (GrowlMailFoundBundle *) selectedBundle
+{
 	return ([self.selectedBundleIndexes count] == 1UL)
-		? [self.growlMailFoundBundles objectAtIndex:[self.selectedBundleIndexes firstIndex]]
+		? (self.growlMailFoundBundles)[[self.selectedBundleIndexes firstIndex]]
 		: nil;
 }
 
 //Ensure that the warning notes table never has a selection.
 - (NSIndexSet *) selectionIndexesOfWarningNotes {
 	return [NSIndexSet indexSet];
+
 }
-- (void) setSelectionIndexesOfWarningNotes:(NSIndexSet *)newIndexes {
+
+- (void) setSelectionIndexesOfWarningNotes:(NSIndexSet *)newIndexes
+{
 	//Do nothing, successfully.
 	//The only reason this is here is because NSArrayController hates being bound to this property if there's no setter.
 }
 
-- (void) applyChangeToFoundBundle:(GrowlMailFoundBundle *)bundle {
+- (void) applyChangeToFoundBundle:(GrowlMailFoundBundle *)bundle
+{
 	NSParameterAssert(bundle != nil);
 	NSParameterAssert([bundle isKindOfClass:[GrowlMailFoundBundle class]]);
 
@@ -209,27 +239,33 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
 																			 format:&format
 																			  error:&error];
 	[inStream close];
-	if (!dict) {
-		[window presentError:error];
-	} else {
-		NSMutableArray *UUIDs = [dict objectForKey:@"SupportedPluginCompatibilityUUIDs"];
+	if (!dict)
+    {
+		[self.window presentError:error];
+	}
+    else
+    {
+		NSMutableArray *UUIDs = dict[@"SupportedPluginCompatibilityUUIDs"];
 		if(!UUIDs)
         {
             [dict setValue:[NSMutableArray array] forKey:@"SupportedPluginCompatibilityUUIDs"];
-            UUIDs = [dict objectForKey:@"SupportedPluginCompatibilityUUIDs"];
+            UUIDs = dict[@"SupportedPluginCompatibilityUUIDs"];
         }
-        if (mailUUID && ![UUIDs containsObject:mailUUID])
-			[UUIDs addObject:mailUUID];
-		if (messageFrameworkUUID && ![UUIDs containsObject:messageFrameworkUUID])
-			[UUIDs addObject:messageFrameworkUUID];
-
+        if (self.mailUUID && ![UUIDs containsObject:self.mailUUID])
+		{
+            [UUIDs addObject:self.mailUUID];
+        }
+        
 		NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict
 																  format:format
 																 options:0
 																   error:&error];
-		if (!data) {
-			[window presentError:error];
-		} else {
+		if (!data)
+        {
+			[self.window presentError:error];
+		}
+        else
+        {
 			[self willChangeValueForKey:@"canAndShouldPatchSelectedBundle"];
 			[bundle willChangeValueForKey:@"isCompatibleWithCurrentMailAndMessageFramework"];
 			BOOL wrote = [data writeToURL:infoDictURL
@@ -237,45 +273,21 @@ static NSString *const hardCodedGrowlMailCurrentVersionNumber = @"1.3.4";
 									error:&error];
 			[bundle didChangeValueForKey:@"isCompatibleWithCurrentMailAndMessageFramework"];
 			[self didChangeValueForKey:@"canAndShouldPatchSelectedBundle"];
-			if (!wrote) {
-				[window presentError:error];
+			if (!wrote)
+            {
+				[self.window presentError:error];
 			}
 		}
 	}
 
 }
 
-static Class buttonClass = Nil;
-- (NSButton *) buttonInWindow:(NSWindow *)windowToSearch withAction:(SEL)action {
-	if (!buttonClass)
-		buttonClass = [NSButton class];
-	return [self buttonDescendantOfView:[windowToSearch contentView] withAction:action];
-}
-//Note: buttonDescendantOfView:withAction: won't work unless buttonInWindow:withAction: has been called previously (since it initializes the buttonClass variable).
-- (NSButton *) buttonDescendantOfView:(NSView *)view withAction:(SEL)action {
-	if ([view isKindOfClass:buttonClass]) {
-		NSButton *button = (NSButton *)view;
-		if (sel_isEqual([button action], action))
-			return button;
-	}
-
-	for (NSView *subview in [view subviews]) {
-		NSButton *foundButton = [self buttonDescendantOfView:subview withAction:action];
-		if (foundButton)
-			return foundButton;
-	}
-
-	return nil;
-}
-
-- (IBAction) patchSelectedBundle:(id)sender {
-	//First, find the OK button, disable it, and prepare to enable it in some number of seconds.
-	//We search out the button rather than use an outlet so that the user cannot simply enable the button and disconnect the outlet.
-	okButton = [self buttonInWindow:confirmationSheet withAction:@selector(ok:)]; //Not retained because the window's view hierarchy owns it
-	[okButton setEnabled:NO];
+- (IBAction) patchSelectedBundle:(id)sender
+{
+	[self.okButton setEnabled:NO];
     
-	[delayedEnableTimer invalidate];
-	[delayedEnableTimer release];
+	[self.delayedEnableTimer invalidate];
+	self.delayedEnableTimer = nil;
 	
     if([[NSApp currentEvent] modifierFlags] & NSAlternateKeyMask)
     {
@@ -283,23 +295,25 @@ static Class buttonClass = Nil;
     }
     else
     {
-        delayedEnableTimer = [[NSTimer scheduledTimerWithTimeInterval:BUTTON_ENABLING_DELAY target:self selector:@selector(enableOKButton:) userInfo:nil repeats:NO] retain];
+        self.delayedEnableTimer = [NSTimer scheduledTimerWithTimeInterval:BUTTON_ENABLING_DELAY target:self selector:@selector(enableOKButton:) userInfo:nil repeats:NO];
 	}
-    [NSApp beginSheet:confirmationSheet modalForWindow:window modalDelegate:self didEndSelector:@selector(confirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+    [NSApp beginSheet:self.confirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(confirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:NULL];
 }
 
-- (void) enableOKButton:(NSTimer *)timer {
-	[okButton setEnabled:YES];
+- (void) enableOKButton:(NSTimer *)timer
+{
+	[self.okButton setEnabled:YES];
 }
+
 - (void) confirmationSheetDidEnd:(NSWindow *)sheet
 					  returnCode:(NSInteger)returnCode
 					 contextInfo:(void *)contextInfo
 {
-	[delayedEnableTimer invalidate];
-	[delayedEnableTimer release];
-	delayedEnableTimer = nil;
+	[self.delayedEnableTimer invalidate];
+	self.delayedEnableTimer = nil;
 
-	if (returnCode == NSOKButton) {
+	if (returnCode == NSOKButton)
+    {
 		[self applyChangeToFoundBundle:self.selectedBundle];
         [self moveBundleBackToActiveLocation:[NSBundle bundleWithPath:self.selectedBundle.URL.path]];
         [self relaunchMail];
@@ -308,11 +322,14 @@ static Class buttonClass = Nil;
 	[sheet close];
 }
 
-- (IBAction) ok:(id) sender {
+- (IBAction) ok:(id) sender
+{
 	NSWindow *dialog = [sender respondsToSelector:@selector(window)] ? [sender window] : sender;
 	[NSApp endSheet:dialog returnCode:NSOKButton];
 }
-- (IBAction) cancel:(id) sender {
+
+- (IBAction) cancel:(id) sender
+{
 	NSWindow *dialog = [sender respondsToSelector:@selector(window)] ? [sender window] : sender;
 	[NSApp endSheet:dialog returnCode:NSCancelButton];
 }
@@ -330,19 +347,29 @@ static Class buttonClass = Nil;
         BOOL dir = NO;
         NSError *error = nil;
         if(![[NSFileManager defaultManager] fileExistsAtPath:destinationPath isDirectory:&dir] || !dir)
+        {
             [[NSFileManager defaultManager] createDirectoryAtPath:destinationPath withIntermediateDirectories:YES attributes:nil error:&error];
+        }
         
         if(error)
+        {
             result = NO;
+        }
         
         if(result)
+        {
             [[NSFileManager defaultManager] moveItemAtPath:[chosenOne bundlePath] toPath:[destinationPath stringByAppendingPathComponent:@"GrowlMail.mailbundle"] error:&error];
+        }
         
         if(error)
+        {
             result = NO;
+        }
     }
     else
+    {
         result = NO;
+    }
     
     return result;
 }
@@ -369,12 +396,10 @@ static Class buttonClass = Nil;
     {
         if([[application bundleIdentifier] isEqualToString:mailAppBundleID])
         {	
-            [application retain];
-            [application addObserver:self forKeyPath:@"terminated" options:NSKeyValueObservingOptionNew context:self];
+            [application addObserver:self forKeyPath:@"terminated" options:NSKeyValueObservingOptionNew context:(__bridge void *)(self)];
             if([application terminate])
             {
                 [application removeObserver:self forKeyPath:@"terminated"];
-                [application release];
                 [[NSWorkspace sharedWorkspace] performSelector:@selector(launchApplication:) withObject:@"Mail.app" afterDelay:2.0f];
             }
         }
@@ -384,36 +409,40 @@ static Class buttonClass = Nil;
 #pragma mark NSTableViewDelegate protocol conformance
 
 - (CGFloat) tableView:(NSTableView *)theTableView heightOfRow:(NSInteger)row {
-	CGFloat height = [warningNotesTable rowHeight];
+	CGFloat height = [self.warningNotesTable rowHeight];
 	/*This code is adapted from an Apple code sample:
 	 *	http://developer.apple.com/mac/library/samplecode/CocoaTipsAndTricks/Listings/TableViewVariableRowHeights_TableViewVariableRowHeightsAppDelegate_m.html
 	 *It is more reliable than measuring the text directly. Thanks to Jesper for telling me about it. -PRH
 	 */ {
 		// It is important to use a constant value when calculating the height. Querying the tableColumn width will not work, since it dynamically changes as the user resizes -- however, we don't get a notification that the user "did resize" it until after the mouse is let go. We use the latter as a hook for telling the table that the heights changed. We must return the same height from this method every time, until we tell the table the heights have changed. Not doing so will quicly cause drawing problems.
 		NSString *tableColumnIdentifier = @"message";
-		NSTableColumn *tableColumnToWrap = [warningNotesTable tableColumnWithIdentifier:tableColumnIdentifier];
-		NSInteger columnToWrap = [warningNotesTable.tableColumns indexOfObject:tableColumnToWrap];
+		NSTableColumn *tableColumnToWrap = [self.warningNotesTable tableColumnWithIdentifier:tableColumnIdentifier];
+		NSInteger columnToWrap = [self.warningNotesTable.tableColumns indexOfObject:tableColumnToWrap];
 
 		// Grab the fully prepared cell with our content filled in. Note that in IB the cell's Layout is set to Wraps.
-		NSCell *cell = [warningNotesTable preparedCellAtColumn:columnToWrap row:row];
+		NSCell *cell = [self.warningNotesTable preparedCellAtColumn:columnToWrap row:row];
 
 		// See how tall it naturally would want to be if given a restricted with, but unbound height
-		NSRect constrainedBounds = NSMakeRect(0, 0, [[warningNotesTable tableColumnWithIdentifier:tableColumnIdentifier] width], CGFLOAT_MAX);
+		NSRect constrainedBounds = NSMakeRect(0, 0, [[self.warningNotesTable tableColumnWithIdentifier:tableColumnIdentifier] width], CGFLOAT_MAX);
 		NSSize naturalSize = [cell cellSizeForBounds:constrainedBounds];
 
 		// Make sure we have a minimum height -- use the table's set height as the minimum.
-		if (naturalSize.height > height) {
+		if (naturalSize.height > height)
+        {
 			height = naturalSize.height;
 		}
 	}
 	
 	CGFloat iconColumnWidth = [[theTableView tableColumnWithIdentifier:@"fatality"] width];
 	if (height < iconColumnWidth)
+    {
 		height = iconColumnWidth;
+    }
 	return height;
 }
 
-- (NSIndexSet *)tableView:(NSTableView *)tableView selectionIndexesForProposedSelection:(NSIndexSet *)proposedSelectionIndexes {
+- (NSIndexSet *)tableView:(NSTableView *)tableView selectionIndexesForProposedSelection:(NSIndexSet *)proposedSelectionIndexes
+{
 	//Never allow any selection.
 	return [NSIndexSet indexSet];
 }

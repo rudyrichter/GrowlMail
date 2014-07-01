@@ -10,16 +10,21 @@
 
 #import "GrowlMailUUIDPatcher.h"
 
+@interface GrowlMailUUIDPatcherAppDelegate()
+@property (nonatomic, strong) GrowlMailUUIDPatcher *patcher;
+@end
+
 @implementation GrowlMailUUIDPatcherAppDelegate
 
-- (void) applicationWillFinishLaunching:(NSNotification *)aNotification {
-	patcher = [[GrowlMailUUIDPatcher alloc] init];
+- (void) dealloc
+{
+    self.patcher = nil;
 }
 
-- (void) dealloc {
-	[patcher release];
-	[super dealloc];
+- (void) applicationWillFinishLaunching:(NSNotification *)aNotification {
+	self.patcher = [[GrowlMailUUIDPatcher alloc] init];
 }
+
 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
 	return YES;

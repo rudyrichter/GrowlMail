@@ -11,10 +11,10 @@
 @implementation GrowlMailWarningNote
 
 + (id) nonfatalWarningNoteWithMessage:(NSString *)newMessage {
-	return [[[self alloc] initWithMessage:newMessage fatal:NO] autorelease];
+	return [[self alloc] initWithMessage:newMessage fatal:NO];
 }
 + (id) fatalWarningNoteWithMessage:(NSString *)newMessage {
-	return [[[self alloc] initWithMessage:newMessage fatal:NO] autorelease];
+	return [[self alloc] initWithMessage:newMessage fatal:NO];
 }
 - (id) initWithMessage:(NSString *)newMessage fatal:(BOOL)flag {
 	if ((self = [super init])) {
