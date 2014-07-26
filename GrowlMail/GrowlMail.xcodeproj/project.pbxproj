@@ -44,11 +44,11 @@
 		93583EA4181207A00091ACC0 /* NSString+GrowlMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 93583EA3181207A00091ACC0 /* NSString+GrowlMail.m */; };
 		939A74271627AD5F00AF72FB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 939A74251627AD5F00AF72FB /* Localizable.strings */; };
 		939A742A1627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 939A74281627B0AC00AF72FB /* GrowlMailPreferencesPanel.xib */; };
-		93B885BE183C580600CCC368 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93B885BC183C57F400CCC368 /* Growl.framework */; };
+		93B885BE183C580600CCC368 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93B885BC183C57F400CCC368 /* Growl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		93D7D840144218B700BFCFB6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D83A144218B700BFCFB6 /* InfoPlist.strings */; };
 		93D7D8441442237300BFCFB6 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 93D7D8431442237300BFCFB6 /* dsa_pub.pem */; };
 		93D7D848144233C500BFCFB6 /* GMSparkleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D7D847144233C500BFCFB6 /* GMSparkleController.m */; };
-		93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; };
+		93E712B613FF66950025D733 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 93E712AB13FF66630025D733 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		953EE18E082CC7420040C586 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 953EE18D082CC7420040C586 /* AddressBook.framework */; };
 /* End PBXBuildFile section */
 
@@ -492,7 +492,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GM;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Rudy Richter";
 				TargetAttributes = {
 					8D5B49AC048680CD000E48DA = {
