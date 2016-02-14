@@ -35,10 +35,10 @@
                         </binding>
                     </connections>
                 </button>
-                <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lg7-CI-wlu">
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="Lg7-CI-wlu">
                     <rect key="frame" x="59" y="447" width="366" height="18"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="272" id="Agm-w7-QSq"/>
+                        <constraint firstAttribute="width" constant="362" id="Agm-w7-QSq"/>
                     </constraints>
                     <buttonCell key="cell" type="check" title="Clicking notification reveals message in the main window" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="MiT-OD-QaJ">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
