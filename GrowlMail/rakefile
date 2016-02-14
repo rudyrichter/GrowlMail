@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby -S rake --verbose --trace --rakefile
+# -*- encoding: utf-8 -*-
+
+task :default => "build"
+
+desc "build"
+task :build => ["build:growlmail"] do
+  puts "Done building"
+end
+
+desc "package"
+task :package => ["package:growlmail"] do
+end
+
+namespace "package" do
+  desc "package growlmail"
+  task :growlmail => ["build:growlmail"] do
+	system "xcodebuild -configuration $(BUILDCONFIGURATION) -workspace GrowlMail.xcworkspace -scheme \"Package GrowlMail\" build"
+  end
+end
+
+namespace "build" do
+  desc "build growlmail"
+  task :growlmail do
+  	system "xcodebuild -configuration $(BUILDCONFIGURATION) build"
+  end
+end
