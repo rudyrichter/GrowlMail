@@ -78,9 +78,9 @@ GM_KVO_CONTEXT(GrowlMailPreferencesModuleKVOContext);
 
 - (NSView *)preferencesView
 {
-	if (!_view_preferences)
+	if (!self.view_preferences)
 		[[NSBundle bundleForClass:[self class]] loadNibNamed:[self preferencesNibName] owner:self topLevelObjects:nil];
-	return _view_preferences;
+	return self.view_preferences;
 }
 
 - (NSString*)version

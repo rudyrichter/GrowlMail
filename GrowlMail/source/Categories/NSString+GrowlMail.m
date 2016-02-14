@@ -21,7 +21,7 @@
         NSString *value = values[idx];
         [str replaceOccurrencesOfString:keyword
 		                     withString:value
-		                        options:0
+		                        options:NSCaseInsensitiveSearch
 		                          range:NSMakeRange(0, str.length)];
     }];
 	return str;

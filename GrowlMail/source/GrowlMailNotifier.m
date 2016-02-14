@@ -310,7 +310,7 @@ static BOOL notifierEnabled = YES;
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Mail added messages [1] to mailboxes [2].\n[1]: %@\n[2]: %@", __PRETTY_FUNCTION__, messages, mailboxes);
 #endif
-    __weak NSMutableArray *disabledMessages = [NSMutableArray array];
+    NSMutableArray *disabledMessages = [NSMutableArray array];
     [messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (![self isAccountEnabled:[obj mailbox]])
         {
@@ -319,7 +319,7 @@ static BOOL notifierEnabled = YES;
     }];
     
     //note which mailboxes are enabled
-    __weak NSMutableArray *enabledMailboxes = [NSMutableArray array];
+    NSMutableArray *enabledMailboxes = [NSMutableArray array];
     [mailboxes enumerateObjectsUsingBlock:^(id mailbox, NSUInteger idx, BOOL *stop)
     {
         if([mailbox isKindOfClass:MailBox_Class])
@@ -520,7 +520,7 @@ static BOOL notifierEnabled = YES;
 #ifdef GROWL_MAIL_DEBUG
 	NSLog(@"%s: Mail added messages [1] to mailboxes [2].\n[1]: %@\n[2]: %@", __PRETTY_FUNCTION__, messages, mailboxes);
 #endif
-    __weak NSMutableArray *disabledMessages = [NSMutableArray array];
+    NSMutableArray *disabledMessages = [NSMutableArray array];
     [messages enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (![self isAccountEnabled:[obj mailbox]])
         {
@@ -529,7 +529,7 @@ static BOOL notifierEnabled = YES;
     }];
     
     //note which mailboxes are enabled
-    __weak NSMutableArray *enabledMailboxes = [NSMutableArray array];
+    NSMutableArray *enabledMailboxes = [NSMutableArray array];
     [mailboxes enumerateObjectsUsingBlock:^(id mailbox, BOOL *stop)
      {
          if([mailbox isKindOfClass:MailBox_Class])
