@@ -98,5 +98,6 @@
 @end
 
 @interface SingleMessageViewer : MessageViewer
-+ (instancetype)viewerForMessage:(id)arg1 hiddenCopies:(id)arg2 relatedMessages:(id)arg3 showRelatedMessages:(BOOL)arg4 showAllHeaders:(BOOL)arg5 expandedSelectedMailboxes:(id)arg6;
++ (id)viewerForMessage:(id)arg1 hiddenCopies:(id)arg2 showRelatedMessages:(BOOL)arg3 expandedSelectedMailboxes:(id)arg4;
+- (void)selectMessages:(id)arg1;
 @end

@@ -171,11 +171,10 @@ static BOOL notifierEnabled = YES;
         Class messageViewerClass = NSClassFromString(@"MessageViewer");
 
         //Make sure we have all the methods we need.
-        if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:expandedSelectedMailboxes:)))
-			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:relatedMessages:showRelatedMessages:showAllHeaders:viewingState:expandedSelectedMailboxes:");
+        if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:showRelatedMessages:expandedSelectedMailboxes:)))
+			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:showRelatedMessages:expandedSelectedMailboxes:");
 		if (!class_getInstanceMethod(singleMessageViewerClass, @selector(showAndMakeKey:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
-        
         if(!class_getClassMethod(libraryClass, @selector(markMessageAsViewed:viewedDate:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
         if(!class_getClassMethod(libraryClass, @selector(messageWithMessageID:)))
@@ -192,14 +191,13 @@ static BOOL notifierEnabled = YES;
                 messageViewer = [messageViewerClass newDefaultMessageViewer];
             
             [NSApp activateIgnoringOtherApps:YES];
-            [messageViewer showAndMakeKey:(BOOL)self];
+            [messageViewer showAndMakeKey:YES];
             
             [messageViewer revealMessage:message inMailbox:mailbox forceMailboxSelection:YES];
         }
         else
         {
-            id messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil relatedMessages:nil showRelatedMessages:NO showAllHeaders:NO expandedSelectedMailboxes:nil];
-            
+            id messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil showRelatedMessages:NO expandedSelectedMailboxes:nil];
             [NSApp activateIgnoringOtherApps:YES];
             [messageViewer showAndMakeKey:YES];
             [libraryClass markMessageAsViewed:message viewedDate:[NSDate date]];
