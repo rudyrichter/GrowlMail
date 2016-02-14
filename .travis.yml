@@ -2,3 +2,6 @@ language: objective-c
 osx_image: xcode7.2
 xcode_project: GrowlMail/GrowlMail.xcodeproj
 xcode_scheme: GrowlMail
+
+script:
+  - xcodebuild [DEFAULT_OPTIONS] CODE_SIGNING_REQUIRED=NO
