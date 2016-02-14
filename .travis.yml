@@ -4,4 +4,5 @@ xcode_workspace: GrowlMail/GrowlMail.xcworkspace
 xcode_scheme: GrowlMail
 
 script:
-  - xcodebuild -workspace GrowlMail/GrowlMail.xcworkspace -scheme GrowlMail build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+  - cd GrowlMail
+  - xcodebuild -workspace GrowlMail.xcworkspace -scheme GrowlMail build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
