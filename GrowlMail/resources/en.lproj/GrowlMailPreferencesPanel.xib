@@ -72,8 +72,8 @@
                         </binding>
                     </connections>
                 </button>
-                <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="111">
-                    <rect key="frame" x="59" y="465" width="320" height="18"/>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="111">
+                    <rect key="frame" x="59" y="465" width="306" height="18"/>
                     <buttonCell key="cell" type="check" title="Only notify when Mail.app is in the background" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="112">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -94,8 +94,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="74">
-                    <rect key="frame" x="58" y="352" width="88" height="17"/>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="74">
+                    <rect key="frame" x="58" y="353" width="88" height="17"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Title:" id="102">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -124,8 +124,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="13">
-                    <rect key="frame" x="59" y="485" width="130" height="18"/>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="13">
+                    <rect key="frame" x="59" y="485" width="126" height="18"/>
                     <buttonCell key="cell" type="check" title="Enable GrowlMail" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>

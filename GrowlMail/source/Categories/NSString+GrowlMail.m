@@ -15,14 +15,14 @@
 {
 	NSParameterAssert([keywords count] == [values count]);
     
-	__block NSMutableString *str = [[self mutableCopy] autorelease];
+	NSMutableString *str = [self mutableCopy];
     [keywords enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL *stop)
     {
-        NSString *value = [values objectAtIndex:idx];
+        NSString *value = values[idx];
         [str replaceOccurrencesOfString:keyword
 		                     withString:value
 		                        options:0
-		                          range:NSMakeRange(0, [str length])];
+		                          range:NSMakeRange(0, str.length)];
     }];
 	return str;
 }
@@ -42,7 +42,7 @@
 	for (NSUInteger i = 0U; i < n; ++i)
 		[self getLineStart:NULL end:&range.location contentsEnd:&end forRange:range];
     
-	length = [self length];
+	length = self.length;
 	if (length > end)
 		[self deleteCharactersInRange:NSMakeRange(end, length - end)];
 }

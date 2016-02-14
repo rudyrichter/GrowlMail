@@ -72,24 +72,24 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
  *
  *	@return	The One True GrowlMailNotifier instance, or \c nil.
  */
-- (id) init;
+- (instancetype) init;
 
-- (BOOL) isEnabled;
-- (GrowlMailSummaryMode) summaryMode;
+@property (nonatomic, getter=isEnabled, readonly) BOOL enabled;
+@property (nonatomic, readonly) GrowlMailSummaryMode summaryMode;
 /*!	@brief	Only post notifications for messages added to an account's inbox, not to other mailboxes (folders).
  */
-- (BOOL) inboxOnly;
+@property (nonatomic, readonly) BOOL inboxOnly;
 
 /*!	@brief	Returns the correct format string for Growl notification titles.
  *
  *	The returned format is only useful for single-message notifications. Summary notifications do not use this format.
  */
-- (NSString *) titleFormat;
+@property (nonatomic, readonly, copy) NSString *titleFormat;
 /*!	@brief	Returns the correct format string for Growl notification descriptions.
  *
  *	The returned format is only useful for single-message notifications. Summary notifications do not use this format.
  */
-- (NSString *) descriptionFormat;
+@property (nonatomic, readonly, copy) NSString *descriptionFormat;
 
 /*!	@brief	Return whether the given account is enabled for notifications
  *
@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
 - (void) setAccount:(id)account enabled:(BOOL)enabled;
 - (NSCellStateValue) accountState:(id)account;
 - (NSArray *)mailboxesForAccount:(id)account;
-- (NSArray *)enabledRemoteAccounts;
+@property (nonatomic, readonly, copy) NSArray *enabledRemoteAccounts;
 
 /*!	@brief	Determine whether the notifier only notifies while the app is in the background.
  *
@@ -113,7 +113,7 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
  *
  *	@return	\c YES if this object will only notify while the application is in the background; \c NO if it will notify whether the app is in the background or not.
  */
-- (BOOL) isBackgroundOnlyEnabled;
+@property (nonatomic, getter=isBackgroundOnlyEnabled, readonly) BOOL backgroundOnlyEnabled;
 /*!	@brief	Tell the notifier to update its notification registrations for suspend/resume events.
  *
  *	This method does not set the user default that backs \c isBackgroundOnlyEnabled, so it is not that method's inverse.
@@ -122,16 +122,16 @@ typedef NS_ENUM(NSInteger, GrowlMailSummaryMode)
  */
 - (void) configureForBackgroundOnly:(BOOL)enabled;
 
-- (NSString *) applicationNameForGrowl;
-- (NSImage *) applicationIconForGrowl;
+@property (nonatomic, readonly, copy) NSString *applicationNameForGrowl;
+@property (nonatomic, readonly, copy) NSImage *applicationIconForGrowl;
 - (void) growlNotificationWasClicked:(NSString *)clickContext;
-- (NSDictionary *) registrationDictionaryForGrowl;
+@property (nonatomic, readonly, copy) NSDictionary *registrationDictionaryForGrowl;
 
 - (void)didFinishNotificationForMessage:(id /*Message **/)message;
 - (void)newMessagesReceived:(NSArray *)messages forMailboxes:(NSArray *)mailboxes;
 
 
-@property (nonatomic, retain) NSUserDefaultsController *userDefaultsController;
+@property (nonatomic, strong) NSUserDefaultsController *userDefaultsController;
 
 /*!	@brief	Disable GrowlMail and print a warning message
  *

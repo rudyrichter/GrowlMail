@@ -520,7 +520,7 @@
  *
  *	@result The <code>NSDictionary</code> to use for registration.
  */
-- (NSDictionary *) registrationDictionaryForGrowl;
+@property (nonatomic, readonly, copy) NSDictionary *registrationDictionaryForGrowl;
 
 /*!
  *	@method applicationNameForGrowl
@@ -539,7 +539,7 @@
  *
  *	@result The name of the application using Growl.
  */
-- (NSString *) applicationNameForGrowl;
+@property (nonatomic, readonly, copy) NSString *applicationNameForGrowl;
 
 /*!
  *	@method applicationIconForGrowl
@@ -551,7 +551,7 @@
  *	 generally needed.
  *	@result The <code>NSImage</code> to treat as the application icon.
  */
-- (NSImage *) applicationIconForGrowl;
+@property (nonatomic, readonly, copy) NSImage *applicationIconForGrowl;
 
 /*!
  *	@method applicationIconDataForGrowl

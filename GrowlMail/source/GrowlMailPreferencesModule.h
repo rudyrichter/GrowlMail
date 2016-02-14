@@ -37,7 +37,7 @@
 
 -(void)enableTextView:(BOOL)enableIt;
 
-@property (nonatomic, assign) IBOutlet NSView *view_preferences;
-@property (nonatomic, assign) IBOutlet NSTextView *descriptionTextView;
-@property (nonatomic, assign) IBOutlet NSOutlineView *accountsView;
+@property (nonatomic, weak) IBOutlet NSView *view_preferences;
+@property (nonatomic, unsafe_unretained) IBOutlet NSTextView *descriptionTextView;
+@property (nonatomic, weak) IBOutlet NSOutlineView *accountsView;
 @end

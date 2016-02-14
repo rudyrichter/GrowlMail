@@ -9,9 +9,11 @@
 	<key>CFBundleIconFile</key>
 	<string>GrowlMail.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>${BR_BUNDLE_ID}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>${BR_PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
@@ -22,21 +24,19 @@
 	<string>$(PRODUCT_VERSION)</string>
 	<key>NSPrincipalClass</key>
 	<string>GrowlMail</string>
-	<key>SupportedPluginCompatibilityUUIDs</key>
-	<array>
-		<string>1550C683-EA48-4036-B7CE-FB6F5D13EE02</string>
-	</array>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
 	<key>SUEnableSystemProfiling</key>
 	<true/>
 	<key>SUFeedURL</key>
 	<string>http://sparkle.bewarereactor.com/clog/appcast.php</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
 	<key>SUPromptUserOnFirstLaunch</key>
 	<true/>
-	<key>CFBundleName</key>
-	<string>${BR_PRODUCT_NAME}</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+	<key>SupportedPluginCompatibilityUUIDs</key>
+	<array>
+		<string>1550C683-EA48-4036-B7CE-FB6F5D13EE02</string>
+	</array>
 </dict>
 </plist>

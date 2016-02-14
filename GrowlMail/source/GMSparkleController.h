@@ -35,8 +35,9 @@
     id sparkle;
 }
 
-+ (id)sharedController;
++ (GMSparkleController*)sharedController;
 - (IBAction)checkForUpdates:(id)sender;
 - (void)checkForUpdatesInBackground;
+- (void)setUpdateCheckInterval:(NSTimeInterval)updateTime;
 
 @end

@@ -28,6 +28,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef void * _GMKVOContext;
+
+#ifndef GM_KVO_CONTEXT
+#define GM_KVO_CONTEXT(x) static _GMKVOContext x = (_GMKVOContext)@#x
+#endif
+
 #define GM_MailAccount @"MFMailAccount"
 #define GM_Message @"MCMessage"
 #define GM_Mailbox @"MFMailbox"

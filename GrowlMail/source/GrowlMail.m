@@ -58,7 +58,7 @@ static NSImage *growlMailIcon = nil;
 	else
 	{        
 		//finish setup
-        growlMailIcon = [[GMGetGrowlMailBundle() imageForResource:@"GrowlMail"] retain];
+        growlMailIcon = [GMGetGrowlMailBundle() imageForResource:@"GrowlMail"];
 		[growlMailIcon setName:@"GrowlMail"];
 		
 		[GrowlMail registerBundle];
@@ -91,7 +91,7 @@ static NSImage *growlMailIcon = nil;
 
 + (void) setup 
 {
-    NSString *privateFrameworksPath = [GMGetGrowlMailBundle() privateFrameworksPath];
+    NSString *privateFrameworksPath = GMGetGrowlMailBundle().privateFrameworksPath;
     NSString *growlBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Growl.framework"];
     NSBundle *growlBundle = [NSBundle bundleWithPath:growlBundlePath];
     if (growlBundle) 
@@ -106,8 +106,8 @@ static NSImage *growlMailIcon = nil;
                 
                 NSDictionary *infoDictionary = [NSClassFromString(@"GrowlApplicationBridge") frameworkInfoDictionary];
                 NSLog(@"Using Growl.framework %@ (%@)",
-                      [infoDictionary objectForKey:@"CFBundleShortVersionString"],
-                      [infoDictionary objectForKey:(NSString *)kCFBundleVersionKey]);
+                      infoDictionary[@"CFBundleShortVersionString"],
+                      infoDictionary[(NSString *)kCFBundleVersionKey]);
             } 
         }
     } 

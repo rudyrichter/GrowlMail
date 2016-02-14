@@ -200,7 +200,6 @@
 		93583EAA18120BEC0091ACC0 /* MailServiceFramework.dump */ = {isa = PBXFileReference; lastKnownFileType = text; name = MailServiceFramework.dump; path = framework_dumps/MailServiceFramework.dump; sourceTree = "<group>"; };
 		93583EAB18120BEC0091ACC0 /* MailUIFramework.dump */ = {isa = PBXFileReference; lastKnownFileType = text; name = MailUIFramework.dump; path = framework_dumps/MailUIFramework.dump; sourceTree = "<group>"; };
 		93583EAC181211530091ACC0 /* MessageFrameworkHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MessageFrameworkHeaders.h; path = source/MessageFrameworkHeaders.h; sourceTree = "<group>"; };
-		93947E7F13C8D00900E29642 /* GrowlMail_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GrowlMail_Prefix.pch; path = source/GrowlMail_Prefix.pch; sourceTree = "<group>"; };
 		93947E8313C8D04900E29642 /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = xcconfig/Release.xcconfig; sourceTree = "<group>"; };
 		93947E8413C8D04900E29642 /* Localization.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Localization.xcconfig; path = xcconfig/Localization.xcconfig; sourceTree = "<group>"; };
 		93947E8513C8D04900E29642 /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = xcconfig/Debug.xcconfig; sourceTree = "<group>"; };
@@ -284,7 +283,6 @@
 				93947E9B13C8D27800E29642 /* Core */,
 				93947E9A13C8D26A00E29642 /* Swizzle */,
 				93947E9913C8D25C00E29642 /* Preferences */,
-				93947E7F13C8D00900E29642 /* GrowlMail_Prefix.pch */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -500,7 +498,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GM;
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Rudy Richter";
 				TargetAttributes = {
 					8D5B49AC048680CD000E48DA = {
@@ -813,6 +811,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -826,6 +825,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PROVISIONING_PROFILE = "";
 			};
 			name = Localization;
@@ -835,6 +835,7 @@
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -844,6 +845,7 @@
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Localization;
@@ -853,6 +855,7 @@
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -861,6 +864,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -874,6 +878,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
@@ -882,6 +887,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -895,6 +901,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "${BR_BUNDLE_ID}";
 				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
@@ -902,6 +909,7 @@
 		95E4A3640855C16F006B3F45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};

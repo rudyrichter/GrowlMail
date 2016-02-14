@@ -10,7 +10,7 @@
 
 @implementation GMUserDefaults
 
-- (id)initWithPersistentDomainName:(NSString*)domain
+- (instancetype)initWithPersistentDomainName:(NSString*)domain
 {
     if((self = [super init]))
     {
@@ -26,25 +26,22 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_domain release];
-    [_registeredDefaults release];
 
-    [super dealloc];
 }
 
 - (void)setObject:(id)value forKey:(NSString *)defaultName
 {
     [self willChangeValueForKey:defaultName];
-    CFPreferencesSetValue((CFStringRef)defaultName, value, (CFStringRef)self.domain,  kCFPreferencesCurrentUser,  kCFPreferencesAnyHost);
+    CFPreferencesSetValue((CFStringRef)defaultName, (__bridge CFPropertyListRef)(value), (CFStringRef)self.domain,  kCFPreferencesCurrentUser,  kCFPreferencesAnyHost);
     [self didChangeValueForKey:defaultName];
     [self synchronize];
 }
 
 - (id)objectForKey:(NSString *)defaultName
 {
-    id result = [(id)CFPreferencesCopyValue((CFStringRef)defaultName, (CFStringRef)self.domain, kCFPreferencesCurrentUser,  kCFPreferencesAnyHost) autorelease];
+    id result = (id)CFBridgingRelease(CFPreferencesCopyValue((CFStringRef)defaultName, (CFStringRef)self.domain, kCFPreferencesCurrentUser,  kCFPreferencesAnyHost));
     if(!result)
-        result = [self.registeredDefaults objectForKey:defaultName];
+        result = (self.registeredDefaults)[defaultName];
     return result;
 }
 

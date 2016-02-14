@@ -35,7 +35,7 @@
 - (void) initializeFromDefaults;
 - (void) willBeDisplayed;
 - (void) saveChanges;
-- (char) hasChangesPending;
+@property (nonatomic, readonly) char hasChangesPending;
 - (NSImage *) imageForPreferenceNamed:(NSString *)aName;
 - (NSView *) viewForPreferenceNamed:(NSString *)aName;
 @end
@@ -50,20 +50,20 @@
 
 + (id) sharedInstance;
 - (void) dealloc;
-- (id) init;
-- (NSString *) preferencesNibName;
+- (instancetype) init;
+@property (nonatomic, readonly, copy) NSString *preferencesNibName;
 - (void) setPreferencesView:fp12;
 - (id) viewForPreferenceNamed:(NSString *)aName;
 - (NSImage *) imageForPreferenceNamed:(NSString *)aName;
 - (NSString *) titleForIdentifier:(NSString *)aName;
-- (BOOL) hasChangesPending;
+@property (nonatomic, readonly) char hasChangesPending;
 - (void) saveChanges;
 - (void) willBeDisplayed;
 - (void) initializeFromDefaults;
 - (void) didChange;
-- (NSSize) minSize;
+@property (nonatomic, readonly) NSSize minSize;
 - (void) moduleWillBeRemoved;
 - (void) moduleWasInstalled;
-- (BOOL) isResizable;
+@property (nonatomic, getter=isResizable, readonly) BOOL resizable;
 
 @end

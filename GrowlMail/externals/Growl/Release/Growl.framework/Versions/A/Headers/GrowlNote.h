@@ -126,7 +126,7 @@ typedef void(^GrowlNoteStatusUpdateBlock)(GrowlNoteStatus status, GrowlNote *not
  *
  *	@since Growl.framework 3.0
  */
--(id)initWithDictionary:(NSDictionary*)dictionary;
+-(instancetype)initWithDictionary:(NSDictionary*)dictionary;
 
 /*!@brief Initialize a notification using a dictionary
  *  requires values for GROWL_NOTIFICATION_NAME and either GROWL_NOTIFICATION_TITLE or GROWL_NOTIFICATION_DESCRIPTION
@@ -156,7 +156,7 @@ typedef void(^GrowlNoteStatusUpdateBlock)(GrowlNoteStatus status, GrowlNote *not
  * @param cancelButtonTitle a string to use as the cancel button title in NSUserNotificationCenter
  *	@param identifier	An identifier for this notification. Notifications with equal identifiers are coalesced.
  */
--(id)initWithTitle:(NSString *)title
+-(instancetype)initWithTitle:(NSString *)title
        description:(NSString *)description
   notificationName:(NSString *)notifName
           iconData:(NSData *)iconData

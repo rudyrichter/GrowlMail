@@ -37,19 +37,19 @@ static GMSparkleController *sharedControl = nil;
 
 @implementation GMSparkleController
 
-+ (id)sharedController
++ (GMSparkleController*)sharedController
 {
     if(!sharedControl)
         sharedControl = [[GMSparkleController alloc] init];
     return sharedControl;
 }
 
-- (id)init
+- (instancetype)init
 {
     if ((self = [super init])) 
     {
         NSBundle *growlMailBundle = [NSBundle bundleForClass:[self class]];
-        NSString *privateFrameworksPath = [growlMailBundle privateFrameworksPath];
+        NSString *privateFrameworksPath = growlMailBundle.privateFrameworksPath;
         
         NSString *sparkleBundlePath = [privateFrameworksPath stringByAppendingPathComponent:@"Sparkle.framework"];
         NSBundle *sparkleBundle = [NSBundle bundleWithPath:sparkleBundlePath];
@@ -78,7 +78,7 @@ static GMSparkleController *sharedControl = nil;
 
 - (NSArray *)feedParametersForUpdater:(id)updater sendingSystemProfile:(BOOL)sendingProfile
 {
-    return [NSArray arrayWithObject:[NSDictionary dictionaryWithObjectsAndKeys:@"1", @"value", @"id", @"key", nil]];
+    return @[@{@"value": @"1", @"key": @"id"}];
 }
 
 - (void)setUpdateCheckInterval:(NSTimeInterval)updateTime

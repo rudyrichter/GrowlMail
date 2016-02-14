@@ -38,7 +38,7 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 
 @interface NSPreferences (GMSwizzleSticks)
 
-+ (id) sharedPreferencesForGrowlMail;
++ (NSPreferences*) sharedPreferencesForGrowlMail;
 
 @end
 
@@ -73,7 +73,7 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 
 @implementation NSPreferences (GMSwizzleSticks)
 
-+ (id) sharedPreferencesForGrowlMail 
++ (NSPreferences*) sharedPreferencesForGrowlMail 
 {
 	static BOOL	added = NO;
 	id preferences = [self sharedPreferencesFromAppKitSwizzledByGrowlMail];
@@ -83,25 +83,26 @@ static void GMExchangeMethodImplementations(Method a, Method b);
 		added = YES;
 		[preferences addPreferenceNamed:[GrowlMail preferencesPanelName] owner:[GrowlMailPreferencesModule sharedInstance]];
 	
-        NSWindow *prefsWindow;
-        NSMutableArray *toolbarTitles;
-        if(object_getInstanceVariable(preferences, "_preferencesPanel", (void**)&prefsWindow) && object_getInstanceVariable(preferences, "_preferenceTitles", (void**)&toolbarTitles))
+        NSWindow *prefsWindow = (NSWindow *)[preferences valueForKey:@"_preferencesPanel"];
+        NSMutableArray *toolbarTitles = (NSMutableArray *)[preferences valueForKey:@"_preferenceTitles"];
+        
+        if(prefsWindow && toolbarTitles)
         {
-            NSToolbar *toolbar = [prefsWindow toolbar];
-            NSArray *toolbarItems = [toolbar items];
-            NSUInteger itemsCount = [toolbarItems count];
-            NSUInteger titlesCount = [toolbarTitles count];
+            NSToolbar *toolbar = prefsWindow.toolbar;
+            NSArray *toolbarItems = toolbar.items;
+            NSUInteger itemsCount = toolbarItems.count;
+            NSUInteger titlesCount = toolbarTitles.count;
             
             if(itemsCount < titlesCount)
             {
                 NSUInteger i;
                 for( i = 0 ; i < titlesCount ; i++ )
                 {
-                    NSString* title = [toolbarTitles objectAtIndex:i];
-                    if(i < itemsCount && [[(NSToolbarItem*)[toolbarItems objectAtIndex:i] itemIdentifier] isEqualToString:title] )
+                    NSString* title = toolbarTitles[i];
+                    if(i < itemsCount && [((NSToolbarItem*)toolbarItems[i]).itemIdentifier isEqualToString:title] )
                         continue;
                     [toolbar insertItemWithItemIdentifier:title atIndex:(NSInteger)i];
-                    toolbarItems = [toolbar items];
+                    toolbarItems = toolbar.items;
                     itemsCount++;
                 }
             }

@@ -38,7 +38,7 @@
 #import <objc/objc-runtime.h>
 
 void GMShowNotificationPart1(id self, SEL _cmd);
-void GMShowNotificationPart2(id self, SEL _cmd, id messageBody);
+void GMShowNotificationPart2(id self, id messageBody);
 
 @implementation GrowlMessage
 
@@ -46,8 +46,7 @@ void GMShowNotificationPart2(id self, SEL _cmd, id messageBody);
 {
     Class mailMessageClass = NSClassFromString(GM_Message);
     
-    class_addMethod(mailMessageClass, NSSelectorFromString(@"GMShowNotificationPart1:"), (IMP)GMShowNotificationPart1, "v@:");
-    class_addMethod(mailMessageClass, NSSelectorFromString(@"GMShowNotificationPart2:"), (IMP)GMShowNotificationPart2, "v@:@");
+    class_addMethod(mailMessageClass, NSSelectorFromString(@"GMShowNotificationPart1"), (IMP)GMShowNotificationPart1, "v@:");
 }
 
 void GMShowNotificationPart1(id self, SEL _cmd)
@@ -82,19 +81,19 @@ void GMShowNotificationPart1(id self, SEL _cmd)
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self performSelector:NSSelectorFromString(@")GMShowNotificationPart2:") withObject:messageBody];
+            GMShowNotificationPart2(self, messageBody);
         });
     };
 }
 
 
-void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
+void GMShowNotificationPart2(MCMessage *self, id messageBody)
 {
-	NSString *account = (NSString *)[[[self mailbox] account] displayName];
+	NSString *account = (NSString *)[[self mailbox] account].displayName;
 	NSString *senderAddress = [self senderIfAvailable];
 	NSString *sender = [self senderDisplayName];
     NSArray *receivers = [self to];
-    NSString *receiver = ([receivers count] ? [receivers componentsJoinedByString:@", "] : account);
+    NSString *receiver = (receivers.count ? [receivers componentsJoinedByString:@", "] : account);
 	NSString *subject = (NSString *)[self subject];
 	NSString *body = @"";
 	GrowlMailNotifier *notifier = [GrowlMailNotifier sharedNotifier];
@@ -110,28 +109,28 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
         }
 		if (originalBody) 
         {
-			NSMutableString *transformedBody = [[[originalBody stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy] autorelease];
-			NSUInteger lengthWithoutWhitespace = [transformedBody length];
+			NSMutableString *transformedBody = [[originalBody stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy];
+			NSUInteger lengthWithoutWhitespace = transformedBody.length;
 			[transformedBody trimStringToFirstNLines:4U];
-			NSUInteger length = [transformedBody length];
+			NSUInteger length = transformedBody.length;
 			if (length > 200U) 
             {
 				[transformedBody deleteCharactersInRange:NSMakeRange(200U, length - 200U)];
 				length = 200U;
 			}
 			if (length != lengthWithoutWhitespace)
-				[transformedBody appendString:[NSString stringWithUTF8String:"\xE2\x80\xA6"]];
+				[transformedBody appendString:@"\xE2\x80\xA6"];
 			body = (NSString *)transformedBody;
 		} 
 	}
 
-    __block NSMutableArray *activeEnabledAccounts = [NSMutableArray array];
+    __weak NSMutableArray *activeEnabledAccounts = [NSMutableArray array];
     [[notifier enabledRemoteAccounts] enumerateObjectsUsingBlock:^(id enabledRemoteAccount, NSUInteger idx, BOOL *stop) {
         if([notifier isAccountEnabled:enabledRemoteAccount])
             [activeEnabledAccounts addObject:enabledRemoteAccount];
     }];
     
-    NSString *accountValue = ([activeEnabledAccounts count] > 1 ? account : @"");
+    NSString *accountValue = (activeEnabledAccounts.count > 1 ? account : @"");
 	NSArray *keywords = @[@"%sender", @"%receiver", @"%subject", @"%body", @"(%account)", @"%account"];
     NSArray *values = @[(sender ?: @""), (receiver ?: @""), (subject ?: @""), (body ?: @""), (accountValue ?: @""), (accountValue ?: @"")];
 	NSString *title = [[titleFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

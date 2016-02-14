@@ -38,8 +38,10 @@
 
 #import <Sparkle/Sparkle.h>
 
+GM_KVO_CONTEXT(GrowlMailPreferencesModuleKVOContext);
+
 @interface GrowlMailPreferencesModule ()
-@property (nonatomic, assign) IBOutlet NSUserDefaultsController *defaultsController;
+@property (nonatomic, weak) IBOutlet NSUserDefaultsController *defaultsController;
 @end
 
 @implementation GrowlMailPreferencesModule
@@ -48,21 +50,20 @@
 {
     self.defaultsController = [GrowlMailNotifier sharedNotifier].userDefaultsController;
 
-    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefEnabled options:NSKeyValueObservingOptionNew context:&self];
-    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefInboxOnlyMode options:NSKeyValueObservingOptionNew context:&self];
-    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefBackgroundOnlyMode options:NSKeyValueObservingOptionNew context:&self];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefEnabled options:NSKeyValueObservingOptionNew context:&GrowlMailPreferencesModuleKVOContext];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefInboxOnlyMode options:NSKeyValueObservingOptionNew context:&GrowlMailPreferencesModuleKVOContext];
+    [self.defaultsController.defaults addObserver:self forKeyPath:GMPrefBackgroundOnlyMode options:NSKeyValueObservingOptionNew context:&GrowlMailPreferencesModuleKVOContext];
 
-    [_descriptionTextView setFont:[NSFont systemFontOfSize:13.0f]];
+    _descriptionTextView.font = [NSFont systemFontOfSize:13.0f];
     
 	NSTableColumn *activeColumn = [_accountsView tableColumnWithIdentifier:@"active"];
-	[[activeColumn dataCell] setImagePosition:NSImageOnly]; // center the checkbox
+	[activeColumn.dataCell setImagePosition:NSImageOnly]; // center the checkbox
 }
 
 - (void)dealloc
 {
     [self.defaultsController.defaults removeObserver:self forKeyPath:@"GMEnableGrowlMailBundle"];
     
-    [super dealloc];
 }
 
 - (void) willBeDisplayed
@@ -109,7 +110,7 @@
 
 - (NSSize) minSize 
 {
-	return [[self preferencesView] frame].size;
+	return [self preferencesView].frame.size;
 }
 
 - (BOOL) isResizable 
@@ -137,12 +138,12 @@
 
 -(void)enableTextView:(BOOL)enableIt
 {
-    [_descriptionTextView setSelectable: enableIt];
-    [_descriptionTextView setEditable: enableIt];
+    _descriptionTextView.selectable = enableIt;
+    _descriptionTextView.editable = enableIt;
     if (enableIt)
-        [_descriptionTextView setTextColor: [NSColor controlTextColor]];
+        _descriptionTextView.textColor = [NSColor controlTextColor];
     else
-        [_descriptionTextView setTextColor: [NSColor disabledControlTextColor]];
+        _descriptionTextView.textColor = [NSColor disabledControlTextColor];
 }
 
 - (BOOL)inboxOnly
@@ -160,8 +161,8 @@
 - (IBAction)setCheckInterval:(id)sender
 {
     NSPopUpButton *button = (NSPopUpButton*)sender;
-    NSMenuItem *item = [button selectedItem];
-    NSTimeInterval time = [item tag];
+    NSMenuItem *item = button.selectedItem;
+    NSTimeInterval time = item.tag;
     [[GMSparkleController sharedController] setUpdateCheckInterval:time];
 }
 
@@ -174,9 +175,9 @@
 	NSUInteger count = 0;
     
     if(!item)
-        count = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] count];
+        count = [[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts].count;
     else if([item isKindOfClass:mailAccountClass])
-        count = [[[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item] count];
+        count = [[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item].count;
     return (NSInteger)count;
 }
 
@@ -197,12 +198,12 @@
     id child = nil;
     if(!item)
     {
-        child = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] objectAtIndex:(NSUInteger)index];
+        child = [[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts][(NSUInteger)index];
     }
     else if([item isKindOfClass:mailAccountClass] && [self inboxOnly])
     {
         NSArray *mailboxes = [[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item];
-        child = [mailboxes objectAtIndex:(NSUInteger)index];
+        child = mailboxes[(NSUInteger)index];
     }
     return child;
 }
@@ -211,9 +212,9 @@
 {
     id objectValue = nil;
 	id account = item;
-	if ([[tableColumn identifier] isEqualToString:@"active"])
+	if ([tableColumn.identifier isEqualToString:@"active"])
     {
-		objectValue = [NSNumber numberWithInteger:[[GrowlMailNotifier sharedNotifier] accountState:account]];
+		objectValue = @([[GrowlMailNotifier sharedNotifier] accountState:account]);
 	}
     else
         if([account respondsToSelector:@selector(mailboxName)])

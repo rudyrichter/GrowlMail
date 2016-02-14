@@ -6,13 +6,14 @@
 //  Copyright (c) 2011-2014 Rudy Richter. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+@import AppKit;
 
 @interface GMUserDefaults : NSUserDefaults
 
-@property (nonatomic, retain) NSString *domain;
-@property (nonatomic, retain) NSDictionary *registeredDefaults;
+@property (nonatomic, strong) NSString *domain;
+@property (nonatomic, strong) NSDictionary *registeredDefaults;
 
-- (id)initWithPersistentDomainName:(NSString*)domain;
+- (instancetype)initWithPersistentDomainName:(NSString*)domain;
 
 @end
