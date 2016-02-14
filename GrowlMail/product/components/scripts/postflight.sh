@@ -19,6 +19,9 @@ macosx_minor_version=$(sw_vers | /usr/bin/sed -Ene 's/.*[[:space:]]10\.([0-9][0-
 bundle_compatibility_version=4
 if [[ "$macosx_minor_version" -eq 9 ]]; then
     domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
+elif [[ "$macosx_minor_version" -eq 10 ]]; then
+    domain=~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail
+    bundle_compatibility_version=7
 else
     echo 'Unrecognized Mac OS X version!' > /dev/stderr
     sw_vers > /dev/stderr

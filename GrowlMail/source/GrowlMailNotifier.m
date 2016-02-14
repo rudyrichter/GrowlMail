@@ -510,7 +510,6 @@ static BOOL notifierEnabled = YES;
     NSDictionary *gmailLabelChanges = [userInfo objectForKey:@"gmailLabelChanges"];
     if(!gmailLabelChanges)
     {
-        GMShutDownGrowlMailAndWarn(@"Notification had no userInfo");
         return;
     }
 #ifdef GROWL_MAIL_DEBUG
@@ -693,6 +692,10 @@ return isEnabled;
         }];
         if ([account respondsToSelector:@selector(uniqueId)])
             key = [account uniqueId];
+        else if ([account respondsToSelector:@selector(identifier)])
+        {
+            key = [account identifier];
+        }
     }
     else if ([account isKindOfClass:NSClassFromString(GM_Mailbox)])
     {
@@ -700,8 +703,15 @@ return isEnabled;
             key = [account uuid];
     }
     
-    [newSettings setObject:[NSNumber numberWithBool:enabled] forKey:key];
-	[self.userDefaultsController.defaults setObject:newSettings forKey:@"GMAccounts"];
+    if(key)
+    {
+        [newSettings setObject:[NSNumber numberWithBool:enabled] forKey:key];
+    }
+    else
+    {
+        NSLog(@"account: %@", account);
+    }
+    [self.userDefaultsController.defaults setObject:newSettings forKey:@"GMAccounts"];
 }
 
 #pragma mark Accessors
