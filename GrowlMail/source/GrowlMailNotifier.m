@@ -195,7 +195,7 @@ static BOOL notifierEnabled = YES;
                 messageViewer = [messageViewerClass newDefaultMessageViewer];
             
             [NSApp activateIgnoringOtherApps:YES];
-            [messageViewer showAndMakeKey:self];
+            [messageViewer showAndMakeKey:(BOOL)self];
             
             [messageViewer revealMessage:message inMailbox:mailbox forceMailboxSelection:YES];
         }
@@ -254,7 +254,7 @@ static BOOL notifierEnabled = YES;
 		 * We're making some assumptions about Mail's internals, but the fact that notifications are posted on auxiliary threads
 		 * and then again with a _inMainThread_ suffix on the main thread indicates that threads are being used for mail access elsewhere.
 		 */
-		[NSThread detachNewThreadSelector:@selector(GMShowNotificationPart1)
+		[NSThread detachNewThreadSelector:NSSelectorFromString(@"GMShowNotificationPart1:")
 								 toTarget:message
 							   withObject:nil];
 	} 
@@ -688,7 +688,10 @@ return isEnabled;
             if([mailbox respondsToSelector:@selector(uuid)])
                 mailboxKey = [mailbox uuid];
             NSLog(@"%@ %@", [mailbox displayName], mailboxKey);
-            [newSettings setObject:[NSNumber numberWithBool:enabled] forKey:mailboxKey];
+            if(mailboxKey.length > 0)
+            {
+                [newSettings setObject:[NSNumber numberWithBool:enabled] forKey:mailboxKey];
+            }
         }];
         if ([account respondsToSelector:@selector(uniqueId)])
             key = [account uniqueId];

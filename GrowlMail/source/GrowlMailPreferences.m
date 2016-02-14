@@ -100,7 +100,7 @@ static void GMExchangeMethodImplementations(Method a, Method b);
                     NSString* title = [toolbarTitles objectAtIndex:i];
                     if(i < itemsCount && [[(NSToolbarItem*)[toolbarItems objectAtIndex:i] itemIdentifier] isEqualToString:title] )
                         continue;
-                    [toolbar insertItemWithItemIdentifier:title atIndex:i];
+                    [toolbar insertItemWithItemIdentifier:title atIndex:(NSInteger)i];
                     toolbarItems = [toolbar items];
                     itemsCount++;
                 }

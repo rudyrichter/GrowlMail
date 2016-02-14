@@ -171,13 +171,13 @@
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
     Class mailAccountClass = NSClassFromString(GM_MailAccount);
-	NSInteger count = 0;
+	NSUInteger count = 0;
     
     if(!item)
         count = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] count];
     else if([item isKindOfClass:mailAccountClass])
         count = [[[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item] count];
-    return count;
+    return (NSInteger)count;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -197,12 +197,12 @@
     id child = nil;
     if(!item)
     {
-        child = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] objectAtIndex:index];
+        child = [[[GrowlMailNotifier sharedNotifier] enabledRemoteAccounts] objectAtIndex:(NSUInteger)index];
     }
     else if([item isKindOfClass:mailAccountClass] && [self inboxOnly])
     {
         NSArray *mailboxes = [[GrowlMailNotifier sharedNotifier] mailboxesForAccount:item];
-        child = [mailboxes objectAtIndex:index];
+        child = [mailboxes objectAtIndex:(NSUInteger)index];
     }
     return child;
 }

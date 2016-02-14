@@ -46,8 +46,8 @@ void GMShowNotificationPart2(id self, SEL _cmd, id messageBody);
 {
     Class mailMessageClass = NSClassFromString(GM_Message);
     
-    class_addMethod(mailMessageClass, @selector(GMShowNotificationPart1), (IMP)GMShowNotificationPart1, "v@:");
-    class_addMethod(mailMessageClass, @selector(GMShowNotificationPart2:), (IMP)GMShowNotificationPart2, "v@:@");
+    class_addMethod(mailMessageClass, NSSelectorFromString(@"GMShowNotificationPart1:"), (IMP)GMShowNotificationPart1, "v@:");
+    class_addMethod(mailMessageClass, NSSelectorFromString(@"GMShowNotificationPart2:"), (IMP)GMShowNotificationPart2, "v@:@");
 }
 
 void GMShowNotificationPart1(id self, SEL _cmd)
@@ -82,7 +82,7 @@ void GMShowNotificationPart1(id self, SEL _cmd)
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self performSelector:@selector(GMShowNotificationPart2:) withObject:messageBody];
+            [self performSelector:NSSelectorFromString(@")GMShowNotificationPart2:") withObject:messageBody];
         });
     };
 }
@@ -133,7 +133,7 @@ void GMShowNotificationPart2(MCMessage *self, SEL _cmd, id messageBody)
     
     NSString *accountValue = ([activeEnabledAccounts count] > 1 ? account : @"");
 	NSArray *keywords = @[@"%sender", @"%receiver", @"%subject", @"%body", @"(%account)", @"%account"];
-	NSArray *values = @[(sender ? : @""), (receiver ? : @""), (subject ? : @""), (body ? : @""), accountValue, accountValue];
+    NSArray *values = @[(sender ?: @""), (receiver ?: @""), (subject ?: @""), (body ?: @""), (accountValue ?: @""), (accountValue ?: @"")];
 	NSString *title = [[titleFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	NSString *description = [[descriptionFormat stringByReplacingKeywords:keywords withValues:values] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 

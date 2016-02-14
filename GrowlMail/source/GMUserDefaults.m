@@ -57,6 +57,6 @@
 
 - (BOOL)synchronize
 {
-    return CFPreferencesSynchronize((CFStringRef)self.domain, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    return (BOOL)CFPreferencesSynchronize((CFStringRef)self.domain, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 }
 @end
