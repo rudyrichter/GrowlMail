@@ -4,3 +4,6 @@
 [submodule "GrowlMail/externals/MAObjCRuntime"]
 	path = GrowlMail/externals/MAObjCRuntime
 	url = https://github.com/rudyrichter/MAObjCRuntime.git
+[submodule "GrowlMail/externals/Warnings"]
+	path = GrowlMail/externals/Warnings
+	url = https://github.com/rudyrichter/Warnings-xcconfig.git

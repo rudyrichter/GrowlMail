@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2014, Rudy Richter. All rights reserved.
 //
 
-BR_BUNDLE_VERSION = 1.4.0b8
+BR_BUNDLE_VERSION = 1.5.0d
 BR_BUNDLE_ID = com.bewarereactor.growlmail
 BR_PRODUCT_NAME = GrowlMail
 BR_FULL_PRODUCT_NAME = $(BR_PRODUCT_NAME).$(WRAPPER_EXTENSION)
@@ -38,8 +38,8 @@ GCC_PREFIX_HEADER = source/GrowlMail_Prefix.pch
 FRAMEWORK_SEARCH_PATHS = $(BUILT_PRODUCTS_DIR) $(SRCROOT)/externals/Growl/Release
 
 //target platform
-SDKROOT = macosx10.9
-MACOSX_DEPLOYMENT_TARGET = 10.9
+SDKROOT = macosx10.11
+MACOSX_DEPLOYMENT_TARGET = 10.11
 ARCHS = $(ARCHS_STANDARD_64_BIT)
 VALID_ARCHS = x86_64
 

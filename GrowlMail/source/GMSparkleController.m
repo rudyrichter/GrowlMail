@@ -30,6 +30,9 @@
 #import "GMSparkleController.h"
 #import "Sparkle/Sparkle.h"
 
+@interface GMSparkleController () <NSFileManagerDelegate>
+@end
+
 static GMSparkleController *sharedControl = nil;
 
 @implementation GMSparkleController

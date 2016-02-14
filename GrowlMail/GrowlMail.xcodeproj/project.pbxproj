@@ -60,6 +60,13 @@
 			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
 			remoteInfo = GrowlMail;
 		};
+		93A4112C1C70C3C100B78D4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93E7129C13FF66620025D733 /* Sparkle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 726B2B5D1C645FC900388755;
+			remoteInfo = "UI Tests";
+		};
 		93E712AA13FF66630025D733 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93E7129C13FF66620025D733 /* Sparkle.xcodeproj */;
@@ -439,9 +446,10 @@
 			children = (
 				93E712AB13FF66630025D733 /* Sparkle.framework */,
 				93E712AD13FF66630025D733 /* Sparkle Test App.app */,
-				93E712B113FF66630025D733 /* Sparkle Unit Tests.octest */,
+				93E712B113FF66630025D733 /* Sparkle Unit Tests.xctest */,
 				93E712B313FF66630025D733 /* BinaryDelta */,
-				93F216CC15D4B34200343EB1 /* finish_installation.app */,
+				93F216CC15D4B34200343EB1 /* Autoupdate.app */,
+				93A4112D1C70C3C100B78D4C /* UI Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -534,6 +542,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		93A4112D1C70C3C100B78D4C /* UI Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "UI Tests.xctest";
+			remoteRef = 93A4112C1C70C3C100B78D4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		93E712AB13FF66630025D733 /* Sparkle.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -548,10 +563,10 @@
 			remoteRef = 93E712AC13FF66630025D733 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		93E712B113FF66630025D733 /* Sparkle Unit Tests.octest */ = {
+		93E712B113FF66630025D733 /* Sparkle Unit Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = "Sparkle Unit Tests.octest";
+			path = "Sparkle Unit Tests.xctest";
 			remoteRef = 93E712B013FF66630025D733 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -562,10 +577,10 @@
 			remoteRef = 93E712B213FF66630025D733 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		93F216CC15D4B34200343EB1 /* finish_installation.app */ = {
+		93F216CC15D4B34200343EB1 /* Autoupdate.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = finish_installation.app;
+			path = Autoupdate.app;
 			remoteRef = 93F216CB15D4B34200343EB1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -790,6 +805,7 @@
 		315C887B1068F96700880530 /* Localization */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SDKROOT = macosx;
 			};
 			name = Localization;
 		};
@@ -797,6 +813,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8413C8D04900E29642 /* Localization.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -808,6 +826,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Localization;
 		};
@@ -842,6 +861,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8513C8D04900E29642 /* Debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -853,6 +874,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -860,6 +882,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93947E8313C8D04900E29642 /* Release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -871,6 +895,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					framework_dumps,
 				);
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -878,12 +903,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		95E4A3650855C16F006B3F45 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
