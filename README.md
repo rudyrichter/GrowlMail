@@ -1,4 +1,4 @@
-[![Image: Status of most recent build and test attempt.](https://travis-ci.org/rudyrichter/GrowlMail.svg?branch=master)](https://travis-ci.org/rudyrichter/growlmail)
+[![Image: Status of most recent build and test attempt.](https://travis-ci.org/rudyrichter/GrowlMail.svg?branch=master)](https://travis-ci.org/rudyrichter/GrowlMail)
 
 GrowlMail is a Apple Mail plugin that posts a Growl notification whenever Mail receives new mail.
 
