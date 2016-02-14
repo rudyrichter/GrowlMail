@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "A810A3CC7BC635449C7C02450CBF3848623AF2ED",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "18030B5112E4743F2CDD69CFF074D529EA063310" : 0,
+    "A810A3CC7BC635449C7C02450CBF3848623AF2ED" : 0,
+    "EF1CF5E1F342919DE309B5C9DAEDDCF1D12D0402" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7EA9C6DD-DF32-4D01-920E-82E7AF7E305F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "18030B5112E4743F2CDD69CFF074D529EA063310" : "growlmail\/GrowlMail\/externals\/MAObjCRuntime\/",
+    "A810A3CC7BC635449C7C02450CBF3848623AF2ED" : "growlmail\/",
+    "EF1CF5E1F342919DE309B5C9DAEDDCF1D12D0402" : "growlmail\/GrowlMail\/externals\/Sparkle\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "GrowlMail",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "GrowlMail\/GrowlMail.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rudyrichter\/MAObjCRuntime.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "18030B5112E4743F2CDD69CFF074D529EA063310"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/github.com\/rudyrichter\/growlmail\/",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A810A3CC7BC635449C7C02450CBF3848623AF2ED"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:rudyrichter\/Sparkle.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EF1CF5E1F342919DE309B5C9DAEDDCF1D12D0402"
+    }
+  ]
+}
