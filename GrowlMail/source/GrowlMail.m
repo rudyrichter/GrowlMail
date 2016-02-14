@@ -32,6 +32,14 @@
 #import <objc/runtime.h>
 #import "GMSparkleController.h"
 
+NSString *const GM_MailAccount = @"MFMailAccount";
+NSString *const GM_Message = @"MCMessage";
+NSString *const GM_Mailbox = @"MFMailbox";
+NSString *const GM_SingleMessageViewer = @"SingleMessageViewer";
+NSString *const GM_MessageViewer = @"MessageViewer";
+NSString *const GM_Library = @"MFLibrary";
+NSString *const GM_MessageStore = @"MFMessageStore";
+
 NSBundle *GMGetGrowlMailBundle(void)
 {
 	return [NSBundle bundleForClass:[GrowlMail class]];

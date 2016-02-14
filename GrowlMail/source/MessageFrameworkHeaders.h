@@ -35,6 +35,7 @@
 @property (nonatomic, readonly, strong) id rootMailbox;
 @property (nonatomic, readonly, strong) id primaryMailbox;
 @property (nonatomic, readonly, strong) id allMailboxes;
+- (id)inboxMailboxCreateIfNeeded:(BOOL)arg1;
 - (id)_outboxMailboxCreateIfNeeded:(BOOL)arg1;
 - (id)archiveMailboxCreateIfNeeded:(BOOL)arg1;
 - (id)trashMailboxCreateIfNeeded:(BOOL)arg1;
@@ -95,9 +96,11 @@
 + (id)frontmostMessageViewerWithOptions:(unsigned long long)arg1;
 + (id)newDefaultMessageViewer;
 - (void)showAndMakeKey:(BOOL)arg1;
++ (id)existingViewerShowingMessage:(id)arg1;
 @end
 
 @interface SingleMessageViewer : MessageViewer
 + (id)viewerForMessage:(id)arg1 hiddenCopies:(id)arg2 showRelatedMessages:(BOOL)arg3 expandedSelectedMailboxes:(id)arg4;
 - (void)selectMessages:(id)arg1;
++ (id)existingSingleMessageViewerForMessage:(id)arg1;
 @end

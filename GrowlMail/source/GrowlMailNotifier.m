@@ -168,44 +168,74 @@ static BOOL notifierEnabled = YES;
     {
         Class libraryClass = NSClassFromString(GM_Library);
         Class singleMessageViewerClass = NSClassFromString(GM_SingleMessageViewer);
-        Class messageViewerClass = NSClassFromString(@"MessageViewer");
-
+        Class messageViewerClass = NSClassFromString(GM_MessageViewer);
+        Class messageClass = NSClassFromString(GM_Message);
+        Class mailboxClass = NSClassFromString(GM_Mailbox);
+        Class mailAccountClass = NSClassFromString(GM_MailAccount);
+        
         //Make sure we have all the methods we need.
         if (!class_getClassMethod(singleMessageViewerClass, @selector(viewerForMessage:hiddenCopies:showRelatedMessages:expandedSelectedMailboxes:)))
 			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +viewerForMessage:hiddenCopies:showRelatedMessages:expandedSelectedMailboxes:");
-		if (!class_getInstanceMethod(singleMessageViewerClass, @selector(showAndMakeKey:)))
-			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
+        if (!class_getClassMethod(singleMessageViewerClass, @selector(existingSingleMessageViewerForMessage:)))
+            GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to +existingSingleMessageViewerForMessage:");
         if(!class_getClassMethod(libraryClass, @selector(markMessageAsViewed:viewedDate:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +markMessageAsViewed:viewedDate:");
         if(!class_getClassMethod(libraryClass, @selector(messageWithMessageID:)))
             GMShutDownGrowlMailAndWarn(@"Library does not respond to +messageWithMessageID:");
+        if (!class_getClassMethod(messageViewerClass, @selector(frontmostMessageViewerWithOptions:)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to +frontmostMessageViewerWithOptions:");
+        if (!class_getClassMethod(messageViewerClass, @selector(newDefaultMessageViewer)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to +newDefaultMessageViewer");
+
+        if (!class_getInstanceMethod(messageClass, @selector(mailbox)))
+            GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -mailbox");
+        if (!class_getInstanceMethod(singleMessageViewerClass, @selector(showAndMakeKey:)))
+			GMShutDownGrowlMailAndWarn(@"SingleMessageViewer does not respond to -showAndMakeKey:");
+        if (!class_getInstanceMethod(messageViewerClass, @selector(showAndMakeKey:)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to -showAndMakeKey:");
+        if (!class_getInstanceMethod(messageViewerClass, @selector(revealMessage:inMailbox:forceMailboxSelection:)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to -revealMessage:inMailbox:forceMailboxSelection:");
+        if (!class_getInstanceMethod(mailboxClass, @selector(account)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to -account");
+        if (!class_getInstanceMethod(mailAccountClass, @selector(archiveMailboxCreateIfNeeded:)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to -archiveMailboxCreateIfNeeded:");
+        if (!class_getInstanceMethod(mailAccountClass, @selector(inboxMailboxCreateIfNeeded:)))
+            GMShutDownGrowlMailAndWarn(@"MessageViewer does not respond to -inboxMailboxCreateIfNeeded:");
+
 
         
         id message = [libraryClass messageWithMessageID:clickContext];
-
+        id messageViewer = nil;
         if([[self.userDefaultsController.defaults objectForKey:GMPrefMessagesRevealedInMainWindow] boolValue])
         {
             id mailbox = [message mailbox];
-            id messageViewer = [messageViewerClass frontmostMessageViewerWithOptions:0];
-            if(!messageViewer)
+            messageViewer = [messageViewerClass frontmostMessageViewerWithOptions:0];
+            if(messageViewer == nil)
+            {
                 messageViewer = [messageViewerClass newDefaultMessageViewer];
-            
-            [NSApp activateIgnoringOtherApps:YES];
-            [messageViewer showAndMakeKey:YES];
-            
-            [messageViewer revealMessage:message inMailbox:mailbox forceMailboxSelection:YES];
+            }
+            //gmail test
+            if([[[mailbox account] archiveMailboxCreateIfNeeded:NO] isEqualTo:mailbox] == YES)
+            {
+                mailbox = [[message account] inboxMailboxCreateIfNeeded:NO];
+            }
+            [messageViewer revealMessage:message inMailbox:mailbox forceMailboxSelection:NO];
         }
         else
         {
-            id messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil showRelatedMessages:NO expandedSelectedMailboxes:nil];
-            [NSApp activateIgnoringOtherApps:YES];
-            [messageViewer showAndMakeKey:YES];
+            messageViewer = [singleMessageViewerClass existingViewerShowingMessage:message];
+            if(messageViewer == nil || [messageViewer isMemberOfClass:messageViewerClass])
+            {
+                messageViewer = [singleMessageViewerClass viewerForMessage:message hiddenCopies:nil showRelatedMessages:NO expandedSelectedMailboxes:nil];
+            }
             [libraryClass markMessageAsViewed:message viewedDate:[NSDate date]];
         }
+        [NSApp activateIgnoringOtherApps:YES];
+        [messageViewer showAndMakeKey:YES];
 	}
 }
 
-- (NSDictionary *) registrationDictionaryForGrowl 
+- (NSDictionary *) registrationDictionaryForGrowl
 {
 	// Register our ticket with Growl
 	NSArray *allowedNotifications = @[NEW_MAIL_NOTIFICATION,

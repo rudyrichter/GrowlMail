@@ -34,12 +34,13 @@ typedef void * _GMKVOContext;
 #define GM_KVO_CONTEXT(x) static _GMKVOContext x = (_GMKVOContext)@#x
 #endif
 
-#define GM_MailAccount @"MFMailAccount"
-#define GM_Message @"MCMessage"
-#define GM_Mailbox @"MFMailbox"
-#define GM_SingleMessageViewer @"SingleMessageViewer"
-#define GM_Library @"MFLibrary"
-#define GM_MessageStore @"MFMessageStore"
+extern NSString *const GM_MailAccount;
+extern NSString *const GM_Message;
+extern NSString *const GM_Mailbox;
+extern NSString *const GM_SingleMessageViewer;
+extern NSString *const GM_MessageViewer;
+extern NSString *const GM_Library;
+extern NSString *const GM_MessageStore;
 
 @interface GrowlMail : NSObject
 {
